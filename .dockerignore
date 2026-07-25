@@ -1,0 +1,10 @@
+# .dockerignore
+node_modules
+.next
+.git
+.gitignore
+docker/
+*.md
+.env
+.env.local
+.DS_Store

@@ -1,0 +1,17 @@
+# docker/Dockerfile.dev
+FROM node:24-alpine
+
+WORKDIR /app
+
+# Install dependencies dulu agar layer ini di-cache
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy sisa file (akan di-override oleh volume mount saat runtime)
+COPY . .
+
+# Expose port default Next.js
+EXPOSE 3000
+
+# Jalankan development server
+CMD ["npm", "run", "dev"]
