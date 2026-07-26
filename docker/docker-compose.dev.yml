@@ -5,7 +5,7 @@ services:
       dockerfile: docker/Dockerfile.dev  # <--- PANGGIL DOCKERFILE DEV
     container_name: nextjs_dev
     volumes:
-      - ..:/app              # Mount root project
+      - ..:/app:cached           # Mount root project
       - /app/node_modules       # Agar node_modules host tidak menimpa container
       - /app/.next              # Agar folder .next host tidak menimpa container
     env_file:
