@@ -8,10 +8,8 @@ services:
       - ..:/app              # Mount root project
       - /app/node_modules       # Agar node_modules host tidak menimpa container
       - /app/.next              # Agar folder .next host tidak menimpa container
-    environment:
-      - NODE_ENV=development
-      - WATCHPACK_POLLING=true  # Wajib agar HMR terdeteksi di Docker
-      - DATABASE_URL=postgresql://devuser:devpassword@host.docker.internal:5432/devdb?schema=public
+    env_file:
+      - ../.env
     extra_hosts:
       - "host.docker.internal:host-gateway" # ⬇️ WAJIB agar bisa connect ke host (terutama di Linux)
     ports:

@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://devuser:devpassword@host.docker.internal:5432/devdb?schema=public
+      - DATABASE_URL=postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres
     extra_hosts:
       - "host.docker.internal:host-gateway" 
     networks:
