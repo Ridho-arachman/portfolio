@@ -29,6 +29,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   verifications Verification[]
+
+  @@map("user")
 }
 
 model Session {
@@ -39,6 +41,11 @@ model Session {
   userAgent String?
   ipAddress String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -55,7 +62,12 @@ model Account {
   password              String?
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -69,6 +81,7 @@ model Verification {
   userId     String?
 
   @@index([identifier])
+  @@map("verification")
 }
 
 // =============================================================================
