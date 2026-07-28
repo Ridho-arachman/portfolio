@@ -1,7 +1,8 @@
 // _components/ui/glass-card.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import * as m from "motion/react-m";
+import { type HTMLMotionProps } from "framer-motion";
 
 interface GlassCardProps extends Omit<HTMLMotionProps<"div">, "children"> {
   variant?: "default" | "hover" | "glow";
@@ -15,7 +16,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     ref,
   ) => {
     return (
-      <motion.div
+      <m.div
         ref={ref}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -66,9 +67,9 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         {/* Inner gradient overlay for depth */}
         <div className="absolute inset-0 rounded-xl bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
 
-        {/* Content - Gunakan motion.div juga untuk konsistensi */}
-        <motion.div className="relative z-10">{children}</motion.div>
-      </motion.div>
+        {/* Content - Gunakan m.div juga untuk konsistensi */}
+        <m.div className="relative z-10">{children}</m.div>
+      </m.div>
     );
   },
 );
