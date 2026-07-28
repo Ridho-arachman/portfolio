@@ -1,20 +1,16 @@
 // _components/ui/glass-card.tsx
-import * as React from "react";
 import { cn } from "@/lib/utils";
-import * as m from "motion/react-m";
 import { type HTMLMotionProps } from "framer-motion";
+import * as m from "motion/react-m";
+import * as React from "react";
 
 interface GlassCardProps extends Omit<HTMLMotionProps<"div">, "children"> {
-  variant?: "default" | "hover" | "glow";
-  glow?: "cyan" | "purple" | "pink" | null;
+  variant?: "default" | "hover" | "accent";
   children: React.ReactNode;
 }
 
 const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
-  (
-    { className, variant = "default", glow = null, children, ...props },
-    ref,
-  ) => {
+  ({ className, variant = "default", children, ...props }, ref) => {
     return (
       <m.div
         ref={ref}
@@ -24,8 +20,8 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         transition={{ duration: 0.5 }}
         className={cn(
           // Base glassmorphism styles
-          "relative rounded-xl border border-white/10",
-          "bg-white/5 backdrop-blur-xl",
+          "relative rounded-xl border border-white/8",
+          "bg-white/3 backdrop-blur-xl",
           "transition-all duration-300 ease-out",
 
           // Variant: default
@@ -34,30 +30,14 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           // Variant: hover - lift effect
           variant === "hover" && [
             "hover:-translate-y-2 hover:shadow-2xl",
-            "hover:border-white/20 hover:bg-white/10",
+            "hover:border-white/12 hover:bg-white/5",
           ],
 
-          // Variant: glow - neon border
-          variant === "glow" && [
-            "border-neon-cyan/50",
-            "shadow-[0_0_20px_rgba(0,240,255,0.3)]",
-          ],
-
-          // Glow color variants
-          glow === "cyan" && [
-            "border-neon-cyan/50",
-            "shadow-[0_0_20px_rgba(0,240,255,0.3)]",
-            "hover:shadow-[0_0_30px_rgba(0,240,255,0.5)]",
-          ],
-          glow === "purple" && [
-            "border-neon-purple/50",
-            "shadow-[0_0_20px_rgba(176,38,255,0.3)]",
-            "hover:shadow-[0_0_30px_rgba(176,38,255,0.5)]",
-          ],
-          glow === "pink" && [
-            "border-neon-pink/50",
-            "shadow-[0_0_20px_rgba(255,0,229,0.3)]",
-            "hover:shadow-[0_0_30px_rgba(255,0,229,0.5)]",
+          // Variant: accent - subtle violet border
+          variant === "accent" && [
+            "border-accent/30",
+            "shadow-[0_0_20px_rgba(167,139,250,0.1)]",
+            "hover:border-accent/50 hover:shadow-[0_0_30px_rgba(167,139,250,0.15)]",
           ],
 
           className,
@@ -67,7 +47,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         {/* Inner gradient overlay for depth */}
         <div className="absolute inset-0 rounded-xl bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
 
-        {/* Content - Gunakan m.div juga untuk konsistensi */}
+        {/* Content */}
         <m.div className="relative z-10">{children}</m.div>
       </m.div>
     );
