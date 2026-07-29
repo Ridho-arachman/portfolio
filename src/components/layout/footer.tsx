@@ -43,7 +43,7 @@ export function Footer() {
       whileInView={{ opacity: 1 }}
       viewport={replayViewport}
       transition={{ duration: 0.8 }}
-      className="relative border-t border-glass-border bg-bg-secondary/80 backdrop-blur-xl mt-20"
+      className="relative border-t border-glass-border bg-bg-secondary/80 backdrop-blur-xl"
     >
       {/* FIX: Gunakan bg-linear-to-r untuk mencegah hydration mismatch */}
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-accent to-transparent" />
