@@ -1,9 +1,5 @@
-import { type MotionValue } from "framer-motion";
 import * as m from "motion/react-m";
-
-interface AboutBackgroundProps {
-  blobY: MotionValue<number>;
-}
+import { AboutBackgroundProps } from "./constants";
 
 export function AboutBackground({ blobY }: AboutBackgroundProps) {
   return (

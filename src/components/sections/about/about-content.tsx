@@ -1,31 +1,13 @@
 "use client";
 
-import { type MotionValue, type Variants } from "framer-motion";
 import * as m from "motion/react-m";
-import { HIGHLIGHT_POINTS } from "./constants";
-import { REPLAY_VIEWPORT } from "./use-about-animations";
-
-interface AboutContentProps {
-  textY: MotionValue<number>;
-}
-
-const contentVariants: Variants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.7, delay: 0.1, ease: "easeOut" },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, x: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.5, delay: i * 0.1 },
-  }),
-};
+import {
+  AboutContentProps,
+  contentVariants,
+  HIGHLIGHT_POINTS,
+  itemVariants,
+  REPLAY_VIEWPORT,
+} from "./constants";
 
 export function AboutContent({ textY }: AboutContentProps) {
   return (

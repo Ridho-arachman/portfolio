@@ -1,10 +1,5 @@
-import { type MotionValue } from "framer-motion";
 import * as m from "motion/react-m";
-
-interface AvatarBackgroundProps {
-  bgX: MotionValue<number>;
-  bgY: MotionValue<number>;
-}
+import { AvatarBackgroundProps } from "./constants";
 
 export function AvatarBackground({ bgX, bgY }: AvatarBackgroundProps) {
   return (

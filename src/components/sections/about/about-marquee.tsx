@@ -1,14 +1,8 @@
 "use client";
 
 import { TechMarquee } from "@/components/ui/tech-marquee";
-import { type Variants } from "framer-motion";
 import * as m from "motion/react-m";
-import { REPLAY_VIEWPORT } from "./use-about-animations";
-
-const marqueeVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
+import { marqueeVariants, REPLAY_VIEWPORT } from "./constants";
 
 export function AboutMarquee() {
   return (

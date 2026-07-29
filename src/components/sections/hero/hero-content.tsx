@@ -3,21 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/ui/magnetic-button";
-import { type MotionValue, type Variants } from "framer-motion";
 import { ArrowRight, Globe } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
-
-interface HeroContentProps {
-  textY: MotionValue<number>;
-  textOpacity: MotionValue<number>;
-  textBlur: MotionValue<string>;
-  rotateX: MotionValue<number>;
-  rotateY: MotionValue<number>;
-  isMobile: boolean;
-  containerVariants: Variants;
-  itemVariants: Variants;
-}
+import { HeroContentProps } from "./constants";
 
 export function HeroContent({
   textY,

@@ -1,21 +1,11 @@
 "use client";
 
-import { type MotionValue, type Variants } from "framer-motion";
 import * as m from "motion/react-m";
 import Image from "next/image";
 import { AvatarBackground } from "./avatar-background";
 import { AvatarBadge } from "./avatar-badge";
+import { AboutAvatarProps, cardVariants, REPLAY_VIEWPORT } from "./constants";
 import { use3dTilt } from "./use-3d-tilt";
-import { REPLAY_VIEWPORT } from "./use-about-animations";
-
-interface AboutAvatarProps {
-  avatarY: MotionValue<number>;
-}
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } },
-};
 
 export function AboutAvatar({ avatarY }: AboutAvatarProps) {
   const {

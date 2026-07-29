@@ -1,12 +1,5 @@
-import { type MotionValue } from "framer-motion";
 import * as m from "motion/react-m";
-
-interface HeroBackgroundProps {
-  bgY: MotionValue<number>;
-  bgScale: MotionValue<number>;
-  gridY: MotionValue<number>;
-  gridOpacity: MotionValue<number>;
-}
+import { HeroBackgroundProps } from "./constants";
 
 export function HeroBackground({
   bgY,

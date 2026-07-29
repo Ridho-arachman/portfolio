@@ -1,10 +1,4 @@
-import { useScroll, useTransform, type ViewportOptions } from "framer-motion";
-
-export const REPLAY_VIEWPORT: ViewportOptions = {
-  once: false,
-  amount: 0.2,
-  margin: "0px 0px -100px 0px",
-};
+import { useScroll, useTransform } from "framer-motion";
 
 export function useAboutAnimations() {
   const { scrollYProgress } = useScroll({
