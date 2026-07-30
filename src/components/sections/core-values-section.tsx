@@ -6,7 +6,7 @@ import { ValueCard } from "./core-values/value-card";
 
 export function CoreValuesSection() {
   return (
-    <section className="relative py-20 md:py-24">
+    <section className="relative ">
       <div className="container mx-auto px-4">
         {/* Header Section */}
         <m.div

@@ -18,7 +18,10 @@ export function ValueCard({ value, index }: ValueCardProps) {
       className="group h-full"
     >
       {/* Menggunakan Card dari shadcn/ui, dengan override class untuk glassmorphism */}
-      <Card className="h-full p-6 rounded-2xl border border-glass-border bg-glass-bg backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
+      <Card
+        className="h-full p-6 rounded-2xl bg-glass-bg backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300"
+        style={{ borderWidth: 0, boxShadow: "none" }}
+      >
         <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
           <Icon className="w-6 h-6 text-accent" />
         </div>

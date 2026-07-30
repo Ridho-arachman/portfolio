@@ -6,10 +6,8 @@ import { AboutAvatar } from "./about/about-avatar";
 import { AboutBackground } from "./about/about-background";
 import { AboutContent } from "./about/about-content";
 import { AboutMarquee } from "./about/about-marquee";
-import {
-  REPLAY_VIEWPORT,
-  useAboutAnimations,
-} from "./about/use-about-animations";
+import { REPLAY_VIEWPORT } from "./about/constants";
+import { useAboutAnimations } from "./about/use-about-animations";
 
 export function AboutSection() {
   const { blobY, avatarY, textY } = useAboutAnimations();
