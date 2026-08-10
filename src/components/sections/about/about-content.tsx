@@ -1,3 +1,4 @@
+// components/sections/about-content.tsx (atau sesuai path Anda)
 "use client";
 
 import * as m from "motion/react-m";
@@ -24,16 +25,19 @@ export function AboutContent({ textY }: AboutContentProps) {
       </h3>
 
       <p className="text-text-secondary leading-relaxed text-lg">
-        Saya adalah mahasiswa{" "}
-        <span className="text-text-primary font-medium">Sistem Informasi</span>{" "}
-        yang memiliki passion mendalam dalam membangun pengalaman web yang
-        imersif, berkinerja tinggi, dan berorientasi pada pengguna.
+        I am a{" "}
+        <span className="text-text-primary font-medium">
+          recent Information Systems graduate
+        </span>{" "}
+        with a deep passion for crafting immersive, high-performance, and
+        user-centric web experiences.
       </p>
 
-      <p className="text-text-secondary leading-relaxed">
-        Dengan fondasi yang kuat dalam pemecahan masalah bisnis dan keahlian
-        teknis modern, saya menjembatani kesenjangan antara kebutuhan
-        stakeholder dan implementasi teknologi yang elegan.
+      <p className="text-text-secondary max-w-2xl mx-auto text-lg">
+        As a recent Information Systems graduate specializing in E-Business, I
+        leverage a strong foundation in business problem-solving and modern tech
+        stacks to bridge the gap between complex stakeholder needs and elegant,
+        scalable technical solutions.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">

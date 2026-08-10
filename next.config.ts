@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["aromatically-dreamiest-delia.ngrok-free.dev"],
 };
 
 export default nextConfig;

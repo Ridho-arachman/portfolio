@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Hero Section dengan Parallax yang Dramatis */}
       <AboutHeroSection />
 
@@ -25,6 +25,6 @@ export default function AboutPage() {
 
       {/* Timeline Pengalaman */}
       <ExperienceSection />
-    </main>
+    </div>
   );
 }

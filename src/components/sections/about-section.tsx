@@ -36,8 +36,9 @@ export function AboutSection() {
             <span className="text-linear-elegant">Technology</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            Sebagai mahasiswa Sistem Informasi, saya tidak hanya menulis kode,
-            tetapi juga merancang solusi yang berdampak.
+            As an Information Systems graduate specializing in E-Business from
+            Universitas Bina Bangsa, I don&apos;t just write code, I design
+            solutions that deliver real impact.
           </p>
         </m.div>
 
