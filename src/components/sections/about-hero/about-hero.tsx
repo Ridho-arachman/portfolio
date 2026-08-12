@@ -1,10 +1,10 @@
 "use client";
 
 import { Code2, Database, Globe } from "lucide-react";
-import { AboutHeroBackground } from "./about-hero/about-hero-background";
-import { AboutHeroContent } from "./about-hero/about-hero-content";
-import { FloatingTechIcon } from "./about-hero/floating-tech-icon";
-import { useAboutHeroAnimations } from "./about-hero/use-about-hero-animations";
+import { AboutHeroBackground } from "./about-hero-background";
+import { AboutHeroContent } from "./about-hero-content";
+import { FloatingTechIcon } from "./floating-tech-icon";
+import { useAboutHeroAnimations } from "./use-about-hero-animations";
 
 export function AboutHeroSection() {
   const {

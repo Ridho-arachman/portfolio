@@ -7,8 +7,8 @@ import { ArrowRight } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
-import { REPLAY_VIEWPORT } from "./experience/constants";
-import { ExperienceTimeline } from "./experience/experience-timeline";
+import { REPLAY_VIEWPORT } from "./constants";
+import { ExperienceTimeline } from "./experience-timeline";
 
 export function ExperienceSection() {
   const sectionRef = useRef<HTMLElement>(null);

@@ -2,12 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import * as m from "motion/react-m";
-import { AboutAvatar } from "./about/about-avatar";
-import { AboutBackground } from "./about/about-background";
-import { AboutContent } from "./about/about-content";
-import { AboutMarquee } from "./about/about-marquee";
-import { REPLAY_VIEWPORT } from "./about/constants";
-import { useAboutAnimations } from "./about/use-about-animations";
+import { AboutAvatar } from "./about-avatar";
+import { AboutBackground } from "./about-background";
+import { AboutContent } from "./about-content";
+import { AboutMarquee } from "./about-marquee";
+import { REPLAY_VIEWPORT } from "./constants";
+import { useAboutAnimations } from "./use-about-animations";
 
 export function AboutSection() {
   const { blobY, avatarY, textY } = useAboutAnimations();

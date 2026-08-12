@@ -2,9 +2,9 @@
 
 import { useIsMobile } from "@/hooks/use-is-mobile"; // Pastikan path ini benar
 import { useRef } from "react";
-import { HeroBackground } from "./hero/hero-background";
-import { HeroContent } from "./hero/hero-content";
-import { useHeroAnimations } from "./hero/use-hero-animations";
+import { HeroBackground } from "./hero-background";
+import { HeroContent } from "./hero-content";
+import { useHeroAnimations } from "./use-hero-animations";
 
 export function HeroSection() {
   const isMobile = useIsMobile();

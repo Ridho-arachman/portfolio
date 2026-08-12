@@ -1,11 +1,11 @@
 "use client";
 
 import * as m from "motion/react-m";
-import { FooterBottom } from "./footer/footer-bottom";
-import { FooterBrand } from "./footer/footer-brand";
-import { FooterLinks } from "./footer/footer-links";
-import { FooterSocial } from "./footer/footer-social";
-import { FOOTER_VIEWPORT } from "./footer/use-footer-animations";
+import { FooterBottom } from "./footer-bottom";
+import { FooterBrand } from "./footer-brand";
+import { FooterLinks } from "./footer-links";
+import { FooterSocial } from "./footer-social";
+import { FOOTER_VIEWPORT } from "./use-footer-animations";
 
 export function Footer() {
   return (

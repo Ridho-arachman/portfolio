@@ -1,8 +1,8 @@
 // app/about/page.tsx
-import { AboutHeroSection } from "@/components/sections/about-hero-section";
-import { AboutSection } from "@/components/sections/about-section";
-import { CoreValuesSection } from "@/components/sections/core-values-section";
-import { ExperienceSection } from "@/components/sections/experience-section";
+import { AboutHeroSection } from "@/components/sections/about-hero";
+import { AboutSection } from "@/components/sections/about";
+import { CoreValuesSection } from "@/components/sections/core-values";
+import { ExperienceSection } from "@/components/sections/experience";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -7,9 +7,9 @@ import { ArrowUpRight } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
-import { FEATURED_PROJECTS, REPLAY_VIEWPORT } from "./projects/constants";
-import { ProjectCard } from "./projects/project-card";
-import { ProjectsBackground } from "./projects/projects-background";
+import { FEATURED_PROJECTS, REPLAY_VIEWPORT } from "./constants";
+import { ProjectCard } from "./project-card";
+import { ProjectsBackground } from "./projects-background";
 
 export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);

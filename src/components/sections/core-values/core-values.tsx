@@ -1,8 +1,8 @@
 "use client";
 
 import * as m from "motion/react-m";
-import { CORE_VALUES, REPLAY_VIEWPORT } from "./core-values/constants";
-import { ValueCard } from "./core-values/value-card";
+import { CORE_VALUES, REPLAY_VIEWPORT } from "./constants";
+import { ValueCard } from "./value-card";
 
 export function CoreValuesSection() {
   return (

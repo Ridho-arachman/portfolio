@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DesktopNav } from "./navbar/desktop-nav";
-import { MobileNav } from "./navbar/mobile-nav";
-import { NavbarLogo } from "./navbar/navbar-logo";
-import { useNavbarScroll } from "./navbar/use-navbar-scroll";
+import { DesktopNav } from "./desktop-nav";
+import { MobileNav } from "./mobile-nav";
+import { NavbarLogo } from "./navbar-logo";
+import { useNavbarScroll } from "./use-navbar-scroll";
 
 export function Navbar() {
   const pathname = usePathname();
