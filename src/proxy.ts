@@ -11,21 +11,22 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 2. Definisikan route yang dilindungi
-  const isAdminRoute = pathname.startsWith("/admin");
-  const isLoginPage = pathname === "/login";
+  const isLoginPage = pathname === "/admin/login";
+  const isAdminRoute =
+    pathname.startsWith("/admin") && pathname !== "/admin/login";
   const isAuthApiRoute = pathname.startsWith("/api/auth");
 
   // 3. Logika Proteksi Route Admin
-  // Jika user mencoba akses /admin tapi BELUM login -> Redirect ke /login
+  // Jika user mencoba akses /admin tapi BELUM login -> Redirect ke /admin/login
   if (isAdminRoute && !session) {
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL("/admin/login", request.url);
     // Simpan URL asal agar setelah login bisa redirect balik ke /admin
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // 4. Logika Redirect jika sudah login
-  // Jika user SUDAH login tapi mencoba akses /login -> Redirect ke /admin
+  // Jika user SUDAH login tapi mencoba akses /admin/login -> Redirect ke /admin
   if (isLoginPage && session) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
