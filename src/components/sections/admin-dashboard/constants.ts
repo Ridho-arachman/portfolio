@@ -56,18 +56,8 @@ export const ADMIN_USER = {
 export const ADMIN_NAV_LINKS: AdminNavLink[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
-  {
-    label: "Experience",
-    href: "/admin/experience",
-    icon: Briefcase,
-    disabled: true,
-  },
-  {
-    label: "Certificates",
-    href: "/admin/certificates",
-    icon: Award,
-    disabled: true,
-  },
+  { label: "Experience", href: "/admin/experience", icon: Briefcase },
+  { label: "Certificates", href: "/admin/certificates", icon: Award },
   {
     label: "Messages",
     href: "/admin/messages",
