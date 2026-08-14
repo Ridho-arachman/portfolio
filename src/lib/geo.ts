@@ -66,8 +66,8 @@ export interface Cell {
   rings: Ring[];
 }
 
-function toPair(ring: Ring): [number, number][] {
-  return ring.map((p) => [p.x, p.y]);
+function toRing(pairs: Ring): [number, number][] {
+  return pairs.map((p) => [p.x, p.y] as [number, number]);
 }
 
 export function ringsToPath(rings: Ring[]): string {
@@ -98,7 +98,7 @@ export function countryCells(country: VisitorCountry, rings: Ring[]): Cell[] {
     ];
   }
 
-  const countryGeom = rings.map(toPair);
+  const countryGeom = rings.map((ring) => [toRing(ring)]);
   const voronoi = Delaunay.from(points).voronoi(WORLD_BOUNDS);
   const cells: Cell[] = [];
 
