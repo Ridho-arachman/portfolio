@@ -1,6 +1,4 @@
 // app/layout.tsx
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
 import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { LazyMotion, domAnimation } from "motion/react";
@@ -52,13 +50,7 @@ export default function RootLayout({
             <div className="fixed top-20 right-0 w-150 h-100 bg-neon-cyan/10 rounded-full blur-[100px] pointer-events-none" />
 
             {/* Main content wrapper */}
-            <div className="relative z-10 flex flex-col min-h-screen">
-              <Navbar />
-
-              <main className="flex-1 pt-20">{children}</main>
-
-              <Footer />
-            </div>
+            <div className="relative z-10 flex flex-col min-h-screen">{children}</div>
 
             <ThemeToggleFloating />
           </LazyMotion>
