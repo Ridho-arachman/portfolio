@@ -3,6 +3,7 @@ import { AdminTopbar } from "./admin-topbar";
 import { PanelCard } from "./panel-card";
 import { StatCard } from "./stat-card";
 import { VisitsChart } from "./visits-chart";
+import { VisitorMap } from "./visitor-map";
 import {
   ADMIN_DASHBOARD,
   DASHBOARD_STATS,
@@ -26,6 +27,7 @@ export function AdminDashboard() {
 
       <main className="space-y-6 p-4 sm:p-6 lg:p-8">
         <VisitsChart />
+        <VisitorMap />
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {DASHBOARD_STATS.map((stat) => (
             <StatCard key={stat.label} stat={stat} />
