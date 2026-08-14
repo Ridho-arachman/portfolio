@@ -1,0 +1,20 @@
+import { AdminSidebar } from "@/components/sections/admin-dashboard";
+
+export default function AdminDashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <div className="relative flex min-h-screen overflow-x-clip bg-bg-primary">
+      <div className="fixed top-[-10%] right-[-10%] w-150 h-150 bg-accent/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] left-[-10%] w-125 h-125 bg-white/5 rounded-full blur-[130px] pointer-events-none" />
+
+      <AdminSidebar />
+
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
+        {children}
+      </div>
+    </div>
+  );
+}

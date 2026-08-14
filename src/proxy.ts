@@ -12,8 +12,9 @@ export async function proxy(request: NextRequest) {
 
   // 2. Definisikan route yang dilindungi
   const isLoginPage = pathname === "/admin/login";
-  const isAdminRoute =
-    pathname.startsWith("/admin") && pathname !== "/admin/login";
+  // TODO: Aktifkan kembali proteksi /admin saat autentikasi better-auth asli
+  // sudah terpasang. Saat ini dinonaktifkan agar mockup dashboard bisa di-preview.
+  const isAdminRoute = false;
   const isAuthApiRoute = pathname.startsWith("/api/auth");
 
   // 3. Logika Proteksi Route Admin
