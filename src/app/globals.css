@@ -82,6 +82,13 @@
   --color-glass-border: var(--color-glass-border);
   --color-glass-hover: var(--color-glass-hover);
 
+  /* Semantic tokens (shadcn/ui) mapped to project palette */
+  --color-background: var(--color-bg-secondary);
+  --color-foreground: var(--color-text-primary);
+  --color-muted: var(--color-bg-tertiary);
+  --color-muted-foreground: var(--color-text-muted);
+  --color-border: var(--color-glass-border);
+
   /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
