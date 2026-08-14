@@ -59,12 +59,7 @@ export const ADMIN_NAV_LINKS: AdminNavLink[] = [
   { label: "Experience", href: "/admin/experience", icon: Briefcase },
   { label: "Certificates", href: "/admin/certificates", icon: Award },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
-  {
-    label: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-    disabled: true,
-  },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export const DASHBOARD_STATS: DashboardStat[] = [
