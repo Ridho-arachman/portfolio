@@ -125,7 +125,7 @@ model Project {
 }
 
 // =============================================================================
-// 3. PORTFOLIO SUPPORT TABLES (Messages, Skills, Experience)
+// 3. PORTFOLIO SUPPORT TABLES (Messages, Skills, Experience, Certificates)
 // =============================================================================
 
 model Message {
@@ -173,6 +173,26 @@ model Experience {
 
   @@index([type])
   @@index([order])
+}
+
+model Certificate {
+  id            String   @id @default(cuid())
+  title         String // e.g., "AWS Certified Cloud Practitioner"
+  issuer        String // e.g., "Amazon Web Services"
+  logoUrl       String? // URL logo issuer (opsional)
+  credentialId  String? // Nomor kredensial sertifikat (opsional)
+  credentialUrl String? // Link verifikasi resmi (opsional)
+  issueDate     DateTime // Tanggal terbit
+  expiryDate    DateTime? // Nullable = berlaku seumur hidup / no expiration
+  skills        String[] // Skill yang tervalidasi: ["Cloud", "AWS"]
+  order         Int      @default(0) // Untuk sorting manual di Admin Dashboard
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isPublished])
+  @@index([order])
+  @@map("certificate")
 }
 
 // =============================================================================
