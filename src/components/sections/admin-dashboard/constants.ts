@@ -58,12 +58,7 @@ export const ADMIN_NAV_LINKS: AdminNavLink[] = [
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Experience", href: "/admin/experience", icon: Briefcase },
   { label: "Certificates", href: "/admin/certificates", icon: Award },
-  {
-    label: "Messages",
-    href: "/admin/messages",
-    icon: MessageSquare,
-    disabled: true,
-  },
+  { label: "Messages", href: "/admin/messages", icon: MessageSquare },
   {
     label: "Settings",
     href: "/admin/settings",
