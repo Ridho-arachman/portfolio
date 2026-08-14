@@ -2,8 +2,11 @@ import { FaLinkedin } from "react-icons/fa";
 import { SiGithub, SiGmail, SiX } from "react-icons/si";
 
 export const QUICK_LINKS = [
-  { label: "Projects", href: "/projects" },
+  { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Projects", href: "/projects" },
+  { label: "Experience", href: "/experience" },
+  { label: "Certificates", href: "/certificates" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
