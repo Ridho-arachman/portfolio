@@ -1,22 +1,18 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
-    branches: ["main"] # Deploy otomatis hanya saat push ke main
+    branches: ["main"]
   pull_request:
-    branches: ["main", "develop"] # Hanya test saat PR
+    branches: ["main", "develop"]
 
-# Mencegah pipeline menumpuk jika ada push berturut-turut
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # =========================================================
-  # TAHAP 1: CI (Continuous Integration) - Validasi Kode
-  # =========================================================
   ci-test:
-    name: Lint, Typecheck, Build & Docker Test
+    name: Lint, Typecheck, Build, Unit & Docker Test
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +22,7 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
 
       - name: 📦 Install dependencies
@@ -41,48 +37,108 @@ jobs:
       - name: 🧠 Type Checking
         run: npx tsc --noEmit
 
+      - name: 🧪 Unit Tests
+        run: npm run test:unit
+
       - name: 🏗️ Build Next.js App
         env:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
-          # Tambahkan variabel lain jika project Anda membutuhkannya saat build
         run: npm run build
 
       - name: 🐳 Test Docker Build (PENTING!)
-        # Memastikan Dockerfile.prod Anda 100% valid sebelum masuk ke server
         run: |
           echo "Membangun image Docker untuk validasi..."
           docker build -f docker/Dockerfile.prod -t nextjs-app:ci-test .
           echo "✅ Docker build berhasil! File .dockerignore dan Dockerfile aman."
 
-  # =========================================================
-  # TAHAP 2: CD (Continuous Deployment) - Deploy ke Server
-  # =========================================================
-  deploy:
-    name: Deploy to VPS
-    needs: ci-test # Hanya jalan jika tahap ci-test BERHASIL
-    if: github.ref == 'refs/heads/main' # Hanya jalan di branch main
+  test-integration:
+    name: Integration Tests
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d portfolio_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
+      BETTER_AUTH_SECRET: ci-integration-test-secret-1234567890abcdef
+      BETTER_AUTH_URL: http://localhost:3000
+
     steps:
-      - name: 🚀 Deploy via SSH ke Server
-        uses: appleboy/ssh-action@v1.0.3
+      - name: 📂 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          host: ${{ secrets.VPS_HOST }} # IP Address server Anda
-          username: ${{ secrets.VPS_USERNAME }} # Biasanya 'root' atau 'ubuntu'
-          key: ${{ secrets.VPS_SSH_KEY }} # Private SSH Key Anda
-          port: 22
-          script: |
-            echo "🔄 Masuk ke folder project..."
-            cd /path/ke/folder/project/anda  # <--- GANTI DENGAN PATH ASLI DI SERVER
+          node-version: 24
+          cache: "npm"
 
-            echo "🔄 Pull kode terbaru dari GitHub..."
-            git pull origin main
+      - name: 📦 Install dependencies
+        run: npm ci
 
-            echo "🔄 Build dan restart container production..."
-            # Pastikan Anda sudah setup script ini di package.json server
-            npm run docker:prod 
+      - name: 🗄️ Generate Prisma Client
+        run: npx prisma generate
 
-            echo "🔄 Bersihkan image docker lama untuk hemat space..."
-            docker image prune -f
+      - name: 🗄️ Push schema to test database
+        run: npx prisma db push
 
-            echo "✅ Deployment berhasil!"
+      - name: 🧪 Integration Tests
+        run: vitest run --config vitest.integration.config.ts
+
+  e2e:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d portfolio_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
+      BETTER_AUTH_SECRET: ci-e2e-test-secret-1234567890abcdef
+      BETTER_AUTH_URL: http://localhost:3000
+
+    steps:
+      - name: 📂 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🗄️ Push schema to test database
+        run: npx prisma db push
+
+      - name: 🖥️ Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🧪 End-to-End Tests
+        run: npm run test:e2e
