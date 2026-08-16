@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { ArrowRight, Globe } from "lucide-react";
 import * as m from "motion/react-m";
@@ -79,18 +78,13 @@ export function HeroContent({
             <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
           </MagneticButton>
 
-          <Button
-            variant="outline"
-            className="group px-10 py-5 h-auto rounded-full border border-white/8 text-text-primary hover:bg-white/5 hover:border-accent/50 hover:text-accent transition-all font-medium text-lg"
+          <Link
+            href="/contact"
+            className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/8 px-10 py-5 text-lg font-medium text-text-primary transition-all hover:bg-white/5 hover:border-accent/50 hover:text-accent"
           >
-            <Link
-              href="/contact"
-              className="flex items-center justify-center gap-3 w-full h-full"
-            >
-              <Globe className="w-5 h-5 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
-              <span>Contact Me</span>
-            </Link>
-          </Button>
+            <Globe className="h-5 w-5 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
+            <span>Contact Me</span>
+          </Link>
         </m.div>
       </m.div>
     </m.div>
