@@ -95,7 +95,7 @@ jobs:
         run: npx prisma db push
 
       - name: 🧪 Integration Tests
-        run: vitest run --config vitest.integration.config.ts
+        run: npx vitest run --config vitest.integration.config.ts
 
   e2e:
     name: End-to-End Tests
