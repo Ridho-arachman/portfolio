@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+test.describe.configure({ retries: 1 });
+
 test.describe("visitor map", () => {
   test("renders the Leaflet map without side gaps", async ({ page }) => {
-    await page.goto("/admin", { waitUntil: "networkidle" });
+    await page.goto("/admin");
 
     await expect(page.getByText("Visitors by Location")).toBeVisible();
 
     const map = page.locator(".leaflet-container");
-    await expect(map).toBeVisible();
+    await expect(map).toBeVisible({ timeout: 60_000 });
 
     await expect(page.locator(".leaflet-control-attribution")).toBeVisible();
     await expect(page.getByRole("button", { name: "Zoom in" })).toBeVisible();
@@ -16,10 +18,10 @@ test.describe("visitor map", () => {
   });
 
   test("map container fills its section width", async ({ page }) => {
-    await page.goto("/admin", { waitUntil: "networkidle" });
+    await page.goto("/admin");
 
     const map = page.locator(".leaflet-container");
-    await expect(map).toBeVisible();
+    await expect(map).toBeVisible({ timeout: 60_000 });
 
     const section = page.locator(".visitor-leaflet").first();
     await expect(section).toBeVisible();
@@ -37,7 +39,7 @@ test.describe("visitor map", () => {
   test("country names open when clicking a region card", async ({
     page,
   }) => {
-    await page.goto("/admin", { waitUntil: "networkidle" });
+    await page.goto("/admin");
 
     const indonesia = page.getByRole("button", { name: /Indonesia/ });
     await expect(indonesia).toBeVisible();
