@@ -24,6 +24,10 @@ import "./visitor-map-leaflet.css";
 
 const MIN_BADGE_ZOOM = 4;
 const FIT_PADDING: L.FitBoundsOptions = { padding: [28, 28], maxZoom: 9 };
+const WORLD_BOUNDS = L.latLngBounds([
+  [-85, -180],
+  [85, 180],
+]);
 
 const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 const TILE_ATTRIBUTION =
@@ -60,6 +64,25 @@ function cityBadgeIcon(visits: number) {
     iconSize: undefined,
     iconAnchor: [0, 0],
   });
+}
+
+function DynamicMinZoom() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    const apply = () => {
+      const width = container.clientWidth;
+      if (width <= 0) return;
+      const fillZoom = Math.max(1, Math.ceil(Math.log2(width / 256)));
+      map.setMinZoom(fillZoom);
+      if (map.getZoom() < fillZoom) map.setZoom(fillZoom);
+    };
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [map]);
+  return null;
 }
 
 function FitBounds({ bounds }: { bounds: L.LatLngBounds | null }) {
@@ -211,10 +234,7 @@ export function VisitorMapLeaflet({
         zoom={2}
         minZoom={1}
         maxZoom={18}
-        maxBounds={[
-          [-85, -180],
-          [85, 180],
-        ]}
+        maxBounds={WORLD_BOUNDS}
         maxBoundsViscosity={1}
         scrollWheelZoom
         zoomControl={false}
@@ -292,6 +312,8 @@ export function VisitorMapLeaflet({
         </ZoomedChildren>
 
         <FitBounds bounds={fitBounds} />
+
+        <DynamicMinZoom />
 
         <MapControls initialBounds={allCityBounds} />
       </MapContainer>
