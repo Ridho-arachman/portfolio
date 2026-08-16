@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: portfolio_test_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=portfolio_test
+    ports:
+      - "5432:5432"
+    volumes:
+      - portfolio_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d portfolio_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  portfolio_test_data:
