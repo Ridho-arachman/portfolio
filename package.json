@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:integration:setup": "node scripts/test-integration-setup.mjs",
     "test:integration": "node scripts/test-integration-setup.mjs && vitest run --config vitest.integration.config.ts",
+    "db:seed": "tsx scripts/seed-admin.ts",
     "test:e2e": "playwright test",
     "test:coverage": "vitest run --coverage",
     "docker:cli": "docker exec -it nextjs_dev sh",

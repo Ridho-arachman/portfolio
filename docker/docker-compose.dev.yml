@@ -10,6 +10,11 @@ services:
       - /app/.next              # Agar folder .next host tidak menimpa container
     env_file:
       - ../.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/portfolio_test
+      - BETTER_AUTH_SECRET=dev-secret-change-me
+      - BETTER_AUTH_URL=http://localhost:3000
+      - NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
     extra_hosts:
       - "host.docker.internal:host-gateway" # ⬇️ WAJIB agar bisa connect ke host (terutama di Linux)
     ports:

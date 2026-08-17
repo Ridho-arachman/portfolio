@@ -1,19 +1,30 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TurnstileWidget } from "@/components/ui/turnstile";
 import { zodResolver } from "@/lib/zod-resolver";
 import {
   CONTACT_FORM_FIELDS,
   contactFormSchema,
   type ContactFormValues,
 } from "./constants";
+
+function translateSubmitError(code?: string, status?: number): string {
+  if (status === 429 || code === "RATE_LIMITED") {
+    return "Terlalu banyak pesan dalam waktu singkat. Coba lagi beberapa saat.";
+  }
+  if (code === "CAPTCHA_VERIFICATION_FAILED") {
+    return "Verifikasi CAPTCHA gagal. Coba lagi.";
+  }
+  return "Gagal mengirim pesan. Coba lagi.";
+}
 
 export function ContactForm() {
   const {
@@ -27,12 +38,48 @@ export function ContactForm() {
   });
 
   const [isSuccess, setIsSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [widgetKey, setWidgetKey] = useState(0);
 
-  const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setIsSuccess(true);
-    reset();
-  };
+  const hasTurnstile = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+
+  const handleCaptchaToken = useCallback((token: string) => {
+    setCaptchaToken(token);
+    setSubmitError(null);
+  }, []);
+
+  const onSubmit = handleSubmit(async (values) => {
+    setSubmitError(null);
+
+    if (hasTurnstile && !captchaToken) {
+      setSubmitError("Selesaikan verifikasi CAPTCHA terlebih dahulu.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, captchaToken: captchaToken || undefined }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setSubmitError(translateSubmitError(data.error, response.status));
+        return;
+      }
+
+      setIsSuccess(true);
+      reset();
+      setCaptchaToken("");
+      setWidgetKey((k) => k + 1);
+    } catch {
+      setSubmitError(translateSubmitError());
+    }
+  });
 
   return (
     <motion.div
@@ -83,10 +130,21 @@ export function ContactForm() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={onSubmit}
             className="relative z-10 space-y-6"
             noValidate
           >
+            {submitError && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {submitError}
+              </motion.div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {CONTACT_FORM_FIELDS.map((field) => (
                 <div key={field.name} className="space-y-2">
@@ -122,6 +180,12 @@ export function ContactForm() {
                 </p>
               )}
             </div>
+
+            {hasTurnstile && (
+              <div className="flex justify-center">
+                <TurnstileWidget key={widgetKey} onToken={handleCaptchaToken} />
+              </div>
+            )}
 
             <div className="flex justify-end pt-2">
               <Button

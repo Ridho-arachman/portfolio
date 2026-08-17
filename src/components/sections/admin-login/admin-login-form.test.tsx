@@ -1,26 +1,38 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: React.ReactNode;
-  }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
+const mocks = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+  signInEmail: vi.fn(),
+  signInSocial: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
+}));
+
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    signIn: {
+      email: mocks.signInEmail,
+      social: mocks.signInSocial,
+    },
+  },
 }));
 
 import { AdminLoginForm } from "./admin-login-form";
 
 describe("AdminLoginForm", () => {
   const passwordInput = () => screen.getByLabelText(/^password$/i);
+
+  beforeEach(() => {
+    mocks.push.mockClear();
+    mocks.refresh.mockClear();
+    mocks.signInEmail.mockReset();
+    mocks.signInSocial.mockReset();
+  });
 
   it("renders the login fields", () => {
     render(<AdminLoginForm />);
@@ -65,13 +77,15 @@ describe("AdminLoginForm", () => {
 
     expect(screen.queryByText(/fitur lupa password/i)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /forgot password/i }));
+    await user.click(screen.getByRole("button", { name: /lupa password/i }));
 
     expect(screen.getByText(/fitur lupa password/i)).toBeInTheDocument();
   });
 
-  it("shows success state after valid credentials", async () => {
+  it("signs in and redirects to /admin on valid credentials", async () => {
     const user = userEvent.setup();
+    mocks.signInEmail.mockResolvedValue({ data: null, error: null });
+
     render(<AdminLoginForm />);
 
     await user.type(screen.getByLabelText(/email/i), "admin@ridho.dev");
@@ -79,11 +93,50 @@ describe("AdminLoginForm", () => {
 
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
-    await waitFor(
-      () => {
-        expect(screen.getByText("Login berhasil!")).toBeInTheDocument();
-      },
-      { timeout: 5000 },
-    );
+    await waitFor(() => {
+      expect(mocks.signInEmail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "admin@ridho.dev",
+          password: "supersecret",
+        }),
+      );
+    });
+    expect(mocks.push).toHaveBeenCalledWith("/admin");
+  });
+
+  it("shows an error message when sign-in fails", async () => {
+    const user = userEvent.setup();
+    mocks.signInEmail.mockResolvedValue({
+      data: null,
+      error: { message: "Invalid email or password" },
+    });
+
+    render(<AdminLoginForm />);
+
+    await user.type(screen.getByLabelText(/email/i), "admin@ridho.dev");
+    await user.type(passwordInput(), "supersecret");
+
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(
+      await screen.findByText(/email atau password salah/i),
+    ).toBeInTheDocument();
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it("triggers google social sign-in", async () => {
+    const user = userEvent.setup();
+    mocks.signInSocial.mockResolvedValue({});
+
+    render(<AdminLoginForm />);
+
+    await user.click(screen.getByRole("button", { name: /google/i }));
+
+    await waitFor(() => {
+      expect(mocks.signInSocial).toHaveBeenCalledWith({
+        provider: "google",
+        callbackURL: "/admin",
+      });
+    });
   });
 });

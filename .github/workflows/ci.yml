@@ -119,7 +119,11 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
       BETTER_AUTH_SECRET: ci-e2e-test-secret-1234567890abcdef
-      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_URL: http://localhost:3005
+      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:3005
+      DISABLE_RATE_LIMIT: "true"
+      TURNSTILE_SECRET_KEY: ""
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
 
     steps:
       - name: 📂 Checkout repository

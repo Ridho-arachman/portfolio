@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AdminLoginPage() {
-  return <AdminLogin />;
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+  return <AdminLogin error={error} />;
 }

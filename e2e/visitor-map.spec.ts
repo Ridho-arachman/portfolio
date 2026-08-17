@@ -1,6 +1,19 @@
 import { expect, test } from "@playwright/test";
+import { cleanupE2EUsers, ensureAdminUser, loginAsEmail, E2E_ADMIN } from "./helpers/admin-auth";
 
 test.describe.configure({ retries: 1 });
+
+test.beforeAll(async ({ request }) => {
+  await ensureAdminUser(request);
+});
+
+test.afterAll(async () => {
+  await cleanupE2EUsers();
+});
+
+test.beforeEach(async ({ page }) => {
+  await loginAsEmail(page, E2E_ADMIN.email);
+});
 
 test.describe("visitor map", () => {
   test("renders the Leaflet map without side gaps", async ({ page }) => {

@@ -21,3 +21,12 @@ export async function requireServerSession() {
   }
   return session;
 }
+
+// Khusus route /admin: user harus login DAN berperan ADMIN.
+export async function requireAdminSession() {
+  const session = await requireServerSession();
+  if (session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+  return session;
+}

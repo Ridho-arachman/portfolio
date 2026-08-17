@@ -19,6 +19,7 @@ export default defineConfig({
       DATABASE_URL: TEST_DATABASE_URL,
       BETTER_AUTH_SECRET: "test-secret-with-at-least-32-characters",
       BETTER_AUTH_URL: "http://localhost:3000",
+      DISABLE_RATE_LIMIT: "true",
     },
     testTimeout: 30_000,
     hookTimeout: 30_000,

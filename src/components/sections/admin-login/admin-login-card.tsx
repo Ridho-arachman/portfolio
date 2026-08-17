@@ -24,7 +24,7 @@ const itemVariants: Variants = {
   },
 };
 
-export function AdminLoginCard() {
+export function AdminLoginCard({ error }: { error?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -115,7 +115,7 @@ export function AdminLoginCard() {
 
             {/* Form */}
             <div style={{ transform: "translateZ(20px)" }}>
-              <AdminLoginForm />
+              <AdminLoginForm error={error} />
             </div>
           </div>
         </div>

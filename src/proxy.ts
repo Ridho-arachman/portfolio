@@ -12,10 +12,7 @@ export async function proxy(request: NextRequest) {
 
   // 2. Definisikan route yang dilindungi
   const isLoginPage = pathname === "/admin/login";
-  // TODO: Aktifkan kembali proteksi /admin saat autentikasi better-auth asli
-  // sudah terpasang. Saat ini dinonaktifkan agar mockup dashboard bisa di-preview.
-  const isAdminRoute = false;
-  const isAuthApiRoute = pathname.startsWith("/api/auth");
+  const isAdminRoute = pathname.startsWith("/admin") && !isLoginPage;
 
   // 3. Logika Proteksi Route Admin
   // Jika user mencoba akses /admin tapi BELUM login -> Redirect ke /admin/login
@@ -26,9 +23,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 4. Logika Redirect jika sudah login
+  // 4. Jika sudah login tapi role-nya bukan ADMIN -> tolak akses /admin
+  if (isAdminRoute && session && session.user.role !== "ADMIN") {
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    loginUrl.searchParams.set("error", "forbidden");
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 5. Logika Redirect jika sudah login
   // Jika user SUDAH login tapi mencoba akses /admin/login -> Redirect ke /admin
-  if (isLoginPage && session) {
+  // Kecuali ada parameter error (misal: non-admin ditolak → ?error=forbidden).
+  if (isLoginPage && session && !request.nextUrl.searchParams.get("error")) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
