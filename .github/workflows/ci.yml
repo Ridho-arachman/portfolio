@@ -43,6 +43,8 @@ jobs:
       - name: 🏗️ Build Next.js App
         env:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          BETTER_AUTH_SECRET: "ci-build-secret-1234567890abcdefghijklmnop"
+          BETTER_AUTH_URL: "http://localhost:3000"
         run: npm run build
 
       - name: 🐳 Test Docker Build (PENTING!)
