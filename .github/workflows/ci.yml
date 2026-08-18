@@ -15,6 +15,21 @@ jobs:
     name: Lint, Typecheck, Build, Unit & Docker Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d portfolio_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: 📂 Checkout repository
         uses: actions/checkout@v4
@@ -42,13 +57,15 @@ jobs:
 
       - name: 🏗️ Build Next.js App
         env:
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/portfolio_test"
           BETTER_AUTH_SECRET: "ci-build-secret-1234567890abcdefghijklmnop"
           BETTER_AUTH_URL: "http://localhost:3000"
           NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
           NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
           SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-key"
-        run: npm run build
+        run: |
+          npx prisma db push
+          npm run build
 
       - name: 🐳 Test Docker Build (PENTING!)
         run: |
@@ -120,15 +137,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
-      BETTER_AUTH_SECRET: ci-e2e-test-secret-1234567890abcdef
-      BETTER_AUTH_URL: http://localhost:3005
-      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:3005
-      DISABLE_RATE_LIMIT: "true"
-      TURNSTILE_SECRET_KEY: ""
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
 
     steps:
       - name: 📂 Checkout repository

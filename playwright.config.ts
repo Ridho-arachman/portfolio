@@ -7,6 +7,30 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = 3005;
 const BASE_URL = `http://localhost:${PORT}`;
 
+const ciWebServer = {
+  command: `npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
+  url: BASE_URL,
+  reuseExistingServer: false,
+  timeout: 480_000,
+  env: {
+    ...process.env,
+    NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
+    BETTER_AUTH_URL: `http://localhost:${PORT}`,
+  },
+};
+
+const localWebServer = {
+  command: `docker compose -f docker/docker-compose.test.yml up -d && npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
+  url: BASE_URL,
+  reuseExistingServer: true,
+  timeout: 480_000,
+  env: {
+    ...process.env,
+    NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
+    BETTER_AUTH_URL: `http://localhost:${PORT}`,
+  },
+};
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -26,41 +50,5 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: process.env.CI
-    ? {
-        command: `npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
-        url: BASE_URL,
-        reuseExistingServer: false,
-        timeout: 480_000,
-        env: {
-          ...process.env,
-          DATABASE_URL:
-            process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@localhost:5432/portfolio_test",
-          DISABLE_RATE_LIMIT: "true",
-          TURNSTILE_SECRET_KEY: "",
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
-          NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
-          BETTER_AUTH_URL: `http://localhost:${PORT}`,
-          BETTER_AUTH_SECRET: "ci-e2e-test-secret-1234567890abcdef",
-        },
-      }
-    : {
-        command: `docker compose -f docker/docker-compose.test.yml up -d && npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
-        url: BASE_URL,
-        reuseExistingServer: true,
-        timeout: 480_000,
-        env: {
-          ...process.env,
-          DATABASE_URL:
-            process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@localhost:5432/portfolio_test",
-          DISABLE_RATE_LIMIT: "true",
-          TURNSTILE_SECRET_KEY: "",
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
-          NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
-          BETTER_AUTH_URL: `http://localhost:${PORT}`,
-          BETTER_AUTH_SECRET: "ci-e2e-test-secret-1234567890abcdef",
-        },
-      },
+  webServer: process.env.CI ? ciWebServer : localWebServer,
 });

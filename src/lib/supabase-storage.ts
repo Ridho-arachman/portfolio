@@ -1,25 +1,34 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const BUCKET_NAME = "portfolio-images";
 
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-  throw new Error("Missing Supabase credentials for storage");
+let cachedClient: SupabaseClient | null = null;
+
+function getSupabaseClient(): SupabaseClient {
+  if (cachedClient) return cachedClient;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    throw new Error("Missing Supabase credentials for storage");
+  }
+
+  cachedClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  return cachedClient;
 }
-
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-export const BUCKET_NAME = "portfolio-images";
 
 export async function uploadImage(
   file: File,
   path: string,
 ): Promise<{ url: string; path: string }> {
+  const supabaseAdmin = getSupabaseClient();
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
@@ -40,6 +49,7 @@ export async function uploadImage(
 }
 
 export async function deleteImage(path: string): Promise<void> {
+  const supabaseAdmin = getSupabaseClient();
   const { error } = await supabaseAdmin.storage.from(BUCKET_NAME).remove([path]);
 
   if (error) {
@@ -48,6 +58,7 @@ export async function deleteImage(path: string): Promise<void> {
 }
 
 export function getPublicUrl(path: string): string {
+  const supabaseAdmin = getSupabaseClient();
   const { data } = supabaseAdmin.storage.from(BUCKET_NAME).getPublicUrl(path);
   return data.publicUrl;
 }
@@ -67,7 +78,7 @@ export function generateImagePath(
 
 export function validateImageFile(file: File): { valid: boolean; error?: string } {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxSize = 5 * 1024 * 1024;
 
   if (!allowedTypes.includes(file.type)) {
     return {
