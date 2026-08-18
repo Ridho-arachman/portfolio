@@ -7,11 +7,12 @@ import { ArrowUpRight } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
-import { FEATURED_PROJECTS, REPLAY_VIEWPORT } from "./constants";
+import type { Project } from "./constants";
+import { REPLAY_VIEWPORT } from "./constants";
 import { ProjectCard } from "./project-card";
 import { ProjectsBackground } from "./projects-background";
 
-export function ProjectsSection() {
+export function ProjectsSection({ projects }: { projects: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -52,7 +53,7 @@ export function ProjectsSection() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {FEATURED_PROJECTS.map((project, index) => (
+          {projects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>

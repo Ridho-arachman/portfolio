@@ -1,14 +1,25 @@
-import { CERTIFICATES_LIST } from "@/components/sections/certificates/constants";
 import { CertificateCard } from "@/components/sections/certificates/certificate-card";
+import { mapCertificateToData } from "@/components/sections/certificates/constants";
+import prisma from "@/lib/prisma";
 import { Metadata } from "next";
+import { getEnv } from "@/lib/env";
+
+const env = getEnv();
 
 export const metadata: Metadata = {
-  title: "All Certificates | Ridho.dev",
+  title: `All Certificates | ${env.NEXT_PUBLIC_SITE_NAME}`,
   description:
     "Daftar lengkap sertifikasi profesional dan kredensial yang saya miliki.",
 };
 
-export default function CertificatesListPage() {
+export default async function CertificatesListPage() {
+  const certificates = await prisma.certificate.findMany({
+    where: { isPublished: true },
+    orderBy: { order: "asc" },
+  });
+
+  const data = certificates.map(mapCertificateToData);
+
   return (
     <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -25,7 +36,7 @@ export default function CertificatesListPage() {
 
         {/* Grid List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {CERTIFICATES_LIST.map((cert, index) => (
+          {data.map((cert, index) => (
             <CertificateCard key={cert.id} cert={cert} index={index} />
           ))}
         </div>

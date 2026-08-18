@@ -8,14 +8,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import {
-  TOTAL_VISITS_FORMATTED,
-  TOTAL_VISITS_LABEL,
-  VISITS_OVERVIEW,
-  VISITS_OVERVIEW_CAPTION,
-  VISITS_OVERVIEW_DELTA,
-  VISITS_OVERVIEW_LABEL,
-} from "./constants";
+import type { VisitPoint } from "./constants";
 
 const chartConfig = {
   visits: {
@@ -24,7 +17,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function VisitsChart() {
+interface VisitsChartProps {
+  visitsOverview: VisitPoint[];
+  totalVisits: number;
+  deltaLabel: string;
+}
+
+export function VisitsChart({ visitsOverview, totalVisits, deltaLabel }: VisitsChartProps) {
   return (
     <section className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl">
       <header className="flex flex-col gap-4 border-b border-glass-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -33,21 +32,21 @@ export function VisitsChart() {
             <Eye className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="font-semibold">{VISITS_OVERVIEW_LABEL}</h2>
-            <p className="text-xs text-text-muted">{VISITS_OVERVIEW_CAPTION}</p>
+            <h2 className="font-semibold">Visits Overview</h2>
+            <p className="text-xs text-text-muted">Daily visits · Last 30 days</p>
           </div>
         </div>
 
         <div className="flex items-end gap-3">
           <div className="text-right">
             <p className="text-3xl font-bold tracking-tight tabular-nums">
-              {TOTAL_VISITS_FORMATTED}
+              {totalVisits.toLocaleString("en-US")}
             </p>
-            <p className="text-xs text-text-muted">{TOTAL_VISITS_LABEL}</p>
+            <p className="text-xs text-text-muted">Total visits (30d)</p>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-accent-muted px-2.5 py-1 text-xs font-medium text-accent">
             <TrendingUp className="h-3.5 w-3.5" />
-            {VISITS_OVERVIEW_DELTA}
+            {deltaLabel}
           </span>
         </div>
       </header>
@@ -58,7 +57,7 @@ export function VisitsChart() {
           className="aspect-auto h-56 w-full sm:h-64"
         >
           <AreaChart
-            data={VISITS_OVERVIEW}
+            data={visitsOverview}
             margin={{ left: -14, right: 8, top: 8, bottom: 0 }}
           >
             <defs>

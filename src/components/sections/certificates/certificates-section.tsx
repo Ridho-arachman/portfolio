@@ -7,11 +7,15 @@ import { ArrowUpRight } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
-import { CERTIFICATES_LIST, CERTIFICATES_VIEWPORT } from "./constants";
+import { CERTIFICATES_VIEWPORT, type CertificateListData } from "./constants";
 import { CertificateCard } from "./certificate-card";
 import { CertificatesBackground } from "./certificates-background";
 
-export function CertificatesSection() {
+interface CertificatesSectionProps {
+  certificates: CertificateListData[];
+}
+
+export function CertificatesSection({ certificates }: CertificatesSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -52,7 +56,7 @@ export function CertificatesSection() {
 
         {/* Certificates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {CERTIFICATES_LIST.slice(0, 3).map((cert, index) => (
+          {certificates.slice(0, 3).map((cert, index) => (
             <CertificateCard key={cert.id} cert={cert} index={index} />
           ))}
         </div>

@@ -9,8 +9,9 @@ import Link from "next/link";
 import { useRef } from "react";
 import { REPLAY_VIEWPORT } from "./constants";
 import { ExperienceTimeline } from "./experience-timeline";
+import type { Experience } from "./constants";
 
-export function ExperienceSection() {
+export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -52,7 +53,7 @@ export function ExperienceSection() {
         </m.div>
 
         {/* Timeline & Cards */}
-        <ExperienceTimeline />
+        <ExperienceTimeline experiences={experiences} />
 
         {/* Bottom CTA (Shadcn UI Button) */}
         <m.div

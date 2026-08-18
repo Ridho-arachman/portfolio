@@ -1,4 +1,5 @@
-import { EXPERIENCES_LIST } from "@/components/sections/experience-list/constants";
+import prisma from "@/lib/prisma";
+import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { ExperienceListItem } from "@/components/sections/experience-list/experience-list-item";
 import { Metadata } from "next";
 
@@ -8,7 +9,12 @@ export const metadata: Metadata = {
     "Daftar lengkap pengalaman profesional, peran kepemimpinan, dan pencapaian saya.",
 };
 
-export default function ExperienceListPage() {
+export default async function ExperienceListPage() {
+  const rawExperiences = await prisma.experience.findMany({
+    orderBy: { order: "asc" },
+  });
+  const experiences = mapExperiences(rawExperiences);
+
   return (
     <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -25,7 +31,7 @@ export default function ExperienceListPage() {
 
         {/* Grid List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {EXPERIENCES_LIST.map((exp, index) => (
+          {experiences.map((exp, index) => (
             <ExperienceListItem key={exp.id} exp={exp} index={index} />
           ))}
         </div>

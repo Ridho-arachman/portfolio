@@ -3,7 +3,7 @@
 import { ArrowLeft, FolderKanban, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
   ADMIN_PROJECTS,
   projectFormSchema,
   type AdminProject,
   type ProjectFormValues,
 } from "./constants";
-import { useProjectStore } from "./project-store";
 
 function slugify(value: string) {
   return value
@@ -27,27 +27,30 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function generateTempId(): string {
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export function ProjectForm({
   mode,
   initialData,
+  isLoading,
+  onSubmit,
 }: {
   mode: "create" | "edit";
   initialData?: AdminProject;
+  isLoading: boolean;
+  onSubmit: (data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">) => void;
 }) {
   const router = useRouter();
-  const projects = useProjectStore((state) => state.projects);
-  const addProject = useProjectStore((state) => state.addProject);
-  const updateProject = useProjectStore((state) => state.updateProject);
-
-  const [isSaving, setIsSaving] = useState(false);
   const slugTouched = useRef(mode === "edit");
+  const tempIdRef = useRef(generateTempId());
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    setError,
     formState: { errors },
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
@@ -79,6 +82,7 @@ export function ProjectForm({
 
   const titleValue = useWatch({ control, name: "title" });
   const isPublished = useWatch({ control, name: "isPublished" });
+  const thumbnail = useWatch({ control, name: "thumbnail" });
 
   useEffect(() => {
     if (!slugTouched.current) {
@@ -86,18 +90,12 @@ export function ProjectForm({
     }
   }, [titleValue, setValue]);
 
-  const onSubmit = async (values: ProjectFormValues) => {
-    const slugTaken = projects.some(
-      (project) => project.slug === values.slug && project.id !== initialData?.id,
-    );
-    if (slugTaken) {
-      setError("slug", { message: "Slug is already in use by another project" });
-      return;
-    }
+  const entityId = useMemo(
+    () => initialData?.id ?? generateTempId(),
+    [initialData?.id],
+  );
 
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
+  const handleFormSubmit = (values: ProjectFormValues) => {
     const payload = {
       slug: values.slug,
       title: values.title,
@@ -113,12 +111,7 @@ export function ProjectForm({
       order: values.order,
     };
 
-    if (mode === "edit" && initialData) {
-      updateProject(initialData.id, payload);
-    } else {
-      addProject(payload);
-    }
-
+    onSubmit(payload);
     router.push("/admin/projects");
   };
 
@@ -154,7 +147,7 @@ export function ProjectForm({
 
       <main className="p-4 sm:p-6 lg:p-8">
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(handleFormSubmit)}
           noValidate
           className="mx-auto max-w-3xl space-y-6"
         >
@@ -233,15 +226,14 @@ export function ProjectForm({
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="thumbnail">
-                    {ADMIN_PROJECTS.fieldThumbnail}
-                  </Label>
-                  <Input
-                    id="thumbnail"
-                    type="url"
+                  <ImageUpload
+                    value={thumbnail}
+                    onChange={(url) => setValue("thumbnail", url)}
+                    onRemove={() => setValue("thumbnail", "")}
+                    entityType="projects"
+                    entityId={entityId}
+                    label={ADMIN_PROJECTS.fieldThumbnail}
                     placeholder={ADMIN_PROJECTS.fieldThumbnailPlaceholder}
-                    aria-invalid={errors.thumbnail ? true : undefined}
-                    {...register("thumbnail")}
                   />
                   {errors.thumbnail && (
                     <p className="text-xs text-destructive">
@@ -340,10 +332,10 @@ export function ProjectForm({
             </Button>
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={isLoading}
               className="rounded-full bg-accent font-semibold text-bg-primary hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
             >
-              {isSaving ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {ADMIN_PROJECTS.savingLabel}

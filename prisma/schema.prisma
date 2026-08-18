@@ -120,8 +120,12 @@ model Project {
   liveUrl      String? // Link demo (opsional)
   repoUrl      String? // Link GitHub (opsional)
   technologies String[] // Array of strings: ["Next.js", "Tailwind", "Prisma"]
-  isPublished  Boolean   @default(true)
-  order        Int       @default(0) // Untuk sorting manual di admin
+  gallery      String[] // Array of image URLs untuk gallery detail
+  role         String?  // e.g., "Frontend Developer"
+  year         String?  // e.g., "2024"
+  highlights   String[] // Bullet points pencapaian
+  isPublished  Boolean  @default(true)
+  order        Int      @default(0) // Untuk sorting manual di admin
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt    DateTime  @default(now())
@@ -134,7 +138,7 @@ model Project {
 }
 
 // =============================================================================
-// 3. PORTFOLIO SUPPORT TABLES (Messages, Skills, Experience, Certificates)
+// 3. PORTFOLIO CORE TABLES (Messages, Skills, Experience, Certificates)
 // =============================================================================
 
 model Message {
@@ -167,38 +171,75 @@ model Skill {
 
 model Experience {
   id          String         @id @default(cuid())
+  slug        String         @unique // URL friendly: /experience/frontend-dev-intern
   title       String // e.g., "Frontend Developer Intern", "Ketua Himpunan"
   company     String // e.g., "PT Tech Startup", "Himpunan Mahasiswa SI"
   logoUrl     String? // URL logo perusahaan/organisasi (opsional)
+  thumbnail   String? // URL gambar cover experience
   type        ExperienceType // Kategori pengalaman
   location    String // e.g., "Jakarta, Indonesia" atau "Remote"
   startDate   DateTime // Tanggal mulai
   endDate     DateTime? // Tanggal selesai (Nullable = Masih berlangsung / "Present")
   isCurrent   Boolean        @default(false) // Flag helper untuk UI badge "Present"
   description String[] // Array of strings untuk bullet points pencapaian
+  gallery     String[] // Array of image URLs untuk gallery detail
+  isPublished Boolean        @default(true) // Published/Draft toggle
   order       Int            @default(0) // Untuk sorting manual di Admin Dashboard
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
+  @@index([slug])
   @@index([type])
   @@index([order])
+  @@index([isPublished])
 }
+
+// =============================================================================
+// 5. ANALYTICS (Visitor Tracking)
+// =============================================================================
+
+model Visit {
+  id          String   @id @default(cuid())
+  path        String   // Page path: "/", "/projects", "/projects/my-project"
+  country     String   // Resolved country name
+  countryCode String   // ISO code: "id", "us", "gb"
+  region      String   // Geographic region: "Southeast Asia", "Europe"
+  city        String?  // Resolved city name (nullable)
+  lat         Float?   // Latitude
+  lng         Float?   // Longitude
+  userAgent   String?  // Browser/OS info
+  sessionId   String?  // Anonymous session ID for unique visitor tracking
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([countryCode])
+  @@index([path])
+  @@index([sessionId])
+}
+
+// =============================================================================
+// 6. PORTFOLIO SUPPORT TABLES (Messages, Skills, Experience, Certificates)
+// =============================================================================
 
 model Certificate {
   id            String   @id @default(cuid())
+  slug          String   @unique // URL friendly: /certificates/aws-cloud-practitioner
   title         String // e.g., "AWS Certified Cloud Practitioner"
   issuer        String // e.g., "Amazon Web Services"
   logoUrl       String? // URL logo issuer (opsional)
+  thumbnail     String? // URL gambar cover sertifikat
   credentialId  String? // Nomor kredensial sertifikat (opsional)
   credentialUrl String? // Link verifikasi resmi (opsional)
   issueDate     DateTime // Tanggal terbit
   expiryDate    DateTime? // Nullable = berlaku seumur hidup / no expiration
   skills        String[] // Skill yang tervalidasi: ["Cloud", "AWS"]
+  summary       String[] // Bullet points pencapaian / detail sertifikat
   order         Int      @default(0) // Untuk sorting manual di Admin Dashboard
   isPublished   Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  @@index([slug])
   @@index([isPublished])
   @@index([order])
   @@map("certificate")

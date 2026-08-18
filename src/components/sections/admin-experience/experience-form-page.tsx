@@ -2,10 +2,14 @@
 
 import { ArrowLeft, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ADMIN_EXPERIENCE } from "./constants";
+import { useRouter } from "next/navigation";
+import {
+  useAdminExperience,
+  useCreateExperience,
+  useUpdateExperience,
+} from "@/hooks/use-experience";
+import { ADMIN_EXPERIENCE, type ExperienceFormValues } from "./constants";
 import { ExperienceForm } from "./experience-form";
-import { useExperienceStore } from "./experience-store";
 
 export function ExperienceFormPage({
   mode,
@@ -14,19 +18,15 @@ export function ExperienceFormPage({
   mode: "create" | "edit";
   experienceId?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  const createMutation = useCreateExperience();
+  const updateMutation = useUpdateExperience();
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const { data: experience, isLoading } = useAdminExperience(
+    experienceId ?? "",
+  );
 
-  const experiences = useExperienceStore((state) => state.experiences);
-  const experience = experienceId
-    ? experiences.find((item) => item.id === experienceId)
-    : undefined;
-
-  if (!mounted) {
+  if (isLoading) {
     return (
       <div className="flex flex-1 flex-col">
         <header className="border-b border-glass-border bg-bg-primary/80 px-4 py-5 sm:px-8">
@@ -63,11 +63,33 @@ export function ExperienceFormPage({
     );
   }
 
+  const handleCreate = (values: ExperienceFormValues) => {
+    createMutation.mutate(values, {
+      onSuccess: () => {
+        router.push("/admin/experience");
+      },
+    });
+  };
+
+  const handleUpdate = (values: ExperienceFormValues) => {
+    if (!experienceId) return;
+    updateMutation.mutate(
+      { id: experienceId, data: values },
+      {
+        onSuccess: () => {
+          router.push("/admin/experience");
+        },
+      },
+    );
+  };
+
   return (
     <ExperienceForm
       key={experience?.id ?? "create"}
       mode={mode}
       initialData={experience}
+      onSubmit={mode === "create" ? handleCreate : handleUpdate}
+      isLoading={createMutation.isPending || updateMutation.isPending}
     />
   );
 }

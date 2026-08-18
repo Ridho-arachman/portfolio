@@ -2,33 +2,29 @@
 
 import {
   FolderKanban,
+  Loader2,
   Pencil,
   Plus,
-  RotateCcw,
   Search,
   Trash2,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ADMIN_PROJECTS } from "./constants";
-import { useProjectStore } from "./project-store";
+import { useAdminProjects, useDeleteProject } from "@/hooks/use-projects";
+import type { AdminProject } from "./constants";
 
 export function ProjectsList() {
-  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [confirmReset, setConfirmReset] = useState(false);
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const { data, isLoading, isError } = useAdminProjects();
+  const deleteMutation = useDeleteProject();
 
-  const projects = useProjectStore((state) => state.projects);
-  const deleteProject = useProjectStore((state) => state.deleteProject);
-  const reset = useProjectStore((state) => state.reset);
+  const projects = (data?.data ?? []) as AdminProject[];
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -49,19 +45,10 @@ export function ProjectsList() {
 
   const handleDelete = (id: string) => {
     if (confirmId === id) {
-      deleteProject(id);
+      deleteMutation.mutate(id);
       setConfirmId(null);
     } else {
       setConfirmId(id);
-    }
-  };
-
-  const handleReset = () => {
-    if (confirmReset) {
-      reset();
-      setConfirmReset(false);
-    } else {
-      setConfirmReset(true);
     }
   };
 
@@ -83,29 +70,13 @@ export function ProjectsList() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleReset}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-3.5 py-2 text-xs transition-colors",
-                confirmReset
-                  ? "border-destructive/50 text-destructive"
-                  : "text-text-secondary hover:border-accent/40 hover:text-accent",
-              )}
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              {confirmReset ? ADMIN_PROJECTS.resetConfirmLabel : ADMIN_PROJECTS.resetLabel}
-            </button>
-
-            <Link
-              href="/admin/projects/new"
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-bg-primary transition-all hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {ADMIN_PROJECTS.addLabel}
-            </Link>
-          </div>
+          <Link
+            href="/admin/projects/new"
+            className="inline-flex w-fit items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-bg-primary transition-all hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {ADMIN_PROJECTS.addLabel}
+          </Link>
         </div>
       </header>
 
@@ -124,7 +95,7 @@ export function ProjectsList() {
             </div>
           </div>
 
-          {!mounted ? (
+          {isLoading ? (
             <div className="space-y-4 p-4 sm:p-5">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
@@ -132,6 +103,16 @@ export function ProjectsList() {
                   className="h-20 animate-pulse rounded-xl bg-white/5"
                 />
               ))}
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+                <AlertCircle className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold">{ADMIN_PROJECTS.errorTitle}</h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                {ADMIN_PROJECTS.errorNote}
+              </p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
@@ -209,6 +190,7 @@ export function ProjectsList() {
                         type="button"
                         onClick={() => handleDelete(project.id)}
                         onBlur={() => setConfirmId(null)}
+                        disabled={deleteMutation.isPending}
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
                           confirmId === project.id
@@ -216,7 +198,11 @@ export function ProjectsList() {
                             : "border-glass-border bg-glass-bg text-text-secondary hover:border-destructive/50 hover:text-destructive",
                         )}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        {deleteMutation.isPending && confirmId !== project.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3 w-3" />
+                        )}
                         {confirmId === project.id
                           ? ADMIN_PROJECTS.deleteConfirmLabel
                           : ADMIN_PROJECTS.deleteLabel}
@@ -228,10 +214,6 @@ export function ProjectsList() {
             </ul>
           )}
         </section>
-
-        <p className="mt-6 text-center text-xs text-text-muted">
-          {ADMIN_PROJECTS.mockNote}
-        </p>
       </main>
     </div>
   );

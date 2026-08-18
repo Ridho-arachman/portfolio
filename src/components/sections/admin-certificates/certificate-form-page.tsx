@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowLeft, Award } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Award, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ADMIN_CERTIFICATES } from "./constants";
 import { CertificateForm } from "./certificate-form";
-import { useCertificateStore } from "./certificate-store";
+import { useAdminCertificate, useCreateCertificate, useUpdateCertificate } from "@/hooks/use-certificates";
+import type { AdminCertificate } from "./constants";
 
 export function CertificateFormPage({
   mode,
@@ -21,12 +22,16 @@ export function CertificateFormPage({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const certificates = useCertificateStore((state) => state.certificates);
-  const certificate = certificateId
-    ? certificates.find((item) => item.id === certificateId)
-    : undefined;
+  const { data: certificate, isLoading: isLoadingCertificate, isError: isCertificateError } = useAdminCertificate(
+    mode === "edit" ? certificateId ?? "" : "",
+  );
+  const createMutation = useCreateCertificate();
+  const updateMutation = useUpdateCertificate();
 
-  if (!mounted) {
+  const isLoading = mode === "edit" && isLoadingCertificate;
+  const certificateData = certificate as AdminCertificate | undefined;
+
+  if (!mounted || isLoading) {
     return (
       <div className="flex flex-1 flex-col">
         <header className="border-b border-glass-border bg-bg-primary/80 px-4 py-5 sm:px-8">
@@ -40,7 +45,30 @@ export function CertificateFormPage({
     );
   }
 
-  if (mode === "edit" && !certificate) {
+  if (mode === "edit" && isCertificateError) {
+    return (
+      <div className="flex flex-1 flex-col">
+        <main className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-bold">Failed to load certificate</h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Please try again later.
+          </p>
+          <Link
+            href="/admin/certificates"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-4 py-2 text-sm text-text-secondary transition-colors hover:border-accent/40 hover:text-accent"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {ADMIN_CERTIFICATES.backLabel}
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
+  if (mode === "edit" && !certificateData) {
     return (
       <div className="flex flex-1 flex-col">
         <main className="flex flex-1 flex-col items-center justify-center p-8 text-center">
@@ -67,9 +95,15 @@ export function CertificateFormPage({
 
   return (
     <CertificateForm
-      key={certificate?.id ?? "create"}
+      key={certificateData?.id ?? "create"}
       mode={mode}
-      initialData={certificate}
+      initialData={certificateData}
+      isLoading={createMutation.isPending || updateMutation.isPending}
+      onSubmit={
+        mode === "edit" && certificateData
+          ? (data) => updateMutation.mutate({ id: certificateData.id, data })
+          : (data) => createMutation.mutate(data)
+      }
     />
   );
 }

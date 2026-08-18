@@ -31,9 +31,8 @@ export function SocialsForm() {
     defaultValues: socials,
   });
 
-  const onSubmit = async (values: SocialsFormValues) => {
+  const onSubmit = (values: SocialsFormValues) => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     updateSocials({
       github: values.github ?? "",
       linkedin: values.linkedin ?? "",

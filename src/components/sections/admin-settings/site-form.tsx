@@ -31,9 +31,8 @@ export function SiteForm() {
     defaultValues: site,
   });
 
-  const onSubmit = async (values: SiteFormValues) => {
+  const onSubmit = (values: SiteFormValues) => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     updateSite(values);
     setIsSaving(false);
     setSaved(true);

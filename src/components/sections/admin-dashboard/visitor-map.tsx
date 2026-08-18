@@ -4,20 +4,7 @@ import dynamic from "next/dynamic";
 import { ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  TOTAL_VISITS,
-  TOTAL_VISITS_FORMATTED,
-  TOTAL_VISITS_LABEL,
-  VISITS_OVERVIEW_DELTA,
-  VISITOR_BACK_LABEL,
-  VISITOR_CITIES_LABEL,
-  VISITOR_MAP_CAPTION,
-  VISITOR_MAP_LABEL,
-  VISITOR_NO_CITIES_LABEL,
-  VISITOR_REGION_ALL,
-  VISITOR_REGIONS,
-  VISITOR_LOCATIONS,
-} from "./constants";
+import type { VisitorCountry } from "./constants";
 
 const VisitorMapLeaflet = dynamic(
   () => import("./visitor-map-leaflet").then((m) => m.VisitorMapLeaflet),
@@ -29,28 +16,37 @@ const VisitorMapLeaflet = dynamic(
   },
 );
 
+const REGION_ALL = "All";
+
 function pct(visits: number, total: number) {
   return total > 0 ? (visits / total) * 100 : 0;
 }
 
-export function VisitorMap() {
-  const [activeRegion, setActiveRegion] = useState(VISITOR_REGION_ALL);
+interface VisitorMapProps {
+  visitorLocations: VisitorCountry[];
+  totalVisits: number;
+  deltaLabel: string;
+  regions: string[];
+}
+
+export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions }: VisitorMapProps) {
+  const [activeRegion, setActiveRegion] = useState(REGION_ALL);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
 
   const byCode = useMemo(
-    () => new Map(VISITOR_LOCATIONS.map((country) => [country.code, country])),
-    [],
+    () => new Map(visitorLocations.map((country) => [country.code, country])),
+    [visitorLocations],
   );
 
   const ranked = useMemo(() => {
     const filtered =
-      activeRegion === VISITOR_REGION_ALL
-        ? VISITOR_LOCATIONS
-        : VISITOR_LOCATIONS.filter(
+      activeRegion === REGION_ALL
+        ? visitorLocations
+        : visitorLocations.filter(
             (country) => country.region === activeRegion,
           );
     return [...filtered].sort((a, b) => b.visits - a.visits);
-  }, [activeRegion]);
+  }, [activeRegion, visitorLocations]);
 
   const selected = selectedCode ? (byCode.get(selectedCode) ?? null) : null;
 
@@ -77,20 +73,20 @@ export function VisitorMap() {
             <Globe className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="font-semibold">{VISITOR_MAP_LABEL}</h2>
-            <p className="text-xs text-text-muted">{VISITOR_MAP_CAPTION}</p>
+            <h2 className="font-semibold">Visitors by Location</h2>
+            <p className="text-xs text-text-muted">Global · Last 30 days</p>
           </div>
         </div>
 
         <div className="flex items-end gap-3">
           <div className="text-right">
             <p className="text-3xl font-bold tracking-tight tabular-nums">
-              {TOTAL_VISITS_FORMATTED}
+              {totalVisits.toLocaleString("en-US")}
             </p>
-            <p className="text-xs text-text-muted">{TOTAL_VISITS_LABEL}</p>
+            <p className="text-xs text-text-muted">Total visits (30d)</p>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-accent-muted px-2.5 py-1 text-xs font-medium text-accent">
-            {VISITS_OVERVIEW_DELTA}
+            {deltaLabel}
           </span>
         </div>
       </header>
@@ -98,17 +94,17 @@ export function VisitorMap() {
       <div className="flex flex-wrap gap-2 border-b border-glass-border px-5 py-3">
         <button
           type="button"
-          onClick={() => selectRegion(VISITOR_REGION_ALL)}
+          onClick={() => selectRegion(REGION_ALL)}
           className={cn(
             "rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-            activeRegion === VISITOR_REGION_ALL
+            activeRegion === REGION_ALL
               ? "bg-accent text-bg-primary"
               : "border border-glass-border text-text-secondary hover:border-accent/40 hover:text-accent",
           )}
         >
-          {VISITOR_REGION_ALL}
+          {REGION_ALL}
         </button>
-        {VISITOR_REGIONS.map((region) => (
+        {regions.map((region) => (
           <button
             key={region}
             type="button"
@@ -128,11 +124,12 @@ export function VisitorMap() {
       <div className="p-4 sm:p-5">
         <div className="relative h-[460px] overflow-hidden rounded-xl border border-glass-border bg-bg-primary/40">
           <VisitorMapLeaflet
-            countries={VISITOR_LOCATIONS}
+            countries={visitorLocations}
             byCode={byCode}
             activeRegion={activeRegion}
             selectedCode={selectedCode}
             onSelectCountry={selectCountry}
+            totalVisits={totalVisits}
           />
         </div>
       </div>
@@ -146,7 +143,7 @@ export function VisitorMap() {
               className="flex w-full items-center gap-2 border-b border-glass-border px-5 py-3 text-left text-xs text-text-secondary transition-colors hover:text-accent"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              {VISITOR_BACK_LABEL}
+              All countries
             </button>
 
             <div className="flex items-center gap-3 px-5 py-4">
@@ -163,7 +160,7 @@ export function VisitorMap() {
             {selected.cities.length > 0 ? (
               <>
                 <p className="px-5 pb-2 text-xs font-semibold tracking-wider text-text-muted uppercase">
-                  {VISITOR_CITIES_LABEL(selected.country)}
+                  Cities · {selected.country}
                 </p>
                 <ul className="grid grid-cols-1 gap-x-6 divide-y divide-glass-border/60 sm:grid-cols-2 sm:gap-y-0">
                   {selected.cities.map((city) => (
@@ -193,14 +190,14 @@ export function VisitorMap() {
               </>
             ) : (
               <p className="px-5 pb-4 text-sm text-text-muted">
-                {VISITOR_NO_CITIES_LABEL}
+                City data is not tracked for this entry yet.
               </p>
             )}
           </div>
         ) : (
           <ul className="divide-y divide-glass-border/60">
             {ranked.map((country) => {
-              const share = pct(country.visits, TOTAL_VISITS);
+              const share = pct(country.visits, totalVisits);
               return (
                 <li key={country.code}>
                   <button

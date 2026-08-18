@@ -1,5 +1,8 @@
 import { FaLinkedin } from "react-icons/fa";
 import { SiGithub, SiGmail, SiX } from "react-icons/si";
+import { getClientEnv } from "@/lib/env";
+
+const env = getClientEnv();
 
 export const QUICK_LINKS = [
   { label: "Home", href: "/" },
@@ -12,22 +15,22 @@ export const QUICK_LINKS = [
 
 export const SOCIAL_LINKS = [
   {
-    href: "https://github.com/Ridho-arachman",
+    href: env.NEXT_PUBLIC_GITHUB_URL,
     icon: SiGithub,
     label: "GitHub",
   },
   {
-    href: "https://linkedin.com/in/ridho-arachman",
+    href: env.NEXT_PUBLIC_LINKEDIN_URL,
     icon: FaLinkedin,
     label: "LinkedIn",
   },
   {
-    href: "https://twitter.com/ridho_arachman",
+    href: env.NEXT_PUBLIC_TWITTER_URL,
     icon: SiX,
     label: "X (Twitter)",
   },
   {
-    href: "mailto:ridho@example.com",
+    href: `mailto:${env.NEXT_PUBLIC_CONTACT_EMAIL}`,
     icon: SiGmail,
     label: "Email",
   },

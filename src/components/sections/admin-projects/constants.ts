@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { FEATURED_PROJECTS } from "@/components/sections/projects/constants";
 
 export interface AdminProject {
   id: string;
@@ -52,12 +51,12 @@ export const ADMIN_PROJECTS = {
   editLabel: "Edit",
   publishedLabel: "Published",
   draftLabel: "Draft",
-  resetLabel: "Reset data",
-  resetConfirmLabel: "Reset all?",
   notFoundTitle: "Project not found",
   notFoundNote: "The project you are looking for does not exist.",
   savedTitle: "Project saved",
   savedNote: "Redirecting back to the project list...",
+  errorTitle: "Failed to load projects",
+  errorNote: "Something went wrong. Please try again later.",
   fieldTitle: "Title",
   fieldTitlePlaceholder: "e.g. Web3 Portfolio Platform",
   fieldSlug: "Slug",
@@ -75,23 +74,4 @@ export const ADMIN_PROJECTS = {
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
-  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
 } as const;
-
-const SEED_CREATED_AT = "2026-07-01T00:00:00.000Z";
-
-export const SEED_PROJECTS: AdminProject[] = FEATURED_PROJECTS.map(
-  (project, index) => ({
-    id: String(project.id),
-    slug: project.slug,
-    title: project.title,
-    description: project.description,
-    thumbnail: project.image,
-    liveUrl: project.link,
-    technologies: [...project.tags],
-    isPublished: true,
-    order: index,
-    createdAt: SEED_CREATED_AT,
-    updatedAt: SEED_CREATED_AT,
-  }),
-);

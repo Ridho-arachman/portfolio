@@ -1,8 +1,11 @@
 import { ContactSection } from "@/components/sections/contact";
 import { Metadata } from "next";
+import { getEnv } from "@/lib/env";
+
+const env = getEnv();
 
 export const metadata: Metadata = {
-  title: "Contact | Ridho.dev",
+  title: `Contact | ${env.NEXT_PUBLIC_SITE_NAME}`,
   description:
     "Get in touch with me — open to new opportunities, collaborations, and project discussions.",
 };

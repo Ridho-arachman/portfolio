@@ -2,6 +2,7 @@
 
 import {
   Briefcase,
+  Loader2,
   Pencil,
   Plus,
   RotateCcw,
@@ -13,10 +14,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
+  useAdminExperiences,
+  useDeleteExperience,
+} from "@/hooks/use-experience";
+import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
 } from "./constants";
-import { useExperienceStore } from "./experience-store";
 
 function typeBadgeClass(type: string) {
   return (
@@ -29,18 +33,16 @@ export function ExperiencesList() {
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const experiences = useExperienceStore((state) => state.experiences);
-  const deleteExperience = useExperienceStore(
-    (state) => state.deleteExperience,
-  );
-  const reset = useExperienceStore((state) => state.reset);
+  const { data, isLoading, error } = useAdminExperiences();
+  const deleteMutation = useDeleteExperience();
+
+  const experiences = data?.data ?? [];
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -62,19 +64,10 @@ export function ExperiencesList() {
 
   const handleDelete = (id: string) => {
     if (confirmId === id) {
-      deleteExperience(id);
+      deleteMutation.mutate(id);
       setConfirmId(null);
     } else {
       setConfirmId(id);
-    }
-  };
-
-  const handleReset = () => {
-    if (confirmReset) {
-      reset();
-      setConfirmReset(false);
-    } else {
-      setConfirmReset(true);
     }
   };
 
@@ -97,22 +90,6 @@ export function ExperiencesList() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleReset}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-3.5 py-2 text-xs transition-colors",
-                confirmReset
-                  ? "border-destructive/50 text-destructive"
-                  : "text-text-secondary hover:border-accent/40 hover:text-accent",
-              )}
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              {confirmReset
-                ? ADMIN_EXPERIENCE.resetConfirmLabel
-                : ADMIN_EXPERIENCE.resetLabel}
-            </button>
-
             <Link
               href="/admin/experience/new"
               className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-bg-primary transition-all hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
@@ -139,7 +116,7 @@ export function ExperiencesList() {
             </div>
           </div>
 
-          {!mounted ? (
+          {!mounted || isLoading ? (
             <div className="space-y-4 p-4 sm:p-5">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
@@ -147,6 +124,16 @@ export function ExperiencesList() {
                   className="h-20 animate-pulse rounded-xl bg-white/5"
                 />
               ))}
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+                <Briefcase className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold text-destructive">Error loading experiences</h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                {(error as Error).message || "Something went wrong"}
+              </p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
@@ -212,6 +199,7 @@ export function ExperiencesList() {
                         type="button"
                         onClick={() => handleDelete(experience.id)}
                         onBlur={() => setConfirmId(null)}
+                        disabled={deleteMutation.isPending}
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
                           confirmId === experience.id
@@ -219,7 +207,11 @@ export function ExperiencesList() {
                             : "border-glass-border bg-glass-bg text-text-secondary hover:border-destructive/50 hover:text-destructive",
                         )}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        {deleteMutation.isPending && confirmId === experience.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3 w-3" />
+                        )}
                         {confirmId === experience.id
                           ? ADMIN_EXPERIENCE.deleteConfirmLabel
                           : ADMIN_EXPERIENCE.deleteLabel}

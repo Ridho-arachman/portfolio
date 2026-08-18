@@ -3,10 +3,10 @@
 import { useScroll, useTransform } from "framer-motion";
 import * as m from "motion/react-m";
 import { useRef } from "react";
-import { EXPERIENCES } from "./constants";
 import { ExperienceCard } from "./experience-card";
+import type { Experience } from "./constants";
 
-export function ExperienceTimeline() {
+export function ExperienceTimeline({ experiences }: { experiences: Experience[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -28,7 +28,7 @@ export function ExperienceTimeline() {
 
       {/* Cards List */}
       <div className="space-y-12 md:space-y-16">
-        {EXPERIENCES.map((exp, index) => (
+        {experiences.map((exp, index) => (
           <ExperienceCard
             key={exp.id}
             exp={exp}

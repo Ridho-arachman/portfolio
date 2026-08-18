@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { EXPERIENCES_LIST } from "@/components/sections/experience-list/constants";
 
 export const EXPERIENCE_TYPES = [
   { value: "Work", label: "Work", badgeClass: "bg-accent-muted text-accent" },
@@ -26,8 +25,10 @@ export interface AdminExperience {
   period: string;
   location: string;
   thumbnail: string;
+  logoUrl: string;
   gallery: string[];
   description: string[];
+  isPublished: boolean;
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -57,79 +58,67 @@ export const experienceFormSchema = z.object({
           ),
       "Each gallery line must be a valid URL",
     ),
+  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
   description: z
     .string()
     .refine(
       (value) =>
-        value.split("\n").some((line) => line.trim().length > 0),
+        value
+          .split("\n")
+          .some((line) => line.trim().length > 0),
       "Add at least one achievement",
     ),
-  order: z.coerce.number().int("Order must be a whole number").min(0),
+  isPublished: z.boolean().default(true),
+  order: z.number().int().min(0),
 });
 
 export type ExperienceFormValues = z.infer<typeof experienceFormSchema>;
 
 export const ADMIN_EXPERIENCE = {
-  title: "Experience",
-  subtitle: "Manage your work experience timeline.",
+  // List page
+  title: "Experiences",
+  subtitle: "Manage your work and organization experiences",
   addLabel: "Add Experience",
-  addTitle: "New Experience",
-  editTitle: "Edit Experience",
   searchPlaceholder: "Search experiences...",
   emptyTitle: "No experiences found",
   emptyNote: "Try a different search or add a new experience.",
-  backLabel: "Back to Experience",
-  saveLabel: "Save Experience",
-  savingLabel: "Saving...",
-  deleteLabel: "Delete",
-  deleteConfirmLabel: "Sure?",
   editLabel: "Edit",
-  resetLabel: "Reset data",
-  resetConfirmLabel: "Reset all?",
+  deleteConfirmLabel: "Sure?",
+  deleteLabel: "Delete",
+  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
+
+  // Form page
   notFoundTitle: "Experience not found",
   notFoundNote: "The experience you are looking for does not exist.",
-  fieldRole: "Role / Title",
-  fieldRolePlaceholder: "e.g. Frontend Developer Intern",
-  fieldSlug: "Slug",
-  fieldSlugPlaceholder: "e.g. frontend-developer-intern",
-  fieldCompany: "Company / Organization",
-  fieldCompanyPlaceholder: "e.g. PT Tech Startup Indonesia",
-  fieldType: "Type",
-  fieldPeriod: "Period",
-  fieldPeriodPlaceholder: "e.g. Jan 2024 - Present",
-  fieldLocation: "Location",
-  fieldLocationPlaceholder: "e.g. Jakarta, Indonesia (Remote)",
-  fieldThumbnail: "Thumbnail URL",
-  fieldThumbnailPlaceholder: "https://images.example.com/cover.jpg",
-  fieldGallery: "Gallery (optional)",
-  fieldGalleryPlaceholder:
-    "One image URL per line.\nhttps://images.example.com/1.jpg\nhttps://images.example.com/2.jpg",
-  fieldGalleryHint: "One image URL per line.",
-  fieldDescription: "Achievements",
-  fieldDescriptionPlaceholder:
-    "One achievement per line.\nThese render as bullet points on the timeline.",
-  fieldDescriptionHint: "One achievement per line — rendered as bullet points.",
-  fieldOrder: "Order",
-  fieldOrderHint: "Lower values appear first.",
-  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
+  backLabel: "Back to Experience",
+
+  // Form fields
+  form: {
+    roleLabel: "Role",
+    rolePlaceholder: "e.g. Frontend Developer",
+    slugLabel: "Slug",
+    slugPlaceholder: "e.g. frontend-dev",
+    companyLabel: "Company / Organization",
+    companyPlaceholder: "e.g. Tech Corp",
+    typeLabel: "Type",
+    periodLabel: "Period",
+    periodPlaceholder: "e.g. Jan 2023 - Present",
+    locationLabel: "Location",
+    locationPlaceholder: "e.g. Jakarta, Indonesia",
+    thumbnailLabel: "Thumbnail URL",
+    thumbnailPlaceholder: "https://example.com/image.jpg",
+    logoUrlLabel: "Logo URL",
+    logoUrlPlaceholder: "https://example.com/logo.png",
+    galleryLabel: "Gallery URLs (one per line)",
+    galleryPlaceholder: "https://example.com/img1.jpg\nhttps://example.com/img2.jpg",
+    descriptionLabel: "Description (one bullet per line)",
+    descriptionPlaceholder: "Led frontend team\nBuilt dashboard with React",
+    isPublishedLabel: "Published",
+    isPublishedDescription: "Visible on public site when enabled",
+    orderLabel: "Display Order",
+    orderPlaceholder: "0",
+    submitCreate: "Create Experience",
+    submitUpdate: "Save Changes",
+    backToList: "Back to List",
+  },
 } as const;
-
-const SEED_CREATED_AT = "2026-07-01T00:00:00.000Z";
-
-export const SEED_EXPERIENCES: AdminExperience[] = EXPERIENCES_LIST.map(
-  (exp, index) => ({
-    id: String(exp.id),
-    slug: exp.slug,
-    role: exp.role,
-    company: exp.company,
-    type: exp.type,
-    period: exp.period,
-    location: exp.location,
-    thumbnail: exp.thumbnail,
-    gallery: exp.gallery ?? [],
-    description: [...exp.description],
-    order: index,
-    createdAt: SEED_CREATED_AT,
-    updatedAt: SEED_CREATED_AT,
-  }),
-);

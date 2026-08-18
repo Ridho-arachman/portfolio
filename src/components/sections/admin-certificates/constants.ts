@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CERTIFICATES_LIST } from "@/components/sections/certificates/constants";
 
 export interface AdminCertificate {
   id: string;
@@ -11,6 +10,7 @@ export interface AdminCertificate {
   issueDate: string;
   period: string;
   thumbnail: string;
+  logoUrl: string;
   skills: string[];
   summary: string[];
   isPublished: boolean;
@@ -33,6 +33,7 @@ export const certificateFormSchema = z.object({
   credentialId: z.union([z.string().min(1), z.literal("")]).optional(),
   credentialUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   thumbnail: z.url("Enter a valid image URL"),
+  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
   skills: z.string(),
   summary: z
     .string()
@@ -64,8 +65,6 @@ export const ADMIN_CERTIFICATES = {
   publishedLabel: "Published",
   draftLabel: "Draft",
   verifiedLabel: "Verified",
-  resetLabel: "Reset data",
-  resetConfirmLabel: "Reset all?",
   notFoundTitle: "Certificate not found",
   notFoundNote: "The certificate you are looking for does not exist.",
   fieldTitle: "Title",
@@ -84,6 +83,8 @@ export const ADMIN_CERTIFICATES = {
   fieldCredentialUrlPlaceholder: "https://www.credly.com/",
   fieldThumbnail: "Thumbnail URL",
   fieldThumbnailPlaceholder: "https://images.example.com/cover.jpg",
+  fieldLogoUrl: "Logo URL",
+  fieldLogoUrlPlaceholder: "https://example.com/logo.png",
   fieldSkills: "Skills",
   fieldSkillsPlaceholder: "Comma separated: Cloud Computing, AWS, Architecture",
   fieldSummary: "Summary",
@@ -93,27 +94,4 @@ export const ADMIN_CERTIFICATES = {
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
-  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
 } as const;
-
-const SEED_CREATED_AT = "2026-07-01T00:00:00.000Z";
-
-export const SEED_CERTIFICATES: AdminCertificate[] = CERTIFICATES_LIST.map(
-  (cert, index) => ({
-    id: String(cert.id),
-    slug: cert.slug,
-    title: cert.title,
-    issuer: cert.issuer,
-    credentialId: cert.credentialId,
-    credentialUrl: cert.credentialUrl,
-    issueDate: cert.issueDate,
-    period: cert.period,
-    thumbnail: cert.thumbnail,
-    skills: [...cert.skills],
-    summary: [...cert.summary],
-    isPublished: true,
-    order: index,
-    createdAt: SEED_CREATED_AT,
-    updatedAt: SEED_CREATED_AT,
-  }),
-);

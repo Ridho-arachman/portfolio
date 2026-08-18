@@ -3,7 +3,7 @@
 import { ArrowLeft, Award, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
   ADMIN_CERTIFICATES,
   certificateFormSchema,
   type AdminCertificate,
   type CertificateFormValues,
 } from "./constants";
-import { useCertificateStore } from "./certificate-store";
 
 function slugify(value: string) {
   return value
@@ -27,29 +27,31 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function generateTempId(): string {
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export function CertificateForm({
   mode,
   initialData,
+  isLoading,
+  onSubmit,
 }: {
   mode: "create" | "edit";
   initialData?: AdminCertificate;
+  isLoading: boolean;
+  onSubmit: (data: Record<string, unknown>) => void;
 }) {
   const router = useRouter();
-  const certificates = useCertificateStore((state) => state.certificates);
-  const addCertificate = useCertificateStore((state) => state.addCertificate);
-  const updateCertificate = useCertificateStore(
-    (state) => state.updateCertificate,
-  );
-
-  const [isSaving, setIsSaving] = useState(false);
   const slugTouched = useRef(mode === "edit");
+  const tempIdRef = useRef(generateTempId());
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    setError,
+    watch,
     formState: { errors },
   } = useForm<CertificateFormValues>({
     resolver: zodResolver(certificateFormSchema),
@@ -64,6 +66,7 @@ export function CertificateForm({
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
           thumbnail: initialData.thumbnail,
+          logoUrl: initialData.logoUrl,
           skills: initialData.skills.join(", "),
           summary: initialData.summary.join("\n"),
           isPublished: initialData.isPublished,
@@ -78,6 +81,7 @@ export function CertificateForm({
           credentialId: "",
           credentialUrl: "",
           thumbnail: "",
+          logoUrl: "",
           skills: "",
           summary: "",
           isPublished: true,
@@ -87,28 +91,18 @@ export function CertificateForm({
 
   const titleValue = useWatch({ control, name: "title" });
   const isPublished = useWatch({ control, name: "isPublished" });
+  const thumbnail = watch("thumbnail");
+  const logoUrl = watch("logoUrl") ?? "";
 
   useEffect(() => {
     if (!slugTouched.current) {
       setValue("slug", slugify(titleValue), { shouldValidate: false });
     }
-  }, [titleValue, setValue]);
+  }, [titleValue, control]);
 
-  const onSubmit = async (values: CertificateFormValues) => {
-    const slugTaken = certificates.some(
-      (certificate) =>
-        certificate.slug === values.slug && certificate.id !== initialData?.id,
-    );
-    if (slugTaken) {
-      setError("slug", {
-        message: "Slug is already in use by another certificate",
-      });
-      return;
-    }
+  const entityId = initialData?.id ?? tempIdRef.current;
 
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
+  const handleFormSubmit = (values: CertificateFormValues) => {
     const payload = {
       slug: values.slug,
       title: values.title,
@@ -118,6 +112,7 @@ export function CertificateForm({
       credentialId: values.credentialId || undefined,
       credentialUrl: values.credentialUrl || undefined,
       thumbnail: values.thumbnail,
+      logoUrl: values.logoUrl,
       skills: values.skills
         .split(",")
         .map((skill) => skill.trim())
@@ -130,13 +125,7 @@ export function CertificateForm({
       order: values.order,
     };
 
-    if (mode === "edit" && initialData) {
-      updateCertificate(initialData.id, payload);
-    } else {
-      addCertificate(payload);
-    }
-
-    router.push("/admin/certificates");
+    onSubmit(payload);
   };
 
   return (
@@ -171,7 +160,7 @@ export function CertificateForm({
 
       <main className="p-4 sm:p-6 lg:p-8">
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(handleFormSubmit)}
           noValidate
           className="mx-auto max-w-3xl space-y-6"
         >
@@ -290,19 +279,35 @@ export function CertificateForm({
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="thumbnail">
-                    {ADMIN_CERTIFICATES.fieldThumbnail}
-                  </Label>
-                  <Input
-                    id="thumbnail"
-                    type="url"
+                  <ImageUpload
+                    value={thumbnail}
+                    onChange={(url) => setValue("thumbnail", url)}
+                    onRemove={() => setValue("thumbnail", "")}
+                    entityType="certificates"
+                    entityId={entityId}
+                    label={ADMIN_CERTIFICATES.fieldThumbnail}
                     placeholder={ADMIN_CERTIFICATES.fieldThumbnailPlaceholder}
-                    aria-invalid={errors.thumbnail ? true : undefined}
-                    {...register("thumbnail")}
                   />
                   {errors.thumbnail && (
                     <p className="text-xs text-destructive">
                       {errors.thumbnail.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <ImageUpload
+                    value={logoUrl}
+                    onChange={(url) => setValue("logoUrl", url)}
+                    onRemove={() => setValue("logoUrl", "")}
+                    entityType="certificates"
+                    entityId={entityId}
+                    label={ADMIN_CERTIFICATES.fieldLogoUrl}
+                    placeholder={ADMIN_CERTIFICATES.fieldLogoUrlPlaceholder}
+                  />
+                  {errors.logoUrl && (
+                    <p className="text-xs text-destructive">
+                      {errors.logoUrl.message}
                     </p>
                   )}
                 </div>
@@ -407,10 +412,10 @@ export function CertificateForm({
             </Button>
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={isLoading}
               className="rounded-full bg-accent font-semibold text-bg-primary hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
             >
-              {isSaving ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {ADMIN_CERTIFICATES.savingLabel}

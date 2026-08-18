@@ -18,7 +18,6 @@ import {
   worldCountries,
   worldCountryFeatures,
 } from "@/lib/geo";
-import { TOTAL_VISITS, VISITOR_REGION_ALL } from "./constants";
 import type { VisitorCountry } from "./constants";
 import "./visitor-map-leaflet.css";
 
@@ -39,6 +38,7 @@ export interface VisitorMapLeafletProps {
   activeRegion: string;
   selectedCode: string | null;
   onSelectCountry: (code: string) => void;
+  totalVisits: number;
 }
 
 function pct(visits: number, total: number) {
@@ -150,6 +150,7 @@ export function VisitorMapLeaflet({
   activeRegion,
   selectedCode,
   onSelectCountry,
+  totalVisits,
 }: VisitorMapLeafletProps) {
   const accent = resolveVar("--color-accent", "#a78bfa");
 
@@ -158,7 +159,7 @@ export function VisitorMapLeaflet({
       const selected = byCode.get(selectedCode);
       return selected ? [selected] : [];
     }
-    return activeRegion === VISITOR_REGION_ALL
+    return activeRegion === "All"
       ? countries
       : countries.filter((country) => country.region === activeRegion);
   }, [countries, byCode, selectedCode, activeRegion]);
@@ -215,9 +216,9 @@ export function VisitorMapLeaflet({
     }
     const isSelected = code === selectedCode;
     const dimmed =
-      activeRegion !== VISITOR_REGION_ALL &&
+      activeRegion !== "All" &&
       country.region !== activeRegion;
-    const share = country.visits / TOTAL_VISITS;
+    const share = country.visits / totalVisits;
     const opacity = dimmed ? 0.03 : 0.1 + 0.3 * Math.min(share * 22, 1);
     return {
       color: accent,
@@ -299,7 +300,7 @@ export function VisitorMapLeaflet({
                   <p className="mt-1 text-lg font-bold tabular-nums text-accent">
                     {city.visits.toLocaleString("en-US")}
                     <span className="ml-1 text-xs font-normal text-text-muted">
-                      {pct(city.visits, TOTAL_VISITS).toFixed(1)}%
+                      {pct(city.visits, totalVisits).toFixed(1)}%
                     </span>
                   </p>
                   <p className="text-[11px] text-text-muted">

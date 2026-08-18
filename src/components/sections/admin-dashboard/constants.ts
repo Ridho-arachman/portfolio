@@ -7,9 +7,6 @@ import {
   MessageSquare,
   Settings,
 } from "lucide-react";
-import { CERTIFICATES_LIST } from "@/components/sections/certificates/constants";
-import { EXPERIENCES_LIST } from "@/components/sections/experience-list/constants";
-import { FEATURED_PROJECTS } from "@/components/sections/projects/constants";
 
 export interface AdminNavLink {
   label: string;
@@ -65,21 +62,21 @@ export const ADMIN_NAV_LINKS: AdminNavLink[] = [
 export const DASHBOARD_STATS: DashboardStat[] = [
   {
     icon: FolderKanban,
-    value: String(FEATURED_PROJECTS.length),
+    value: "3",
     label: "Total Projects",
     delta: "+2 this month",
     tone: "up",
   },
   {
     icon: Briefcase,
-    value: String(EXPERIENCES_LIST.length),
+    value: "3",
     label: "Experience",
     delta: "+1 this year",
     tone: "up",
   },
   {
     icon: Award,
-    value: String(CERTIFICATES_LIST.length),
+    value: "5",
     label: "Certificates",
     delta: "+1 this year",
     tone: "up",
@@ -93,30 +90,64 @@ export const DASHBOARD_STATS: DashboardStat[] = [
   },
 ];
 
-export const RECENT_PROJECTS: RecentItem[] = FEATURED_PROJECTS.slice(0, 4).map(
-  (project) => ({
-    title: project.title,
-    subtitle: `${project.year} · ${project.role ?? "Web Project"}`,
-    badge: project.tags[0] ?? "Web",
-  }),
-);
+export const RECENT_PROJECTS: RecentItem[] = [
+  {
+    title: "Web3 Portfolio Platform",
+    subtitle: "2024 · Frontend Developer",
+    badge: "Next.js",
+  },
+  {
+    title: "SaaS Admin Dashboard",
+    subtitle: "2023 · Fullstack Developer",
+    badge: "React",
+  },
+  {
+    title: "E-Commerce API Gateway",
+    subtitle: "2023 · Backend Developer",
+    badge: "Node.js",
+  },
+];
 
-export const RECENT_CERTIFICATES: RecentItem[] = CERTIFICATES_LIST.slice(
-  0,
-  4,
-).map((cert) => ({
-  title: cert.title,
-  subtitle: cert.issuer,
-  badge: cert.skills[0] ?? "Certified",
-}));
+export const RECENT_CERTIFICATES: RecentItem[] = [
+  {
+    title: "AWS Certified Cloud Practitioner",
+    subtitle: "Amazon Web Services (AWS)",
+    badge: "Cloud Computing",
+  },
+  {
+    title: "Meta Front-End Developer Professional Certificate",
+    subtitle: "Meta · Coursera",
+    badge: "React",
+  },
+  {
+    title: "SQL (Intermediate)",
+    subtitle: "HackerRank",
+    badge: "SQL",
+  },
+  {
+    title: "Google UX Design Professional Certificate",
+    subtitle: "Google · Coursera",
+    badge: "UX Research",
+  },
+];
 
-export const RECENT_EXPERIENCE: RecentItem[] = EXPERIENCES_LIST.slice(0, 4).map(
-  (exp) => ({
-    title: exp.role,
-    subtitle: `${exp.company} · ${exp.period}`,
-    badge: exp.type,
-  }),
-);
+export const RECENT_EXPERIENCE: RecentItem[] = [
+  {
+    title: "Frontend Developer Intern",
+    subtitle: "PT Tech Startup Indonesia · Jan 2024 - Present",
+    badge: "Work",
+  },
+  {
+    title: "Kepala Divisi Teknologi",
+    subtitle: "Himpunan Mahasiswa Sistem Informasi · Aug 2023 - Aug 2024",
+    badge: "Organization",
+  },
+  {
+    title: "Freelance Web Developer",
+    subtitle: "Self-Employed · Mar 2023 - Present",
+    badge: "Freelance",
+  },
+];
 
 export const QUICK_ACTIONS: RecentItem[] = [
   {

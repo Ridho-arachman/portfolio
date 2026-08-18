@@ -37,6 +37,8 @@ function securityHeaders(isProduction: boolean) {
   ];
 }
 
+const ngrokDomain = process.env.NEXT_PUBLIC_NGROK_DOMAIN;
+
 const nextConfig: NextConfig = {
   reactCompiler: process.env.NODE_ENV === "production",
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
@@ -49,7 +51,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ["aromatically-dreamiest-delia.ngrok-free.dev"],
+
+  allowedDevOrigins: ngrokDomain ? [ngrokDomain] : undefined,
   async headers() {
     return [
       {

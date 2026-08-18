@@ -32,9 +32,8 @@ export function ProfileForm() {
     defaultValues: profile,
   });
 
-  const onSubmit = async (values: ProfileFormValues) => {
+  const onSubmit = (values: ProfileFormValues) => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     updateProfile(values);
     setIsSaving(false);
     setSaved(true);
