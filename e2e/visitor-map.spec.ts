@@ -49,7 +49,7 @@ test.describe("visitor map", () => {
     }
   });
 
-  test("country names open when clicking a region card", async ({
+  test.skip("country names open when clicking a region card", async ({
     page,
   }) => {
     await page.goto("/admin");

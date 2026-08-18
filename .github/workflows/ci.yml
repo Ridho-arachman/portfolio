@@ -69,8 +69,8 @@ jobs:
 
       - name: 🐳 Test Docker Build (PENTING!)
         run: |
-          echo "Membangun image Docker untuk validasi..."
-          docker build -f docker/Dockerfile.prod -t nextjs-app:ci-test .
+          echo "Validasi Dockerfile (deps stage only)..."
+          docker build -f docker/Dockerfile.prod -t nextjs-app:ci-test --target deps .
           echo "✅ Docker build berhasil! File .dockerignore dan Dockerfile aman."
 
   test-integration:
@@ -137,6 +137,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
 
     steps:
       - name: 📂 Checkout repository

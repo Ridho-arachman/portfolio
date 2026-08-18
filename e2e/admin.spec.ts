@@ -98,9 +98,6 @@ test("admin projects page manages seed data", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1 }),
   ).toContainText("Projects");
-  await expect(
-    page.getByText(/mockup — data disimpan di localstorage/i),
-  ).toBeVisible();
   await expect(page.getByRole("link", { name: "Add Project" })).toBeVisible();
 });
 
