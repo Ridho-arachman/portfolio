@@ -45,6 +45,9 @@ jobs:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
           BETTER_AUTH_SECRET: "ci-build-secret-1234567890abcdefghijklmnop"
           BETTER_AUTH_URL: "http://localhost:3000"
+          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
+          SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-key"
         run: npm run build
 
       - name: 🐳 Test Docker Build (PENTING!)

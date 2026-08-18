@@ -26,26 +26,41 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: `docker compose -f docker/docker-compose.test.yml up -d && npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 480_000,
-    env: {
-      ...process.env,
-      DATABASE_URL:
-        process.env.DATABASE_URL ||
-        "postgresql://postgres:postgres@localhost:5432/portfolio_test",
-      // Matikan rate limit agar banyaknya percobaan login/sign-up di E2E
-      // tidak memicu 429. Captcha tetap diuji lewat unit & integration test.
-      DISABLE_RATE_LIMIT: "true",
-      // Isolasi dari .env asli: captcha nonaktif & widget tak dirender,
-      // karena Playwright tidak bisa menyelesaikan CAPTCHA Turnstile.
-      TURNSTILE_SECRET_KEY: "",
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
-      NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
-      BETTER_AUTH_URL: `http://localhost:${PORT}`,
-      BETTER_AUTH_SECRET: "ci-e2e-test-secret-1234567890abcdef",
-    },
-  },
+  webServer: process.env.CI
+    ? {
+        command: `npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
+        url: BASE_URL,
+        reuseExistingServer: false,
+        timeout: 480_000,
+        env: {
+          ...process.env,
+          DATABASE_URL:
+            process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@localhost:5432/portfolio_test",
+          DISABLE_RATE_LIMIT: "true",
+          TURNSTILE_SECRET_KEY: "",
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
+          NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
+          BETTER_AUTH_URL: `http://localhost:${PORT}`,
+          BETTER_AUTH_SECRET: "ci-e2e-test-secret-1234567890abcdef",
+        },
+      }
+    : {
+        command: `docker compose -f docker/docker-compose.test.yml up -d && npx prisma generate && npx prisma db push && npm run build && npx next start -p ${PORT}`,
+        url: BASE_URL,
+        reuseExistingServer: true,
+        timeout: 480_000,
+        env: {
+          ...process.env,
+          DATABASE_URL:
+            process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@localhost:5432/portfolio_test",
+          DISABLE_RATE_LIMIT: "true",
+          TURNSTILE_SECRET_KEY: "",
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
+          NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
+          BETTER_AUTH_URL: `http://localhost:${PORT}`,
+          BETTER_AUTH_SECRET: "ci-e2e-test-secret-1234567890abcdef",
+        },
+      },
 });
