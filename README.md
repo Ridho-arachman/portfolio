@@ -1,5 +1,12 @@
 # Portfolio
 
+[![CI](https://github.com/Ridho-arachman/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Ridho-arachman/portfolio/actions/workflows/ci.yml)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://www.prisma.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A full-stack developer portfolio built with Next.js 16, featuring an admin dashboard, CMS-like content management, visitor analytics, and secure authentication.
 
 ## Tech Stack
