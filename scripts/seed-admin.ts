@@ -34,13 +34,26 @@ async function main() {
   // IP acak agar tidak kena rate limit sign-up saat dijalankan berulang.
   const randomIp = `127.0.0.${Math.floor(Math.random() * 250) + 1}`;
 
-  await auth.api.signUpEmail({
-    body: { email, password, name },
-    headers: new Headers({
-      "x-forwarded-for": randomIp,
-      "content-type": "application/json",
-    }),
-  });
+  // Skip captcha verification during seeding.
+  const origTurnstile = process.env.TURNSTILE_SECRET_KEY;
+  delete process.env.TURNSTILE_SECRET_KEY;
+
+  try {
+    await auth.api.signUpEmail({
+      body: { email, password, name },
+      headers: new Headers({
+        "x-forwarded-for": randomIp,
+        "content-type": "application/json",
+      }),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Sign up gagal: ${msg}`);
+  } finally {
+    if (origTurnstile !== undefined) {
+      process.env.TURNSTILE_SECRET_KEY = origTurnstile;
+    }
+  }
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error("User tidak ditemukan setelah sign up");
