@@ -20,6 +20,8 @@ export default defineConfig({
       "src/**/*.integration.test.ts",
       "e2e/**",
     ],
+    pool: "forks",
+    maxWorkers: 2,
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],

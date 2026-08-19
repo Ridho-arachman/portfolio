@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+A full-stack developer portfolio built with Next.js 16, featuring an admin dashboard, CMS-like content management, visitor analytics, and secure authentication.
 
-First, run the development server:
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Framework | [Next.js 16](https://nextjs.org) (App Router, Turbopack) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 + shadcn/ui + @base-ui/react |
+| Database | PostgreSQL via Prisma 7 (driver adapter) |
+| Auth | [better-auth](https://www.better-auth.com) (email/password + OAuth) |
+| State | React Query + Zustand + nuqs |
+| Storage | Supabase Storage (images) |
+| Map | Leaflet + react-leaflet |
+| Testing | Vitest (unit + integration) + Playwright (E2E) |
+| Deployment | Docker + Nginx + ngrok (VPS via GitHub Actions CI/CD) |
+
+## Features
+
+- **Public site** - Projects, experience, certificates, contact form
+- **Admin dashboard** - Analytics, visitor map, CRUD management
+- **Draft/Publish** - Toggle content visibility before going live
+- **Image upload** - Supabase Storage with client-side preview
+- **Authentication** - Email/password + Google/GitHub OAuth, rate limiting
+- **Visitor tracking** - GeoIP-based analytics with Leaflet map visualization
+- **Responsive design** - Glassmorphism UI, mobile-first
+
+## Prerequisites
+
+- Node.js 24+
+- PostgreSQL 16+ (local or Docker)
+- Supabase project (for image storage)
+- Docker (optional, for containerized dev)
+
+## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/Ridho-arachman/portfolio.git
+cd portfolio
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your values
+
+# Generate Prisma client and push schema
+npx prisma generate
+npx prisma db push
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `.env.example` for all required variables. Key ones:
 
-## Learn More
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Secret for auth sessions (32+ chars) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
 
-To learn more about Next.js, take a look at the following resources:
+## Testing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Unit tests
+npm run test:unit
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Integration tests (requires PostgreSQL)
+npm run test:integration
 
-## Deploy on Vercel
+# E2E tests (requires PostgreSQL + running dev server)
+npm run test:e2e
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# All tests
+npm run test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+src/
+  app/
+    (public)/          # Public routes (home, projects, experience, etc.)
+    admin/             # Admin dashboard routes
+    api/               # API routes (auth, contact, analytics, etc.)
+  components/
+    sections/          # Page-level components (admin-dashboard, contact, etc.)
+    ui/                # Shared UI components (shadcn/ui + custom)
+  hooks/               # Custom React hooks
+  lib/                 # Utilities (auth, prisma, env, supabase, etc.)
+  stores/              # Zustand stores
+prisma/                # Database schema and migrations
+docker/                # Dockerfiles and compose files
+e2e/                   # Playwright end-to-end tests
+scripts/               # Seed and utility scripts
+```
+
+## Deployment
+
+The project deploys via GitHub Actions CI/CD to a VPS:
+
+1. Push to `main` triggers the CI pipeline
+2. Tests run (unit, integration, E2E)
+3. Docker image is built and deployed via SSH
+
+See `.github/workflows/ci.yml` for the full pipeline.
+
+## License
+
+MIT
