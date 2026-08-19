@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { cleanupE2EUsers, ensureAdminUser, loginAsEmail, E2E_ADMIN } from "./helpers/admin-auth";
+import { cleanupE2EUsers, ensureAdminUser, loginAsEmail, E2E_ADMIN, seedVisits, cleanupVisits } from "./helpers/admin-auth";
 
 test.describe.configure({ retries: 1 });
 
 test.beforeAll(async ({ request }) => {
   await ensureAdminUser(request);
+  await seedVisits();
 });
 
 test.afterAll(async () => {
+  await cleanupVisits();
   await cleanupE2EUsers();
 });
 
@@ -49,7 +51,7 @@ test.describe("visitor map", () => {
     }
   });
 
-  test.skip("country names open when clicking a region card", async ({
+  test("country names open when clicking a region card", async ({
     page,
   }) => {
     await page.goto("/admin");

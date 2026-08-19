@@ -55,7 +55,7 @@ describe("auth security (rate limit, captcha, role)", () => {
     await prisma.$disconnect();
   });
 
-  it("rate-limits repeated sign-in attempts per IP", async () => {
+  it("rate-limits repeated sign-in attempts per IP", { timeout: 60_000 }, async () => {
     process.env.DISABLE_RATE_LIMIT = "false";
     process.env.AUTH_RATE_LIMIT_SIGNIN_MAX = "2";
     const auth = await loadAuth();

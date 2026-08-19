@@ -121,3 +121,38 @@ export async function cleanupE2EUsers() {
     where: { email: { in: [E2E_ADMIN.email, E2E_USER.email] } },
   });
 }
+
+const SEED_VISITS = [
+  {
+    path: "/",
+    country: "Indonesia",
+    countryCode: "id",
+    region: "Southeast Asia",
+    city: "Jakarta",
+    lat: -6.2,
+    lng: 106.845,
+    sessionId: "e2e-seed-indonesia",
+  },
+  {
+    path: "/",
+    country: "United States",
+    countryCode: "us",
+    region: "Americas",
+    city: "New York",
+    lat: 40.71,
+    lng: -74.01,
+    sessionId: "e2e-seed-us",
+  },
+];
+
+export async function seedVisits() {
+  for (const visit of SEED_VISITS) {
+    await prisma.visit.create({ data: visit });
+  }
+}
+
+export async function cleanupVisits() {
+  await prisma.visit.deleteMany({
+    where: { sessionId: { in: SEED_VISITS.map((v) => v.sessionId) } },
+  });
+}
