@@ -12,9 +12,10 @@ If you discover a security vulnerability, please report it responsibly.
 
 **Do NOT open a public GitHub issue.**
 
-Instead, please email: **[your-email@example.com]**
+Instead, please email: **[ridho.arachman22@gmail.com]**
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -24,6 +25,7 @@ You should receive a response within **48 hours**. We will work with you to unde
 ## Scope
 
 This policy applies to vulnerabilities found in:
+
 - The portfolio web application
 - API routes and authentication flows
 - Docker and deployment configurations
