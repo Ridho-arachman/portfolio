@@ -17,6 +17,8 @@ import {
   useAdminExperiences,
   useDeleteExperience,
 } from "@/hooks/use-experience";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
@@ -31,36 +33,27 @@ function typeBadgeClass(type: string) {
 
 export function ExperiencesList() {
   const [mounted, setMounted] = useState(false);
-  const [query, setQuery] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const { page, search, setSearch, goToPage, paginationParams } =
+    usePagination({ defaultPageSize: 10 });
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const { data, isLoading, error } = useAdminExperiences();
+  const { data, isLoading, error } = useAdminExperiences(paginationParams);
   const deleteMutation = useDeleteExperience();
 
   const experiences = data?.data ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = q
-      ? experiences.filter(
-          (experience) =>
-            experience.role.toLowerCase().includes(q) ||
-            experience.company.toLowerCase().includes(q) ||
-            experience.type.toLowerCase().includes(q) ||
-            experience.location.toLowerCase().includes(q),
-        )
-      : experiences;
-
-    return [...list].sort((a, b) => {
+    return [...experiences].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [experiences, query]);
+  }, [experiences]);
 
   const handleDelete = (id: string) => {
     if (confirmId === id) {
@@ -108,8 +101,8 @@ export function ExperiencesList() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input
                 type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder={ADMIN_EXPERIENCE.searchPlaceholder}
                 className="w-full rounded-xl border border-glass-border bg-bg-primary/60 py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent/50"
               />
@@ -224,9 +217,15 @@ export function ExperiencesList() {
           )}
         </section>
 
-        <p className="mt-6 text-center text-xs text-text-muted">
-          {ADMIN_EXPERIENCE.mockNote}
-        </p>
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={goToPage}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

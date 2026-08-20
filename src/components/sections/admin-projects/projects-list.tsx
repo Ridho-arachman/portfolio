@@ -15,33 +15,27 @@ import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ADMIN_PROJECTS } from "./constants";
 import { useAdminProjects, useDeleteProject } from "@/hooks/use-projects";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import type { AdminProject } from "./constants";
 
 export function ProjectsList() {
-  const [query, setQuery] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const { page, pageSize, search, setSearch, goToPage, paginationParams } =
+    usePagination({ defaultPageSize: 10 });
 
-  const { data, isLoading, isError } = useAdminProjects();
+  const { data, isLoading, isError } = useAdminProjects(paginationParams);
   const deleteMutation = useDeleteProject();
 
   const projects = (data?.data ?? []) as AdminProject[];
+  const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = q
-      ? projects.filter(
-          (project) =>
-            project.title.toLowerCase().includes(q) ||
-            project.slug.toLowerCase().includes(q) ||
-            project.technologies.some((tag) => tag.toLowerCase().includes(q)),
-        )
-      : projects;
-
-    return [...list].sort((a, b) => {
+    return [...projects].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [projects, query]);
+  }, [projects]);
 
   const handleDelete = (id: string) => {
     if (confirmId === id) {
@@ -87,8 +81,8 @@ export function ProjectsList() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input
                 type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder={ADMIN_PROJECTS.searchPlaceholder}
                 className="w-full rounded-xl border border-glass-border bg-bg-primary/60 py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent/50"
               />
@@ -212,6 +206,16 @@ export function ProjectsList() {
                 </li>
               ))}
             </ul>
+          )}
+
+          {totalPages > 1 && (
+            <div className="border-t border-glass-border p-4">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+              />
+            </div>
           )}
         </section>
       </main>

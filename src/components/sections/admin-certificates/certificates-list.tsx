@@ -16,39 +16,33 @@ import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ADMIN_CERTIFICATES } from "./constants";
 import { useAdminCertificates, useDeleteCertificate } from "@/hooks/use-certificates";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import type { AdminCertificate } from "./constants";
 
 export function CertificatesList() {
   const [mounted, setMounted] = useState(false);
-  const [query, setQuery] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const { page, search, setSearch, goToPage, paginationParams } =
+    usePagination({ defaultPageSize: 10 });
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const { data, isLoading, isError } = useAdminCertificates();
+  const { data, isLoading, isError } = useAdminCertificates(paginationParams);
   const deleteMutation = useDeleteCertificate();
 
   const certificates: AdminCertificate[] = (data?.data as AdminCertificate[]) ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = q
-      ? certificates.filter(
-          (certificate) =>
-            certificate.title.toLowerCase().includes(q) ||
-            certificate.issuer.toLowerCase().includes(q) ||
-            certificate.skills.some((skill) => skill.toLowerCase().includes(q)),
-        )
-      : certificates;
-
-    return [...list].sort((a, b) => {
+    return [...certificates].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [certificates, query]);
+  }, [certificates]);
 
   const handleDelete = (id: string) => {
     if (confirmId === id) {
@@ -96,8 +90,8 @@ export function CertificatesList() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input
                 type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder={ADMIN_CERTIFICATES.searchPlaceholder}
                 className="w-full rounded-xl border border-glass-border bg-bg-primary/60 py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent/50"
               />
@@ -232,6 +226,16 @@ export function CertificatesList() {
                 </li>
               ))}
             </ul>
+          )}
+
+          {totalPages > 1 && (
+            <div className="border-t border-glass-border p-4">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+              />
+            </div>
           )}
         </section>
       </main>
