@@ -30,12 +30,12 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <m.aside
-      variants={sidebarVariants}
-      initial="hidden"
-      animate="visible"
-      className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl lg:flex"
-    >
+<m.aside
+        variants={sidebarVariants}
+        initial="hidden"
+        animate="visible"
+        className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl z-30 lg:flex"
+      >
       {/* Brand */}
       <div className="flex items-center gap-3 border-b border-glass-border px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
@@ -60,7 +60,7 @@ export function AdminSidebar() {
                 variants={navItemVariants}
                 aria-disabled="true"
                 className={cn(
-                  "flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-secondary opacity-40 select-none",
+                  "flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-sm text-text-secondary opacity-40 select-none",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function AdminSidebar() {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
+                  "flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-all",
                   active
                     ? "bg-accent-muted font-medium text-accent"
                     : "text-text-secondary hover:bg-white/5 hover:text-text-primary",
@@ -106,7 +106,7 @@ export function AdminSidebar() {
         <Link
           href="/admin/login"
           title={ADMIN_DASHBOARD.logoutLabel}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-2 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-3 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent"
         >
           <LogOut className="h-4 w-4" />
           {ADMIN_DASHBOARD.logoutLabel}
