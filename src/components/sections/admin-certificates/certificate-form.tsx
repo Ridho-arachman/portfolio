@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
   ADMIN_CERTIFICATES,
   certificateFormSchema,
@@ -67,6 +68,7 @@ export function CertificateForm({
           credentialUrl: initialData.credentialUrl ?? "",
           thumbnail: initialData.thumbnail,
           logoUrl: initialData.logoUrl,
+          gallery: initialData.gallery ?? [],
           skills: initialData.skills.join(", "),
           summary: initialData.summary.join("\n"),
           isPublished: initialData.isPublished,
@@ -82,6 +84,7 @@ export function CertificateForm({
           credentialUrl: "",
           thumbnail: "",
           logoUrl: "",
+          gallery: [],
           skills: "",
           summary: "",
           isPublished: true,
@@ -93,6 +96,7 @@ export function CertificateForm({
   const isPublished = useWatch({ control, name: "isPublished" });
   const thumbnail = watch("thumbnail");
   const logoUrl = watch("logoUrl") ?? "";
+  const gallery = watch("gallery") ?? [];
 
   useEffect(() => {
     if (!slugTouched.current) {
@@ -113,6 +117,7 @@ export function CertificateForm({
       credentialUrl: values.credentialUrl || undefined,
       thumbnail: values.thumbnail,
       logoUrl: values.logoUrl,
+      gallery: gallery,
       skills: values.skills
         .split(",")
         .map((skill) => skill.trim())
@@ -310,6 +315,17 @@ export function CertificateForm({
                       {errors.logoUrl.message}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <MultiImageUpload
+                    value={gallery}
+                    onChange={(urls) => setValue("gallery", urls)}
+                    entityType="certificates"
+                    entityId={entityId}
+                    label={ADMIN_CERTIFICATES.fieldGallery}
+                    placeholder={ADMIN_CERTIFICATES.fieldGalleryPlaceholder}
+                  />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">

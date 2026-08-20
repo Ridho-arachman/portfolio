@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
   ADMIN_PROJECTS,
   projectFormSchema,
@@ -61,6 +62,7 @@ export function ProjectForm({
           slug: initialData.slug,
           description: initialData.description,
           thumbnail: initialData.thumbnail,
+          gallery: initialData.gallery ?? [],
           liveUrl: initialData.liveUrl ?? "",
           repoUrl: initialData.repoUrl ?? "",
           technologies: initialData.technologies.join(", "),
@@ -72,6 +74,7 @@ export function ProjectForm({
           slug: "",
           description: "",
           thumbnail: "",
+          gallery: [],
           liveUrl: "",
           repoUrl: "",
           technologies: "",
@@ -83,6 +86,7 @@ export function ProjectForm({
   const titleValue = useWatch({ control, name: "title" });
   const isPublished = useWatch({ control, name: "isPublished" });
   const thumbnail = useWatch({ control, name: "thumbnail" });
+  const gallery = useWatch({ control, name: "gallery" }) ?? [];
 
   useEffect(() => {
     if (!slugTouched.current) {
@@ -101,6 +105,7 @@ export function ProjectForm({
       title: values.title,
       description: values.description,
       thumbnail: values.thumbnail,
+      gallery: gallery,
       liveUrl: values.liveUrl || undefined,
       repoUrl: values.repoUrl || undefined,
       technologies: values.technologies
@@ -240,6 +245,17 @@ export function ProjectForm({
                       {errors.thumbnail.message}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <MultiImageUpload
+                    value={gallery}
+                    onChange={(urls) => setValue("gallery", urls)}
+                    entityType="projects"
+                    entityId={entityId}
+                    label={ADMIN_PROJECTS.fieldGallery}
+                    placeholder={ADMIN_PROJECTS.fieldGalleryPlaceholder}
+                  />
                 </div>
 
                 <div className="space-y-2">

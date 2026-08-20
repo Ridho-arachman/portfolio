@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
@@ -67,7 +68,7 @@ export function ExperienceForm({
           location: initialData.location,
           thumbnail: initialData.thumbnail,
           logoUrl: initialData.logoUrl,
-          gallery: initialData.gallery.join("\n"),
+          gallery: initialData.gallery ?? [],
           description: initialData.description.join("\n"),
           isPublished: initialData.isPublished,
           order: initialData.order,
@@ -81,7 +82,7 @@ export function ExperienceForm({
           location: "",
           thumbnail: "",
           logoUrl: "",
-          gallery: "",
+          gallery: [],
           description: "",
           isPublished: true,
           order: 0,
@@ -91,6 +92,7 @@ export function ExperienceForm({
   const role = watch("role");
   const thumbnail = watch("thumbnail");
   const logoUrl = watch("logoUrl") ?? "";
+  const gallery = watch("gallery") ?? [];
 
   useEffect(() => {
     if (!slugTouched.current && role) {
@@ -238,17 +240,14 @@ export function ExperienceForm({
         </div>
 
         <div className="sm:col-span-2">
-          <Label htmlFor="gallery">{ADMIN_EXPERIENCE.form.galleryLabel}</Label>
-          <Textarea
-            id="gallery"
+          <MultiImageUpload
+            value={gallery}
+            onChange={(urls) => setValue("gallery", urls)}
+            entityType="experience"
+            entityId={entityId}
+            label={ADMIN_EXPERIENCE.form.galleryLabel}
             placeholder={ADMIN_EXPERIENCE.form.galleryPlaceholder}
-            {...register("gallery")}
-            rows={3}
-            aria-invalid={errors.gallery ? "true" : "false"}
           />
-          {errors.gallery && (
-            <p className="mt-1 text-sm text-destructive">{errors.gallery.message}</p>
-          )}
         </div>
 
         <div className="sm:col-span-2">

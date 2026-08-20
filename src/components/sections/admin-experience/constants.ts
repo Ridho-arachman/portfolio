@@ -47,17 +47,7 @@ export const experienceFormSchema = z.object({
   period: z.string().min(2, "Period must be at least 2 characters"),
   location: z.string().min(2, "Location must be at least 2 characters"),
   thumbnail: z.url("Enter a valid image URL"),
-  gallery: z
-    .string()
-    .refine(
-      (value) =>
-        value
-          .split("\n")
-          .every(
-            (line) => line.trim() === "" || z.url().safeParse(line.trim()).success,
-          ),
-      "Each gallery line must be a valid URL",
-    ),
+  gallery: z.array(z.string()),
   logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
   description: z
     .string()
@@ -85,7 +75,6 @@ export const ADMIN_EXPERIENCE = {
   editLabel: "Edit",
   deleteConfirmLabel: "Sure?",
   deleteLabel: "Delete",
-  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
 
   // Form page
   notFoundTitle: "Experience not found",
@@ -109,8 +98,8 @@ export const ADMIN_EXPERIENCE = {
     thumbnailPlaceholder: "https://example.com/image.jpg",
     logoUrlLabel: "Logo URL",
     logoUrlPlaceholder: "https://example.com/logo.png",
-    galleryLabel: "Gallery URLs (one per line)",
-    galleryPlaceholder: "https://example.com/img1.jpg\nhttps://example.com/img2.jpg",
+    galleryLabel: "Gallery Images",
+    galleryPlaceholder: "Upload images to show in the experience gallery",
     descriptionLabel: "Description (one bullet per line)",
     descriptionPlaceholder: "Led frontend team\nBuilt dashboard with React",
     isPublishedLabel: "Published",

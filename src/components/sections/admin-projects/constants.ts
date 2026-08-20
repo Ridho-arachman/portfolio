@@ -6,6 +6,7 @@ export interface AdminProject {
   title: string;
   description: string;
   thumbnail: string;
+  gallery: string[];
   liveUrl?: string;
   repoUrl?: string;
   technologies: string[];
@@ -28,6 +29,7 @@ export const projectFormSchema = z.object({
   liveUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   repoUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   technologies: z.string(),
+  gallery: z.array(z.string()),
   isPublished: z.boolean(),
   order: z.coerce.number().int("Order must be a whole number").min(0),
 });
@@ -71,6 +73,8 @@ export const ADMIN_PROJECTS = {
   fieldRepoUrlPlaceholder: "https://github.com/user/repo",
   fieldTechnologies: "Technologies",
   fieldTechnologiesPlaceholder: "Comma separated: Next.js, Tailwind, Prisma",
+  fieldGallery: "Gallery Images",
+  fieldGalleryPlaceholder: "Upload images to show in the project gallery",
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",

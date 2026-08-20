@@ -19,6 +19,7 @@ const updateCertificateSchema = z.object({
   issuer: z.string().min(2).optional(),
   logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
+  gallery: z.array(z.string()).optional(),
   credentialId: z.string().optional(),
   credentialUrl: z.string().optional(),
   issueDate: z.string().optional(),
@@ -85,6 +86,7 @@ export async function PUT(
         ...(data.thumbnail !== undefined && {
           thumbnail: data.thumbnail || null,
         }),
+        ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.credentialId !== undefined && {
           credentialId: data.credentialId || null,
         }),

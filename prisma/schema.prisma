@@ -228,6 +228,7 @@ model Certificate {
   issuer        String // e.g., "Amazon Web Services"
   logoUrl       String? // URL logo issuer (opsional)
   thumbnail     String? // URL gambar cover sertifikat
+  gallery       String[] // Array of image URLs untuk gallery detail
   credentialId  String? // Nomor kredensial sertifikat (opsional)
   credentialUrl String? // Link verifikasi resmi (opsional)
   issueDate     DateTime // Tanggal terbit

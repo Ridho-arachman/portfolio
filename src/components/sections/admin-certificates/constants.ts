@@ -11,6 +11,7 @@ export interface AdminCertificate {
   period: string;
   thumbnail: string;
   logoUrl: string;
+  gallery: string[];
   skills: string[];
   summary: string[];
   isPublished: boolean;
@@ -34,6 +35,7 @@ export const certificateFormSchema = z.object({
   credentialUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   thumbnail: z.url("Enter a valid image URL"),
   logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
+  gallery: z.array(z.string()),
   skills: z.string(),
   summary: z
     .string()
@@ -85,6 +87,8 @@ export const ADMIN_CERTIFICATES = {
   fieldThumbnailPlaceholder: "https://images.example.com/cover.jpg",
   fieldLogoUrl: "Logo URL",
   fieldLogoUrlPlaceholder: "https://example.com/logo.png",
+  fieldGallery: "Gallery Images",
+  fieldGalleryPlaceholder: "Upload images to show in the certificate gallery",
   fieldSkills: "Skills",
   fieldSkillsPlaceholder: "Comma separated: Cloud Computing, AWS, Architecture",
   fieldSummary: "Summary",
