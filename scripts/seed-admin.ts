@@ -19,7 +19,16 @@ async function main() {
   const existing = await prisma.user.findUnique({ where: { email } });
 
   if (existing) {
-    if (existing.role !== "ADMIN") {
+    const account = await prisma.account.findFirst({
+      where: { userId: existing.id, providerId: "credential" },
+    });
+
+    if (!account) {
+      console.log(
+        `User ${email} ditemukan tanpa credential — dihapus & dibuat ulang.`,
+      );
+      await prisma.user.delete({ where: { id: existing.id } });
+    } else if (existing.role !== "ADMIN") {
       await prisma.user.update({
         where: { id: existing.id },
         data: { role: "ADMIN" },
@@ -27,8 +36,8 @@ async function main() {
       console.log(`Role ${email} dinaikkan menjadi ADMIN.`);
     } else {
       console.log(`${email} sudah ber-role ADMIN.`);
+      return;
     }
-    return;
   }
 
   // IP acak agar tidak kena rate limit sign-up saat dijalankan berulang.

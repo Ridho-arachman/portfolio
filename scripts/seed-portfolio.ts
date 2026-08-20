@@ -1,3 +1,4 @@
+import "dotenv/config";
 import prisma from "../src/lib/prisma";
 
 async function main() {
@@ -38,11 +39,15 @@ async function main() {
         description:
           "A modern portfolio website built with Next.js, featuring smooth animations, dark mode, and responsive design. Includes a blog, project showcase, and contact form.",
         thumbnail:
-          "https://placehold.co/600x400/1a1a2e/ffffff?text=Portfolio",
+          "https://picsum.photos/seed/portfolio-web/600/400",
         liveUrl: "https://example.com",
         repoUrl: "https://github.com/example/portfolio",
         technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-        gallery: [],
+        gallery: [
+          "https://picsum.photos/seed/portfolio-g1/800/600",
+          "https://picsum.photos/seed/portfolio-g2/800/600",
+          "https://picsum.photos/seed/portfolio-g3/800/600",
+        ],
         role: "Full Stack Developer",
         year: "2024",
         highlights: ["Responsive design", "Dark mode", "SEO optimized"],
@@ -56,11 +61,16 @@ async function main() {
         description:
           "Full-featured e-commerce platform with product catalog, shopping cart, payment integration, and admin dashboard.",
         thumbnail:
-          "https://placehold.co/600x400/16213e/ffffff?text=E-Commerce",
+          "https://picsum.photos/seed/e-commerce/600/400",
         liveUrl: "https://example.com/shop",
         repoUrl: "https://github.com/example/ecommerce",
         technologies: ["Next.js", "Prisma", "PostgreSQL", "Stripe"],
-        gallery: [],
+        gallery: [
+          "https://picsum.photos/seed/ecom-g1/800/600",
+          "https://picsum.photos/seed/ecom-g2/800/600",
+          "https://picsum.photos/seed/ecom-g3/800/600",
+          "https://picsum.photos/seed/ecom-g4/800/600",
+        ],
         role: "Backend Developer",
         year: "2024",
         highlights: [
@@ -78,11 +88,14 @@ async function main() {
         description:
           "Collaborative task management application with real-time updates, drag-and-drop interface, and team workspaces.",
         thumbnail:
-          "https://placehold.co/600x400/0f3460/ffffff?text=Task+App",
+          "https://picsum.photos/seed/task-app/600/400",
         liveUrl: "https://example.com/tasks",
         repoUrl: "https://github.com/example/taskapp",
         technologies: ["React", "Node.js", "Socket.io", "MongoDB"],
-        gallery: [],
+        gallery: [
+          "https://picsum.photos/seed/task-g1/800/600",
+          "https://picsum.photos/seed/task-g2/800/600",
+        ],
         role: "Full Stack Developer",
         year: "2023",
         highlights: [
@@ -106,6 +119,7 @@ async function main() {
         company: "Tech Company",
         type: "WORK",
         location: "Jakarta, Indonesia",
+        thumbnail: "https://picsum.photos/seed/senior-fe/600/400",
         startDate: new Date("2023-01-01"),
         isCurrent: true,
         description: [
@@ -113,7 +127,10 @@ async function main() {
           "Implemented design system used across 5 products",
           "Mentored 3 junior developers",
         ],
-        gallery: [],
+        gallery: [
+          "https://picsum.photos/seed/senior-g1/800/600",
+          "https://picsum.photos/seed/senior-g2/800/600",
+        ],
         order: 1,
       },
       {
@@ -122,6 +139,7 @@ async function main() {
         company: "Startup Inc",
         type: "WORK",
         location: "Remote",
+        thumbnail: "https://picsum.photos/seed/fullstack/600/400",
         startDate: new Date("2021-06-01"),
         endDate: new Date("2022-12-31"),
         isCurrent: false,
@@ -130,7 +148,9 @@ async function main() {
           "Developed real-time features using WebSocket",
           "Reduced API response time by 40%",
         ],
-        gallery: [],
+        gallery: [
+          "https://picsum.photos/seed/fullstack-g1/800/600",
+        ],
         order: 2,
       },
       {
@@ -139,6 +159,7 @@ async function main() {
         company: "Digital Agency",
         type: "WORK",
         location: "Bandung, Indonesia",
+        thumbnail: "https://picsum.photos/seed/fe-intern/600/400",
         startDate: new Date("2020-01-01"),
         endDate: new Date("2020-06-30"),
         isCurrent: false,
@@ -159,6 +180,7 @@ async function main() {
         slug: "aws-solutions-architect",
         title: "AWS Solutions Architect Associate",
         issuer: "Amazon Web Services",
+        thumbnail: "https://picsum.photos/seed/aws-cert/600/400",
         credentialId: "AWS-SAA-2024",
         credentialUrl: "https://aws.amazon.com/certification",
         issueDate: new Date("2024-03-01"),
@@ -168,6 +190,10 @@ async function main() {
           "Cost optimization",
           "Security patterns",
         ],
+        gallery: [
+          "https://picsum.photos/seed/aws-g1/800/600",
+          "https://picsum.photos/seed/aws-g2/800/600",
+        ],
         isPublished: true,
         order: 1,
       },
@@ -175,11 +201,15 @@ async function main() {
         slug: "google-cloud-professional",
         title: "Google Cloud Professional Developer",
         issuer: "Google Cloud",
+        thumbnail: "https://picsum.photos/seed/gcp-cert/600/400",
         credentialId: "GCP-PD-2023",
         credentialUrl: "https://cloud.google.com/certification",
         issueDate: new Date("2023-09-01"),
         skills: ["GCP", "Kubernetes", "Cloud Functions"],
         summary: ["GCP services and architecture", "Container orchestration"],
+        gallery: [
+          "https://picsum.photos/seed/gcp-g1/800/600",
+        ],
         isPublished: true,
         order: 2,
       },
@@ -187,6 +217,7 @@ async function main() {
         slug: "meta-react-developer",
         title: "Meta React Developer Certificate",
         issuer: "Meta",
+        thumbnail: "https://picsum.photos/seed/meta-cert/600/400",
         credentialId: "META-RD-2023",
         credentialUrl:
           "https://www.coursera.org/professional-certificates/meta-react-developer",
@@ -196,6 +227,11 @@ async function main() {
           "Advanced React patterns",
           "State management",
           "Testing",
+        ],
+        gallery: [
+          "https://picsum.photos/seed/meta-g1/800/600",
+          "https://picsum.photos/seed/meta-g2/800/600",
+          "https://picsum.photos/seed/meta-g3/800/600",
         ],
         isPublished: true,
         order: 3,
