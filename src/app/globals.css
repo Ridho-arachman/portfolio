@@ -33,6 +33,22 @@
 
   /* Grid Line Color */
   --color-grid-line: rgba(139, 92, 246, 0.08);
+
+  /* shadcn/ui semantic tokens */
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --primary: #8b5cf6;
+  --primary-foreground: #fafafa;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #10b981;
+  --chart-5: #f43f5e;
 }
 
 .dark {
@@ -59,6 +75,22 @@
 
   /* Grid Line Color */
   --color-grid-line: rgba(167, 139, 250, 0.05);
+
+  /* shadcn/ui semantic tokens (dark) */
+  --popover: #0a0a0a;
+  --popover-foreground: #fafafa;
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --primary: #a78bfa;
+  --primary-foreground: #050505;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --ring: #a78bfa;
+  --chart-1: #a78bfa;
+  --chart-2: #22d3ee;
+  --chart-3: #fbbf24;
+  --chart-4: #34d399;
+  --chart-5: #fb7185;
 }
 
 /* ============================================
@@ -88,6 +120,20 @@
   --color-muted: var(--color-bg-tertiary);
   --color-muted-foreground: var(--color-text-muted);
   --color-border: var(--color-glass-border);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   /* Typography */
   --font-sans: var(--font-geist), system-ui, -apple-system, sans-serif;

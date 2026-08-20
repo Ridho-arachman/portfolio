@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
+import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminExperience } from "@/components/sections/admin-experience/constants";
 
@@ -42,7 +43,13 @@ export function useCreateExperience() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: unknown) => createOne("/admin/experience", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-experiences"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-experiences"] });
+      toast.success("Experience created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create experience");
+    },
   });
 }
 
@@ -53,6 +60,10 @@ export function useUpdateExperience() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-experiences"] });
       qc.invalidateQueries({ queryKey: ["admin-experience"] });
+      toast.success("Experience updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update experience");
     },
   });
 }
@@ -61,6 +72,12 @@ export function useDeleteExperience() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOne(`/admin/experience/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-experiences"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-experiences"] });
+      toast.success("Experience deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete experience");
+    },
   });
 }

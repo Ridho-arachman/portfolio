@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
+import { toast } from "sonner";
 import type { PaginationParams } from "@/types/api";
 
 // Public hooks
@@ -32,7 +33,13 @@ export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: unknown) => createOne("/admin/categories", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-categories"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      toast.success("Category created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create category");
+    },
   });
 }
 
@@ -43,6 +50,10 @@ export function useUpdateCategory() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-categories"] });
       qc.invalidateQueries({ queryKey: ["admin-category"] });
+      toast.success("Category updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update category");
     },
   });
 }
@@ -51,6 +62,12 @@ export function useDeleteCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOne(`/admin/categories/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-categories"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      toast.success("Category deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete category");
+    },
   });
 }

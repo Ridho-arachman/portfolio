@@ -1,10 +1,22 @@
 "use client";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   Archive,
   ArchiveRestore,
   CheckCheck,
   Inbox,
+  Loader2,
   Mail,
   MailCheck,
   Search,
@@ -50,7 +62,7 @@ export function MessagesInbox() {
   const [tab, setTab] = useState<TabFilter>("ALL");
   const [query, setQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [confirmAllRead, setConfirmAllRead] = useState(false);
 
   useEffect(() => {
@@ -90,16 +102,6 @@ export function MessagesInbox() {
       );
     return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [messages, tab, query]);
-
-  const handleDelete = (id: string) => {
-    if (confirmId === id) {
-      deleteMutation.mutate(id);
-      setConfirmId(null);
-      if (expandedId === id) setExpandedId(null);
-    } else {
-      setConfirmId(id);
-    }
-  };
 
   const handleMarkAllRead = () => {
     if (confirmAllRead) {
@@ -144,9 +146,9 @@ export function MessagesInbox() {
             <button
               type="button"
               onClick={handleMarkAllRead}
-              disabled={!showUnread}
+              disabled={!showUnread || updateStatusMutation.isPending}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs transition-colors",
+                "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs transition-colors disabled:opacity-40",
                 confirmAllRead
                   ? "border-accent/60 bg-accent/15 text-accent"
                   : "border-glass-border bg-glass-bg text-text-secondary hover:border-accent/40 hover:text-accent",
@@ -212,10 +214,7 @@ export function MessagesInbox() {
           {!mounted || isLoading ? (
             <div className="space-y-4 p-4 sm:p-5">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-20 animate-pulse rounded-xl bg-white/5"
-                />
+                <Skeleton key={index} className="h-20 rounded-xl" />
               ))}
             </div>
           ) : isError ? (
@@ -319,13 +318,14 @@ export function MessagesInbox() {
                           <button
                             type="button"
                             title={ADMIN_MESSAGES.markReadLabel}
+                            disabled={updateStatusMutation.isPending}
                             onClick={() =>
                               updateStatusMutation.mutate({
                                 id: message.id,
                                 status: "READ",
                               })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent disabled:opacity-40"
                           >
                             <MailCheck className="h-3 w-3" />
                             {ADMIN_MESSAGES.markReadLabel}
@@ -335,13 +335,14 @@ export function MessagesInbox() {
                           <button
                             type="button"
                             title={ADMIN_MESSAGES.unarchiveLabel}
+                            disabled={updateStatusMutation.isPending}
                             onClick={() =>
                               updateStatusMutation.mutate({
                                 id: message.id,
                                 status: "READ",
                               })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent disabled:opacity-40"
                           >
                             <ArchiveRestore className="h-3 w-3" />
                             {ADMIN_MESSAGES.unarchiveLabel}
@@ -352,13 +353,14 @@ export function MessagesInbox() {
                             <button
                               type="button"
                               title={ADMIN_MESSAGES.markRepliedLabel}
+                              disabled={updateStatusMutation.isPending}
                               onClick={() =>
                                 updateStatusMutation.mutate({
                                   id: message.id,
                                   status: "REPLIED",
                                 })
                               }
-                              className="hidden items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-emerald-500/40 hover:text-emerald-400 md:inline-flex"
+                              className="hidden items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-emerald-500/40 hover:text-emerald-400 disabled:opacity-40 md:inline-flex"
                             >
                               <MailCheck className="h-3 w-3" />
                               {ADMIN_MESSAGES.markRepliedLabel}
@@ -368,13 +370,14 @@ export function MessagesInbox() {
                           <button
                             type="button"
                             title={ADMIN_MESSAGES.archiveLabel}
+                            disabled={updateStatusMutation.isPending}
                             onClick={() =>
                               updateStatusMutation.mutate({
                                 id: message.id,
                                 status: "ARCHIVED",
                               })
                             }
-                            className="hidden items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
+                            className="hidden items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/40 hover:text-accent disabled:opacity-40 sm:inline-flex"
                           >
                             <Archive className="h-3 w-3" />
                             {ADMIN_MESSAGES.archiveLabel}
@@ -382,19 +385,11 @@ export function MessagesInbox() {
                         )}
                         <button
                           type="button"
-                          onClick={() => handleDelete(message.id)}
-                          onBlur={() => setConfirmId(null)}
-                          className={cn(
-                            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs transition-colors",
-                            confirmId === message.id
-                              ? "border-destructive/60 bg-destructive/15 text-destructive"
-                              : "border-glass-border bg-glass-bg text-text-secondary hover:border-destructive/50 hover:text-destructive",
-                          )}
+                          onClick={() => setDeleteId(message.id)}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-2.5 py-1.5 text-xs text-text-secondary transition-colors hover:border-destructive/50 hover:text-destructive"
                         >
                           <Trash2 className="h-3 w-3" />
-                          {confirmId === message.id
-                            ? ADMIN_MESSAGES.deleteConfirmLabel
-                            : ADMIN_MESSAGES.deleteLabel}
+                          {ADMIN_MESSAGES.deleteLabel}
                         </button>
                       </div>
                     </div>
@@ -425,6 +420,36 @@ export function MessagesInbox() {
           )}
         </section>
       </main>
+
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ADMIN_MESSAGES.deleteConfirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {ADMIN_MESSAGES.deleteConfirmDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteId) {
+                  deleteMutation.mutate(deleteId);
+                  if (expandedId === deleteId) setExpandedId(null);
+                }
+                setDeleteId(null);
+              }}
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                ADMIN_MESSAGES.deleteConfirmLabel
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

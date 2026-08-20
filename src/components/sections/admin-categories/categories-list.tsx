@@ -1,6 +1,17 @@
 "use client";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   AlertTriangle,
   FolderTree,
   Loader2,
@@ -23,7 +34,7 @@ import type { AdminCategory } from "./constants";
 
 export function CategoriesList() {
   const [mounted, setMounted] = useState(false);
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const { page, search, setSearch, goToPage, paginationParams } =
     usePagination({ defaultPageSize: 10 });
 
@@ -45,15 +56,6 @@ export function CategoriesList() {
       return b.createdAt.localeCompare(a.createdAt);
     });
   }, [categories]);
-
-  const handleDelete = (id: string) => {
-    if (confirmId === id) {
-      deleteMutation.mutate(id);
-      setConfirmId(null);
-    } else {
-      setConfirmId(id);
-    }
-  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -103,10 +105,7 @@ export function CategoriesList() {
           {!mounted || isLoading ? (
             <div className="space-y-4 p-4 sm:p-5">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-16 animate-pulse rounded-xl bg-white/5"
-                />
+                <Skeleton key={index} className="h-16 rounded-xl" />
               ))}
             </div>
           ) : isError ? (
@@ -165,25 +164,12 @@ export function CategoriesList() {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => handleDelete(category.id)}
-                        onBlur={() => setConfirmId(null)}
+                        onClick={() => setDeleteId(category.id)}
                         disabled={deleteMutation.isPending}
-                        className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
-                          confirmId === category.id
-                            ? "border-destructive/60 bg-destructive/15 text-destructive"
-                            : "border-glass-border bg-glass-bg text-text-secondary hover:border-destructive/50 hover:text-destructive",
-                        )}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-destructive/50 hover:text-destructive"
                       >
-                        {deleteMutation.isPending &&
-                        confirmId !== category.id ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-3 w-3" />
-                        )}
-                        {confirmId === category.id
-                          ? ADMIN_CATEGORIES.deleteConfirmLabel
-                          : ADMIN_CATEGORIES.deleteLabel}
+                        <Trash2 className="h-3 w-3" />
+                        {ADMIN_CATEGORIES.deleteLabel}
                       </button>
                     </div>
                   </div>
@@ -203,6 +189,33 @@ export function CategoriesList() {
           )}
         </section>
       </main>
+
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ADMIN_CATEGORIES.deleteConfirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {ADMIN_CATEGORIES.deleteConfirmDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteId) deleteMutation.mutate(deleteId);
+                setDeleteId(null);
+              }}
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                ADMIN_CATEGORIES.deleteConfirmLabel
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

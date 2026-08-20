@@ -1,6 +1,17 @@
 "use client";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   AlertTriangle,
   Award,
   Loader2,
@@ -22,7 +33,7 @@ import type { AdminCertificate } from "./constants";
 
 export function CertificatesList() {
   const [mounted, setMounted] = useState(false);
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const { page, search, setSearch, goToPage, paginationParams } =
     usePagination({ defaultPageSize: 10 });
 
@@ -43,15 +54,6 @@ export function CertificatesList() {
       return b.createdAt.localeCompare(a.createdAt);
     });
   }, [certificates]);
-
-  const handleDelete = (id: string) => {
-    if (confirmId === id) {
-      deleteMutation.mutate(id);
-      setConfirmId(null);
-    } else {
-      setConfirmId(id);
-    }
-  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -101,10 +103,7 @@ export function CertificatesList() {
           {!mounted || isLoading ? (
             <div className="space-y-4 p-4 sm:p-5">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-20 animate-pulse rounded-xl bg-white/5"
-                />
+                <Skeleton key={index} className="h-20 rounded-xl" />
               ))}
             </div>
           ) : isError ? (
@@ -202,24 +201,12 @@ export function CertificatesList() {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => handleDelete(certificate.id)}
-                        onBlur={() => setConfirmId(null)}
+                        onClick={() => setDeleteId(certificate.id)}
                         disabled={deleteMutation.isPending}
-                        className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
-                          confirmId === certificate.id
-                            ? "border-destructive/60 bg-destructive/15 text-destructive"
-                            : "border-glass-border bg-glass-bg text-text-secondary hover:border-destructive/50 hover:text-destructive",
-                        )}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-glass-bg px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-destructive/50 hover:text-destructive"
                       >
-                        {deleteMutation.isPending && confirmId !== certificate.id ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-3 w-3" />
-                        )}
-                        {confirmId === certificate.id
-                          ? ADMIN_CERTIFICATES.deleteConfirmLabel
-                          : ADMIN_CERTIFICATES.deleteLabel}
+                        <Trash2 className="h-3 w-3" />
+                        {ADMIN_CERTIFICATES.deleteLabel}
                       </button>
                     </div>
                   </div>
@@ -239,6 +226,33 @@ export function CertificatesList() {
           )}
         </section>
       </main>
+
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ADMIN_CERTIFICATES.deleteConfirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {ADMIN_CERTIFICATES.deleteConfirmDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteId) deleteMutation.mutate(deleteId);
+                setDeleteId(null);
+              }}
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                ADMIN_CERTIFICATES.deleteConfirmLabel
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

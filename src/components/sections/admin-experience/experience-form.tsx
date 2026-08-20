@@ -308,8 +308,11 @@ export function ExperienceForm({
           disabled={isLoading}
           className="gap-2"
         >
-          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-          <Save className="h-4 w-4" />
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
           {mode === "create"
             ? ADMIN_EXPERIENCE.form.submitCreate
             : ADMIN_EXPERIENCE.form.submitUpdate}

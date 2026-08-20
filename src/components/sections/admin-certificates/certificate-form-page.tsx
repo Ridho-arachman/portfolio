@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertTriangle, ArrowLeft, Award, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Award } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_CERTIFICATES } from "./constants";
 import { CertificateForm } from "./certificate-form";
 import { useAdminCertificate, useCreateCertificate, useUpdateCertificate } from "@/hooks/use-certificates";
@@ -35,11 +36,11 @@ export function CertificateFormPage({
     return (
       <div className="flex flex-1 flex-col">
         <header className="border-b border-glass-border bg-bg-primary/80 px-4 py-5 sm:px-8">
-          <div className="h-8 w-52 animate-pulse rounded-lg bg-white/5" />
-          <div className="mt-2 h-4 w-64 animate-pulse rounded-lg bg-white/5" />
+          <Skeleton className="h-8 w-52 rounded-lg" />
+          <Skeleton className="mt-2 h-4 w-64 rounded-lg" />
         </header>
         <main className="p-4 sm:p-8">
-          <div className="h-80 animate-pulse rounded-2xl bg-white/5" />
+          <Skeleton className="h-80 rounded-2xl" />
         </main>
       </div>
     );

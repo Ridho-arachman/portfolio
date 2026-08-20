@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertCircle, ArrowLeft, FolderKanban, Loader2 } from "lucide-react";
+import { AlertCircle, ArrowLeft, FolderKanban } from "lucide-react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_PROJECTS } from "./constants";
 import { ProjectForm } from "./project-form";
 import { useAdminProject, useCreateProject, useUpdateProject } from "@/hooks/use-projects";
@@ -27,11 +28,11 @@ export function ProjectFormPage({
     return (
       <div className="flex flex-1 flex-col">
         <header className="border-b border-glass-border bg-bg-primary/80 px-4 py-5 sm:px-8">
-          <div className="h-8 w-52 animate-pulse rounded-lg bg-white/5" />
-          <div className="mt-2 h-4 w-64 animate-pulse rounded-lg bg-white/5" />
+          <Skeleton className="h-8 w-52 rounded-lg" />
+          <Skeleton className="mt-2 h-4 w-64 rounded-lg" />
         </header>
-        <main className="flex flex-1 items-center justify-center p-8">
-          <Loader2 className="h-6 w-6 animate-spin text-accent" />
+        <main className="p-4 sm:p-8">
+          <Skeleton className="h-80 rounded-2xl" />
         </main>
       </div>
     );

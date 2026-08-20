@@ -73,7 +73,9 @@ export const ADMIN_EXPERIENCE = {
   emptyTitle: "No experiences found",
   emptyNote: "Try a different search or add a new experience.",
   editLabel: "Edit",
-  deleteConfirmLabel: "Sure?",
+  deleteConfirmLabel: "Ya, Hapus",
+  deleteConfirmTitle: "Hapus Experience?",
+  deleteConfirmDescription: "Experience akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
   deleteLabel: "Delete",
 
   // Form page

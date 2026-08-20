@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
+import { toast } from "sonner";
 import type { PaginationParams } from "@/types/api";
 
 // Public hooks
@@ -41,7 +42,13 @@ export function useCreateCertificate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: unknown) => createOne("/admin/certificates", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-certificates"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-certificates"] });
+      toast.success("Certificate created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create certificate");
+    },
   });
 }
 
@@ -52,6 +59,10 @@ export function useUpdateCertificate() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-certificates"] });
       qc.invalidateQueries({ queryKey: ["admin-certificate"] });
+      toast.success("Certificate updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update certificate");
     },
   });
 }
@@ -60,6 +71,12 @@ export function useDeleteCertificate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOne(`/admin/certificates/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-certificates"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-certificates"] });
+      toast.success("Certificate deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete certificate");
+    },
   });
 }

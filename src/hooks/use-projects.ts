@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
+import { toast } from "sonner";
 import type { PaginationParams } from "@/types/api";
 
 // Public hooks
@@ -42,7 +43,13 @@ export function useCreateProject() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: unknown) => createOne("/admin/projects", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-projects"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-projects"] });
+      toast.success("Project created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create project");
+    },
   });
 }
 
@@ -53,6 +60,10 @@ export function useUpdateProject() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-projects"] });
       qc.invalidateQueries({ queryKey: ["admin-project"] });
+      toast.success("Project updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update project");
     },
   });
 }
@@ -61,6 +72,12 @@ export function useDeleteProject() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOne(`/admin/projects/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-projects"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-projects"] });
+      toast.success("Project deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete project");
+    },
   });
 }

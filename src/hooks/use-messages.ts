@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, updateOne, deleteOne } from "@/lib/api-client";
+import { toast } from "sonner";
 import type { PaginationParams } from "@/types/api";
 
 interface MessageFilters extends Partial<PaginationParams> {
@@ -32,6 +33,10 @@ export function useUpdateMessageStatus() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-messages"] });
       qc.invalidateQueries({ queryKey: ["admin-message"] });
+      toast.success("Message status updated");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update message status");
     },
   });
 }
@@ -40,6 +45,12 @@ export function useDeleteMessage() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOne(`/admin/messages/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-messages"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      toast.success("Message deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete message");
+    },
   });
 }
