@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { ChevronLeft, ChevronRight, Globe } from "lucide-react";
+import * as m from "motion/react-m";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { VisitorCountry } from "./constants";
@@ -66,7 +67,13 @@ export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions 
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl">
+    <m.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl"
+    >
       <header className="flex flex-col gap-4 border-b border-glass-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 text-accent">
@@ -232,6 +239,6 @@ export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions 
           </ul>
         )}
       </div>
-    </section>
+    </m.section>
   );
 }

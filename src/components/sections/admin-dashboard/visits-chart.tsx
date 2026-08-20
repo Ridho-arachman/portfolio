@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, TrendingUp } from "lucide-react";
+import * as m from "motion/react-m";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
@@ -25,7 +26,13 @@ interface VisitsChartProps {
 
 export function VisitsChart({ visitsOverview, totalVisits, deltaLabel }: VisitsChartProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl">
+    <m.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5 }}
+      className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl"
+    >
       <header className="flex flex-col gap-4 border-b border-glass-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 text-accent">
@@ -106,6 +113,6 @@ export function VisitsChart({ visitsOverview, totalVisits, deltaLabel }: VisitsC
           </AreaChart>
         </ChartContainer>
       </div>
-    </section>
+    </m.section>
   );
 }

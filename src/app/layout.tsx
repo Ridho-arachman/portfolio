@@ -4,9 +4,12 @@ import { VisitTracker } from "@/components/visit-tracker";
 import { Providers } from "@/lib/providers";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { LazyMotion, domAnimation } from "motion/react";
+import { Geist } from "next/font/google";
 import type { Metadata } from "next";
 import { getEnv } from "@/lib/env";
 import "./globals.css";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 const env = getEnv();
 
@@ -37,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className={geist.variable}>
       <body className="relative min-h-screen bg-bg-primary text-text-primary antialiased overflow-x-hidden">
         <Providers>
           <ThemeProvider

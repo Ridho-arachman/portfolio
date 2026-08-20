@@ -11,6 +11,7 @@ export interface CertificateListData {
   issueDate: string;
   period: string;
   thumbnail: string;
+  gallery: string[];
   skills: string[];
   summary: string[];
 }
@@ -82,6 +83,7 @@ export function mapCertificateToData(cert: Certificate): CertificateListData {
     issueDate: formatIssueDate(cert.issueDate),
     period: formatPeriod(cert.issueDate, cert.expiryDate),
     thumbnail: cert.thumbnail ?? "",
+    gallery: cert.gallery,
     skills: cert.skills,
     summary: cert.summary,
   };

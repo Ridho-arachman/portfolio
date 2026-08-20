@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, ExternalLink } from "lucide-react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,7 +11,12 @@ export function AdminTopbar({ today }: { today: string }) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-20 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl">
+    <m.header
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="sticky top-0 z-20 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl"
+    >
       {/* Mobile navigation */}
       <nav className="flex gap-1 overflow-x-auto px-4 py-3 lg:hidden" aria-label="Admin navigation">
         {ADMIN_NAV_LINKS.map((link) => {
@@ -72,6 +78,6 @@ export function AdminTopbar({ today }: { today: string }) {
           </Link>
         </div>
       </div>
-    </header>
+    </m.header>
   );
 }

@@ -36,12 +36,18 @@ export function CertificateCard({
             {/* 1. Thumbnail Image */}
             <div className="relative h-48 w-full overflow-hidden">
               <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none" />
-              <Image
-                src={cert.thumbnail}
-                alt={cert.title}
-                fill
-                className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-              />
+              {cert.thumbnail ? (
+                <Image
+                  src={cert.thumbnail}
+                  alt={cert.title}
+                  fill
+                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-accent/5 text-accent">
+                  <Award className="h-12 w-12 opacity-40" />
+                </div>
+              )}
 
               {/* Certificate Badge (Shadcn UI) */}
               <Badge
@@ -96,6 +102,30 @@ export function CertificateCard({
                   </Badge>
                 ))}
               </div>
+
+              {/* Gallery Preview */}
+              {cert.gallery.length > 0 && (
+                <div className="flex gap-2 pt-4 border-t border-glass-border/60 mt-4">
+                  {cert.gallery.slice(0, 5).map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="relative shrink-0 w-12 h-12 rounded-md overflow-hidden border border-glass-border"
+                    >
+                      <Image
+                        src={img}
+                        alt={`Preview ${idx + 1}`}
+                        fill
+                        className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                      />
+                    </div>
+                  ))}
+                  {cert.gallery.length > 5 && (
+                    <div className="shrink-0 w-12 h-12 rounded-md bg-accent/10 border border-accent/30 flex items-center justify-center text-xs font-bold text-accent">
+                      +{cert.gallery.length - 5}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </Card>
         </m.div>

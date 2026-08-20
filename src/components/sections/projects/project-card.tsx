@@ -73,6 +73,30 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             {project.description}
           </p>
 
+          {/* Gallery Preview */}
+          {project.gallery && project.gallery.length > 0 && (
+            <div className="flex gap-2 pt-3 border-t border-glass-border/60">
+              {project.gallery.slice(0, 5).map((img, idx) => (
+                <div
+                  key={idx}
+                  className="relative shrink-0 w-12 h-12 rounded-md overflow-hidden border border-glass-border"
+                >
+                  <Image
+                    src={img}
+                    alt={`Preview ${idx + 1}`}
+                    fill
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                  />
+                </div>
+              ))}
+              {project.gallery.length > 5 && (
+                <div className="shrink-0 w-12 h-12 rounded-md bg-accent/10 border border-accent/30 flex items-center justify-center text-xs font-bold text-accent">
+                  +{project.gallery.length - 5}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action Link using Shadcn Button */}
           <Button
             variant="ghost"

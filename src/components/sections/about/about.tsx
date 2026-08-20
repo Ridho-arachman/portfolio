@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import * as m from "motion/react-m";
+import { useRef } from "react";
 import { AboutAvatar } from "./about-avatar";
 import { AboutBackground } from "./about-background";
 import { AboutContent } from "./about-content";
@@ -10,10 +11,11 @@ import { REPLAY_VIEWPORT } from "./constants";
 import { useAboutAnimations } from "./use-about-animations";
 
 export function AboutSection() {
-  const { blobY, avatarY, textY } = useAboutAnimations();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { blobY, avatarY, textY } = useAboutAnimations(sectionRef);
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-32 overflow-hidden">
       <AboutBackground blobY={blobY} />
 
       <div className="container relative z-10 mx-auto px-4">

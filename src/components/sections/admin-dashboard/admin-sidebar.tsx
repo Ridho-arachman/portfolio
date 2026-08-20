@@ -1,8 +1,10 @@
 "use client";
 
 import { LogOut, ShieldCheck } from "lucide-react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { Variants } from "motion/react";
 import { cn } from "@/lib/utils";
 import {
   ADMIN_DASHBOARD,
@@ -10,11 +12,30 @@ import {
   ADMIN_USER,
 } from "./constants";
 
+const sidebarVariants: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.05 },
+  },
+};
+
+const navItemVariants: Variants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: { opacity: 1, x: 0 },
+};
+
 export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl lg:flex">
+    <m.aside
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
+      className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl lg:flex"
+    >
       {/* Brand */}
       <div className="flex items-center gap-3 border-b border-glass-border px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
@@ -34,8 +55,9 @@ export function AdminSidebar() {
 
           if (link.disabled) {
             return (
-              <span
+              <m.span
                 key={link.href}
+                variants={navItemVariants}
                 aria-disabled="true"
                 className={cn(
                   "flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-secondary opacity-40 select-none",
@@ -46,25 +68,26 @@ export function AdminSidebar() {
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
                   Soon
                 </span>
-              </span>
+              </m.span>
             );
           }
 
           return (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
-                active
-                  ? "bg-accent-muted font-medium text-accent"
-                  : "text-text-secondary hover:bg-white/5 hover:text-text-primary",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              <span className="flex-1">{link.label}</span>
-            </Link>
+            <m.div key={link.href} variants={navItemVariants}>
+              <Link
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
+                  active
+                    ? "bg-accent-muted font-medium text-accent"
+                    : "text-text-secondary hover:bg-white/5 hover:text-text-primary",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="flex-1">{link.label}</span>
+              </Link>
+            </m.div>
           );
         })}
       </nav>
@@ -82,13 +105,13 @@ export function AdminSidebar() {
         </div>
         <Link
           href="/admin/login"
-          title={ADMIN_DASHBOARD.logoutTitle}
+          title={ADMIN_DASHBOARD.logoutLabel}
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-2 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent"
         >
           <LogOut className="h-4 w-4" />
           {ADMIN_DASHBOARD.logoutLabel}
         </Link>
       </div>
-    </aside>
+    </m.aside>
   );
 }

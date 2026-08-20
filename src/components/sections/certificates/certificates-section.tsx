@@ -57,7 +57,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
         {/* Certificates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {certificates.slice(0, 3).map((cert, index) => (
-            <CertificateCard key={cert.id} cert={cert} index={index} />
+            <CertificateCard key={cert.slug} cert={cert} index={index} />
           ))}
         </div>
 

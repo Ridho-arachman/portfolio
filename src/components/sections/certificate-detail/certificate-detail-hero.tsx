@@ -28,13 +28,19 @@ export function CertificateDetailHero({
         style={{ y: headerY, scale: headerScale }}
         className="absolute inset-0"
       >
-        <Image
-          src={cert.thumbnail}
-          alt={cert.title}
-          fill
-          className="object-cover"
-          priority
-        />
+        {cert.thumbnail ? (
+          <Image
+            src={cert.thumbnail}
+            alt={cert.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-accent/5">
+            <Award className="h-24 w-24 opacity-20 text-accent" />
+          </div>
+        )}
       </m.div>
 
       <div className="absolute inset-0 bg-linear-to-t from-bg-primary via-bg-primary/60 to-transparent" />
