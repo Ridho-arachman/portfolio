@@ -2,8 +2,9 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, FolderKanban } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
@@ -52,11 +53,20 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
         </m.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.slug} project={project} index={index} />
-          ))}
-        </div>
+        {projects.length === 0 ? (
+          <EmptyState
+            icon={FolderKanban}
+            title="No projects available"
+            description="Projects will appear here once published."
+            className="mb-16"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {projects.map((project, index) => (
+              <ProjectCard key={project.slug} project={project} index={index} />
+            ))}
+          </div>
+        )}
 
         {/* View All CTA */}
         <m.div

@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { getEnv } from "@/lib/env";
 import { ServerPagination } from "@/components/ui/server-pagination";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Award } from "lucide-react";
 
 const env = getEnv();
 
@@ -51,11 +53,19 @@ export default async function CertificatesListPage({
         </div>
 
         {/* Grid List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {data.map((cert, index) => (
-            <CertificateCard key={cert.id} cert={cert} index={index} />
-          ))}
-        </div>
+        {data.length === 0 ? (
+          <EmptyState
+            icon={Award}
+            title="No certificates yet"
+            description="Certificates will appear here once published."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {data.map((cert, index) => (
+              <CertificateCard key={cert.id} cert={cert} index={index} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-12">
           <ServerPagination

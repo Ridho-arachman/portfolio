@@ -1,6 +1,8 @@
 "use client";
 
+import { EmptyState } from "@/components/ui/empty-state";
 import { useScroll, useTransform } from "framer-motion";
+import { Briefcase } from "lucide-react";
 import * as m from "motion/react-m";
 import { useRef } from "react";
 import { ExperienceCard } from "./experience-card";
@@ -14,6 +16,16 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
   });
 
   const scaleY = useTransform(scrollYProgress, [0.1, 0.9], [0, 1]);
+
+  if (experiences.length === 0) {
+    return (
+      <EmptyState
+        icon={Briefcase}
+        title="No experiences yet"
+        description="Work experiences will appear here once added."
+      />
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative max-w-5xl mx-auto">

@@ -1,7 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useScroll, useTransform } from "framer-motion";
+import { FolderKanban } from "lucide-react";
 import * as m from "motion/react-m";
 import { useRef } from "react";
 import { ProjectCard } from "./project-card";
@@ -46,11 +48,19 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
           </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
-          ))}
-        </div>
+        {projects.length === 0 ? (
+          <EmptyState
+            icon={FolderKanban}
+            title="No projects available"
+            description="Projects will appear here once published."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

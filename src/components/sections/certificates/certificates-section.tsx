@@ -2,8 +2,9 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Award } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
@@ -55,11 +56,20 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
         </m.div>
 
         {/* Certificates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {certificates.slice(0, 3).map((cert, index) => (
-            <CertificateCard key={cert.slug} cert={cert} index={index} />
-          ))}
-        </div>
+        {certificates.length === 0 ? (
+          <EmptyState
+            icon={Award}
+            title="No certificates yet"
+            description="Certificates will appear here once published."
+            className="mb-16"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {certificates.slice(0, 3).map((cert, index) => (
+              <CertificateCard key={cert.slug} cert={cert} index={index} />
+            ))}
+          </div>
+        )}
 
         {/* View All CTA */}
         <m.div

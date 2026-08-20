@@ -3,6 +3,8 @@ import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { ExperienceListItem } from "@/components/sections/experience-list/experience-list-item";
 import { Metadata } from "next";
 import { ServerPagination } from "@/components/ui/server-pagination";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Briefcase } from "lucide-react";
 
 const PAGE_SIZE = 6;
 
@@ -48,11 +50,19 @@ export default async function ExperienceListPage({
         </div>
 
         {/* Grid List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {experiences.map((exp, index) => (
-            <ExperienceListItem key={exp.id} exp={exp} index={index} />
-          ))}
-        </div>
+        {experiences.length === 0 ? (
+          <EmptyState
+            icon={Briefcase}
+            title="No experiences yet"
+            description="Experiences will appear here once published."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {experiences.map((exp, index) => (
+              <ExperienceListItem key={exp.id} exp={exp} index={index} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-12">
           <ServerPagination
