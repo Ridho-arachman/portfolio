@@ -34,7 +34,7 @@ export function AdminSidebar() {
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
-        className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl z-30 lg:flex"
+        className="sticky top-16 hidden h-screen w-72 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl z-30 lg:flex"
       >
       {/* Brand */}
       <div className="flex items-center gap-3 border-b border-glass-border px-6 py-5">
