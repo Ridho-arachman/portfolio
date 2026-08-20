@@ -14,7 +14,7 @@ export function AdminTopbar({ today }: { today: string }) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-30 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl"
+      className="sticky top-0 z-40 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl"
     >
       {/* Mobile hamburger button */}
       <div className="lg:hidden">
