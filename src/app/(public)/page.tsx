@@ -12,10 +12,12 @@ export default async function Home() {
     prisma.certificate.findMany({
       where: { isPublished: true },
       orderBy: { order: "asc" },
+      take: 6,
     }),
     prisma.project.findMany({
       where: { isPublished: true },
       orderBy: { order: "asc" },
+      take: 6,
     }),
   ]);
 

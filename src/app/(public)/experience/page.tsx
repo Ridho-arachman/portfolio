@@ -2,6 +2,9 @@ import prisma from "@/lib/prisma";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { ExperienceListItem } from "@/components/sections/experience-list/experience-list-item";
 import { Metadata } from "next";
+import { ServerPagination } from "@/components/ui/server-pagination";
+
+const PAGE_SIZE = 6;
 
 export const metadata: Metadata = {
   title: "All Experiences | Ridho.dev",
@@ -9,11 +12,26 @@ export const metadata: Metadata = {
     "Daftar lengkap pengalaman profesional, peran kepemimpinan, dan pencapaian saya.",
 };
 
-export default async function ExperienceListPage() {
-  const rawExperiences = await prisma.experience.findMany({
-    orderBy: { order: "asc" },
-  });
+export default async function ExperienceListPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+
+  const [rawExperiences, total] = await Promise.all([
+    prisma.experience.findMany({
+      where: { isPublished: true },
+      orderBy: { order: "asc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.experience.count({ where: { isPublished: true } }),
+  ]);
+
   const experiences = mapExperiences(rawExperiences);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
@@ -34,6 +52,14 @@ export default async function ExperienceListPage() {
           {experiences.map((exp, index) => (
             <ExperienceListItem key={exp.id} exp={exp} index={index} />
           ))}
+        </div>
+
+        <div className="mt-12">
+          <ServerPagination
+            page={page}
+            totalPages={totalPages}
+            basePath="/experience"
+          />
         </div>
       </div>
     </main>

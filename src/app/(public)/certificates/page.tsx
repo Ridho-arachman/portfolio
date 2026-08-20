@@ -3,8 +3,11 @@ import { mapCertificateToData } from "@/components/sections/certificates/constan
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { getEnv } from "@/lib/env";
+import { ServerPagination } from "@/components/ui/server-pagination";
 
 const env = getEnv();
+
+const PAGE_SIZE = 6;
 
 export const metadata: Metadata = {
   title: `All Certificates | ${env.NEXT_PUBLIC_SITE_NAME}`,
@@ -12,13 +15,26 @@ export const metadata: Metadata = {
     "Daftar lengkap sertifikasi profesional dan kredensial yang saya miliki.",
 };
 
-export default async function CertificatesListPage() {
-  const certificates = await prisma.certificate.findMany({
-    where: { isPublished: true },
-    orderBy: { order: "asc" },
-  });
+export default async function CertificatesListPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+
+  const [certificates, total] = await Promise.all([
+    prisma.certificate.findMany({
+      where: { isPublished: true },
+      orderBy: { order: "asc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.certificate.count({ where: { isPublished: true } }),
+  ]);
 
   const data = certificates.map(mapCertificateToData);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
@@ -39,6 +55,14 @@ export default async function CertificatesListPage() {
           {data.map((cert, index) => (
             <CertificateCard key={cert.id} cert={cert} index={index} />
           ))}
+        </div>
+
+        <div className="mt-12">
+          <ServerPagination
+            page={page}
+            totalPages={totalPages}
+            basePath="/certificates"
+          />
         </div>
       </div>
     </main>
