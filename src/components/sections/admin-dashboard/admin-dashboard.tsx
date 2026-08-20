@@ -14,7 +14,6 @@ import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useAdminProjects } from "@/hooks/use-projects";
 import { useAdminCertificates } from "@/hooks/use-certificates";
 import { useAdminExperiences } from "@/hooks/use-experience";
-import { AdminTopbar } from "./admin-topbar";
 import { PanelCard } from "./panel-card";
 import { StatCard } from "./stat-card";
 import { VisitsChart } from "./visits-chart";
@@ -191,8 +190,6 @@ export function AdminDashboard() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <AdminTopbar today={today} />
-
       <main className="space-y-6 p-4 sm:p-6 lg:p-8">
         {analyticsLoading ? (
           <>
