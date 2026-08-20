@@ -5,7 +5,7 @@ const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
 const clientEnvSchema = z.object({
   NEXT_PUBLIC_SITE_NAME: z.string().default("Ridho.dev"),
   NEXT_PUBLIC_SITE_TAGLINE: z.string().default("Web3 Portfolio"),
-  NEXT_PUBLIC_SITE_URL: z.string().default("https://aromatically-dreamiest-delia.ngrok-free.dev"),
+  NEXT_PUBLIC_SITE_URL: z.string().default("http://localhost:3000"),
   NEXT_PUBLIC_SITE_DESCRIPTION: z.string().default("Information Systems student crafting immersive web experiences with modern tech stack."),
 
   NEXT_PUBLIC_AUTHOR_NAME: z.string().default("Ridho Arachman"),
