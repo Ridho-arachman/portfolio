@@ -38,8 +38,15 @@ function getAdjacent(
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getAllSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    // Hermetic build fallback: saat database tidak terjangkau (mis. CI build
+    // tanpa DB), lewahkan pra-render params dan biarkan halaman dirender
+    // on-demand alih-alih menggagalkan `next build`.
+    return [];
+  }
 }
 
 export async function generateMetadata({

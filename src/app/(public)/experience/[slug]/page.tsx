@@ -9,10 +9,17 @@ interface ExperienceDetailPageProps {
 }
 
 export async function generateStaticParams() {
-  const experiences = await prisma.experience.findMany({
-    select: { slug: true },
-  });
-  return experiences.map((exp) => ({ slug: exp.slug }));
+  try {
+    const experiences = await prisma.experience.findMany({
+      select: { slug: true },
+    });
+    return experiences.map((exp) => ({ slug: exp.slug }));
+  } catch {
+    // Hermetic build fallback: saat database tidak terjangkau (mis. CI build
+    // tanpa DB), lewahkan pra-render params dan biarkan halaman dirender
+    // on-demand alih-alih menggagalkan `next build`.
+    return [];
+  }
 }
 
 export async function generateMetadata({
