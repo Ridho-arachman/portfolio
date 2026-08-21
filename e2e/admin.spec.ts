@@ -96,7 +96,7 @@ test("admin projects page manages seed data", async ({ page }) => {
   await page.goto("/admin/projects");
 
   await expect(
-    page.getByRole("heading", { level: 1 }),
+    page.getByRole("heading", { level: 1, name: "Projects" }),
   ).toContainText("Projects");
   await expect(page.getByRole("link", { name: "Add Project" })).toBeVisible();
 });
@@ -106,7 +106,7 @@ test("admin settings page renders profile form", async ({ page }) => {
   await page.goto("/admin/settings");
 
   await expect(
-    page.getByRole("heading", { level: 1 }),
+    page.getByRole("heading", { level: 1, name: "Settings" }),
   ).toContainText("Settings");
   await expect(page.getByLabel("Full Name")).toBeVisible();
   await expect(
