@@ -86,6 +86,7 @@ describe("certificateFormSchema", () => {
     summary: "Passed the practitioner exam",
     isPublished: true,
     order: 1,
+    gallery: [],
   };
 
   it("accepts valid input", () => {
@@ -129,7 +130,7 @@ describe("experienceFormSchema", () => {
     period: "Jan 2024 - Present",
     location: "Jakarta, Indonesia (Remote)",
     thumbnail: "https://images.example.com/cover.jpg",
-    gallery: "",
+    gallery: [],
     description: "Built the marketing landing page",
     order: 0,
   };
@@ -157,7 +158,10 @@ describe("experienceFormSchema", () => {
     expect(
       experienceFormSchema.safeParse({
         ...valid,
-        gallery: "https://images.example.com/1.jpg\nhttps://images.example.com/2.jpg",
+        gallery: [
+          "https://images.example.com/1.jpg",
+          "https://images.example.com/2.jpg",
+        ],
       }).success,
     ).toBe(true);
   });
