@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ExperiencesList } from "@/components/sections/admin-experience";
 
@@ -10,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminExperiencePage() {
-  return <ExperiencesList />;
+  return (
+    <Suspense fallback={null}>
+      <ExperiencesList />
+    </Suspense>
+  );
 }

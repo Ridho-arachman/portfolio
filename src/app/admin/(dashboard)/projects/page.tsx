@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ProjectsList } from "@/components/sections/admin-projects";
 
@@ -10,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminProjectsPage() {
-  return <ProjectsList />;
+  return (
+    <Suspense fallback={null}>
+      <ProjectsList />
+    </Suspense>
+  );
 }
