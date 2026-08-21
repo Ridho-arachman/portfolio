@@ -19,11 +19,18 @@ function fetchAllPublishedProjects() {
 }
 
 export async function generateStaticParams() {
-  const projects = await prisma.project.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  });
-  return projects.map((p) => ({ slug: p.slug }));
+  try {
+    const projects = await prisma.project.findMany({
+      where: { isPublished: true },
+      select: { slug: true },
+    });
+    return projects.map((p) => ({ slug: p.slug }));
+  } catch {
+    // Hermetic build fallback: saat database tidak terjangkau (mis. CI build
+    // tanpa DB), lewahkan pra-render params dan biarkan halaman dirender
+    // on-demand alih-alih menggagalkan `next build`.
+    return [];
+  }
 }
 
 export async function generateMetadata({
