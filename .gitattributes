@@ -1,0 +1,21 @@
+# Normalize all text files to LF in the repository and working tree.
+# Required: Docker / nginx / Linux containers break with CRLF.
+* text=auto eol=lf
+
+# Explicit binary assets (never normalize)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.pdf binary
+*.mp4 binary
+*.webm binary
+*.mp3 binary
