@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { successResponse, errorResponse } from "@/lib/api-helpers";
@@ -107,6 +108,12 @@ export async function PUT(
       },
     });
 
+    revalidatePath("/projects");
+    revalidatePath(`/projects/${project.slug}`);
+    if (project.slug !== existing.slug) {
+      revalidatePath(`/projects/${existing.slug}`);
+    }
+
     return successResponse(project);
   } catch (error) {
     const message =
@@ -130,6 +137,9 @@ export async function DELETE(
     }
 
     await prisma.project.delete({ where: { id } });
+
+    revalidatePath("/projects");
+    revalidatePath(`/projects/${existing.slug}`);
 
     return successResponse({ message: "Project deleted" });
   } catch (error) {

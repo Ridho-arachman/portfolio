@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import {
@@ -96,6 +97,9 @@ export async function POST(req: Request) {
         categoryId: data.categoryId || null,
       },
     });
+
+    revalidatePath("/projects");
+    revalidatePath(`/projects/${project.slug}`);
 
     return successResponse(project, 201);
   } catch (error) {
