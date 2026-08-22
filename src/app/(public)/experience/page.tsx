@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { ExperienceListItem } from "@/components/sections/experience-list/experience-list-item";
+import { PageHero } from "@/components/sections/page-hero";
 import { Metadata } from "next";
 import { ServerPagination } from "@/components/ui/server-pagination";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -36,20 +37,18 @@ export default async function ExperienceListPage({
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            All <span className="text-gradient-elegant">Experiences</span>
-          </h1>
-          <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            A comprehensive look at my professional journey, leadership roles,
-            and the impact I&apos;ve made.
-          </p>
-        </div>
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
+      {/* Hero bergaya About */}
+      <PageHero
+        badge="My Journey"
+        title="All"
+        titleAccent="Experiences"
+        description="A comprehensive look at my professional journey, leadership roles, and the impact I've made."
+        iconSet="experience"
+      />
 
-        {/* Grid List */}
+      {/* Grid List */}
+      <section className="container mx-auto px-4 max-w-5xl pb-20">
         {experiences.length === 0 ? (
           <EmptyState
             icon={Briefcase}
@@ -71,7 +70,7 @@ export default async function ExperienceListPage({
             basePath="/experience"
           />
         </div>
-      </div>
-    </main>
+      </section>
+    </div>
   );
 }

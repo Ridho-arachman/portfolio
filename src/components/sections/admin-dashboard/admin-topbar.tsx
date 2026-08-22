@@ -7,7 +7,7 @@ import { useAdminSidebar } from "./admin-sidebar-context";
 import { ADMIN_DASHBOARD } from "./constants";
 
 export function AdminTopbar({ today }: { today: string }) {
-  const { isOpen, closeSidebar, toggleSidebar } = useAdminSidebar();
+  const { isOpen, toggleSidebar } = useAdminSidebar();
 
   return (
     <m.header
@@ -16,8 +16,8 @@ export function AdminTopbar({ today }: { today: string }) {
       transition={{ duration: 0.3 }}
       className="sticky top-0 z-40 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl"
     >
-      {/* Mobile hamburger button */}
-      <div className="lg:hidden">
+      {/* Mobile hamburger button - diberi gutter agar sejajar konten */}
+      <div className="lg:hidden px-4 pt-3 sm:px-6">
         <button
           onClick={toggleSidebar}
           className="p-2 text-text-secondary hover:text-accent hover:bg-accent-muted transition-colors rounded-lg"
@@ -28,7 +28,7 @@ export function AdminTopbar({ today }: { today: string }) {
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      <div className="flex flex-col gap-4 px-4 py-5 sm:px-6 lg:h-20 lg:flex-row lg:items-center lg:justify-between lg:gap-0 lg:py-0 lg:px-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
             {ADMIN_DASHBOARD.greeting}

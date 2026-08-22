@@ -22,7 +22,7 @@ export function FooterBrand() {
           unoptimized
           priority
         />
-        <h3 className="text-2xl font-bold text-linear-elegant mb-3">
+        <h3 className="text-2xl font-bold text-gradient-elegant mb-3">
           Ridho.dev
         </h3>
       </div>

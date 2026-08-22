@@ -37,7 +37,7 @@ export function AboutHeroContent({
           className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9]"
         >
           About{" "}
-          <span className="text-linear-elegant inline-block relative">
+          <span className="text-gradient-elegant inline-block relative">
             Me
             <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
           </span>

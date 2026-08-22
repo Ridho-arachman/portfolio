@@ -2,9 +2,14 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useMotionValue, useSpring, type HTMLMotionProps } from "framer-motion";
+import {
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  type HTMLMotionProps,
+} from "motion/react";
 import * as m from "motion/react-m";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MagneticButtonProps extends Omit<
   HTMLMotionProps<"button">,
@@ -14,12 +19,34 @@ interface MagneticButtonProps extends Omit<
   className?: string;
 }
 
+/** Tracks `(pointer: fine)` capability; false during SSR and for touch devices. */
+function useFinePointer(): boolean {
+  const [isFinePointer, setIsFinePointer] = useState(false);
+
+  useEffect(() => {
+    // Defensif: lingkungan tanpa matchMedia (mis. beberapa setup uji) di-skip.
+    if (typeof window.matchMedia !== "function") return;
+
+    const mediaQuery = window.matchMedia("(pointer: fine)");
+    const update = () => setIsFinePointer(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
+  return isFinePointer;
+}
+
 export function MagneticButton({
   children,
   className,
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const isFinePointer = useFinePointer();
+  // Magnet effect hanya aktif untuk pointer presisi (mouse) tanpa reduced motion.
+  const magnetEnabled = isFinePointer && !prefersReducedMotion;
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -28,7 +55,7 @@ export function MagneticButton({
   const springY = useSpring(y, { stiffness: 150, damping: 15 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!ref.current) return;
+    if (!magnetEnabled || !ref.current) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
 
@@ -40,6 +67,7 @@ export function MagneticButton({
   };
 
   const handleMouseLeave = () => {
+    if (!magnetEnabled) return;
     x.set(0);
     y.set(0);
   };
@@ -51,7 +79,7 @@ export function MagneticButton({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative px-8 py-4 rounded-full bg-accent-muted border border-accent/50 text-accent font-semibold overflow-hidden group transition-colors hover:bg-accent/20",
+        "relative px-6 py-3 text-base sm:px-8 sm:py-4 rounded-full bg-accent-muted border border-accent/50 text-accent font-semibold overflow-hidden group transition-colors hover:bg-accent/20",
         className,
       )}
       {...props}

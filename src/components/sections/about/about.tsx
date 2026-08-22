@@ -34,8 +34,8 @@ export function AboutSection() {
             About Me
           </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Bridging <span className="text-linear-elegant">Business</span> &{" "}
-            <span className="text-linear-elegant">Technology</span>
+            Bridging <span className="text-gradient-elegant">Business</span> &{" "}
+            <span className="text-gradient-elegant">Technology</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg">
             As an Information Systems graduate specializing in E-Business from

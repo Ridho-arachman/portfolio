@@ -34,7 +34,7 @@ export function AdminSidebar() {
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
-        className="sticky top-20 hidden h-screen w-72 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl lg:flex"
+        className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col border-r border-glass-border bg-glass-bg/60 backdrop-blur-xl lg:flex"
       >
       {/* Brand */}
       <div className="flex items-center gap-3 border-b border-glass-border px-6 py-5">
@@ -81,7 +81,7 @@ export function AdminSidebar() {
                   "flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-all",
                   active
                     ? "bg-accent-muted font-medium text-accent"
-                    : "text-text-secondary hover:bg-white/5 hover:text-text-primary",
+                    : "text-text-secondary hover:bg-glass-hover hover:text-text-primary",
                 )}
               >
                 <Icon className="h-4 w-4" />

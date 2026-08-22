@@ -31,6 +31,10 @@
   --color-glass-border: rgba(0, 0, 0, 0.08);
   --color-glass-hover: rgba(255, 255, 255, 0.9);
 
+  /* Decorative Glow Colors (sama di kedua mode) */
+  --color-neon-purple: #c084fc;
+  --color-neon-cyan: #22d3ee;
+
   /* Grid Line Color */
   --color-grid-line: rgba(139, 92, 246, 0.08);
 
@@ -73,6 +77,10 @@
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-hover: rgba(255, 255, 255, 0.05);
 
+  /* Decorative Glow Colors (sama di kedua mode) */
+  --color-neon-purple: #c084fc;
+  --color-neon-cyan: #22d3ee;
+
   /* Grid Line Color */
   --color-grid-line: rgba(167, 139, 250, 0.05);
 
@@ -113,6 +121,9 @@
   --color-glass-bg: var(--color-glass-bg);
   --color-glass-border: var(--color-glass-border);
   --color-glass-hover: var(--color-glass-hover);
+
+  --color-neon-purple: var(--color-neon-purple);
+  --color-neon-cyan: var(--color-neon-cyan);
 
   /* Semantic tokens (shadcn/ui) mapped to project palette */
   --color-background: var(--color-bg-secondary);

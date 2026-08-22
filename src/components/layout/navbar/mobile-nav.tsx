@@ -7,12 +7,30 @@ import { Menu, X } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NAV_LINKS } from "./constants";
 
 export function MobileNav() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  // Tutup menu saat rute berubah (mis. navigasi via back/forward) -
+  // pola "adjust state during render" yang direkomendasikan React.
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsMobileMenuOpen(false);
+  }
+
+  // Tutup menu dengan tombol Escape.
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileMenuOpen]);
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/";
@@ -27,19 +45,24 @@ export function MobileNav() {
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         className="md:hidden p-2 text-text-secondary hover:text-accent transition-colors rounded-lg hover:bg-accent-muted"
         aria-label="Toggle menu"
+        aria-expanded={isMobileMenuOpen}
+        aria-controls="mobile-menu"
       >
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </m.button>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Dropdown
+          Absolut terhadap header (fixed) sehingga selalu membentang penuh
+          TEPAT di bawah navbar — bukan anak flex row yang merusak layout. */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <m.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden bg-bg-primary/95 backdrop-blur-2xl border-t border-glass-border overflow-hidden"
+            id="mobile-menu"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="md:hidden absolute inset-x-0 top-full bg-bg-primary/95 backdrop-blur-2xl border-b border-glass-border shadow-lg overflow-hidden"
           >
             <ul className="container mx-auto px-4 py-6 space-y-2">
               {NAV_LINKS.map((link, index) => {
@@ -58,7 +81,7 @@ export function MobileNav() {
                         "block py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200",
                         active
                           ? "text-accent bg-accent-muted"
-                          : "text-text-secondary hover:text-text-primary hover:bg-white/5",
+                          : "text-text-secondary hover:text-text-primary hover:bg-glass-hover",
                       )}
                     >
                       {link.label}

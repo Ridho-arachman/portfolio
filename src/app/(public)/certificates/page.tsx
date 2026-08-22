@@ -1,5 +1,6 @@
 import { CertificateCard } from "@/components/sections/certificates/certificate-card";
 import { mapCertificateToData } from "@/components/sections/certificates/constants";
+import { PageHero } from "@/components/sections/page-hero";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { getEnv } from "@/lib/env";
@@ -39,20 +40,18 @@ export default async function CertificatesListPage({
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <main className="min-h-screen pt-32 pb-20 bg-bg-primary">
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            My <span className="text-gradient-elegant">Certificates</span>
-          </h1>
-          <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            Professional certifications and credentials validating my expertise
-            in cloud, front-end, data, and UX design.
-          </p>
-        </div>
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
+      {/* Hero bergaya About */}
+      <PageHero
+        badge="Credentials"
+        title="My"
+        titleAccent="Certificates"
+        description="Professional certifications and credentials validating my expertise in cloud, front-end, data, and UX design."
+        iconSet="certificates"
+      />
 
-        {/* Grid List */}
+      {/* Grid List */}
+      <section className="container mx-auto px-4 max-w-5xl pb-20">
         {data.length === 0 ? (
           <EmptyState
             icon={Award}
@@ -74,7 +73,7 @@ export default async function CertificatesListPage({
             basePath="/certificates"
           />
         </div>
-      </div>
-    </main>
+      </section>
+    </div>
   );
 }

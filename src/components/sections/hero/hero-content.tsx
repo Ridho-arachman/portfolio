@@ -73,7 +73,7 @@ export function HeroContent({
           className="flex flex-col sm:flex-row items-center justify-center gap-6"
           style={isMobile ? {} : { transform: "translateZ(40px)" }}
         >
-          <MagneticButton className="text-lg px-10 py-5 h-auto rounded-full">
+          <MagneticButton className="px-8 py-4 text-base sm:px-10 sm:py-5 sm:text-lg h-auto rounded-full">
             View Projects{" "}
             <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
           </MagneticButton>

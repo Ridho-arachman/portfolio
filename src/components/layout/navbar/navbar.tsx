@@ -23,14 +23,16 @@ export function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
         isScrolled
-          ? "py-3 bg-bg-primary/60 backdrop-blur-2xl border-b border-glass-border shadow-sm"
-          : "py-5 bg-transparent",
+          ? "bg-bg-primary/60 backdrop-blur-2xl border-b border-glass-border shadow-sm"
+          : "bg-transparent",
       )}
     >
+      {/* Tinggi total header selalu 80px (h-20) agar offset pt-20 pada
+          <main> presisi di semua state scroll. */}
       <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* 1. Logo */}
           <NavbarLogo />
 
@@ -60,7 +62,7 @@ export function Navbar() {
 
           {/* 4. Mobile Menu (Toggle + Dropdown) */}
           <MobileNav />
-        </nav>
+        </div>
       </div>
     </m.header>
   );

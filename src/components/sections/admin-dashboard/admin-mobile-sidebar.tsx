@@ -2,8 +2,10 @@
 
 import { LogOut, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAdminSidebar } from "./admin-sidebar-context";
 import {
@@ -16,19 +18,39 @@ export function AdminMobileSidebar() {
   const { isOpen, closeSidebar } = useAdminSidebar();
   const pathname = usePathname();
 
+  // Kunci scroll halaman di belakang saat drawer terbuka.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
+          <m.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
             onClick={closeSidebar}
             aria-hidden="true"
           />
           {/* Sidebar Drawer */}
-          <div
-            className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] flex-col border-r border-glass-border bg-glass-bg/95 backdrop-blur-xl lg:hidden"
+          <m.div
+            key="drawer"
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col border-r border-glass-border bg-glass-bg/95 backdrop-blur-xl lg:hidden"
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-glass-border px-6 py-5">
@@ -84,7 +106,7 @@ export function AdminMobileSidebar() {
                       "flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-all",
                       active
                         ? "bg-accent-muted font-medium text-accent"
-                        : "text-text-secondary hover:bg-white/5 hover:text-text-primary",
+                        : "text-text-secondary hover:bg-glass-hover hover:text-text-primary",
                     )}
                   >
                     <Icon className="h-5 w-5" />
@@ -115,7 +137,7 @@ export function AdminMobileSidebar() {
                 {ADMIN_DASHBOARD.logoutLabel}
               </Link>
             </div>
-          </div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

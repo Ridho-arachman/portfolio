@@ -1,6 +1,6 @@
 // _components/ui/glass-card.tsx
 import { cn } from "@/lib/utils";
-import { type HTMLMotionProps } from "framer-motion";
+import { type HTMLMotionProps } from "motion/react";
 import * as m from "motion/react-m";
 import * as React from "react";
 
@@ -19,9 +19,9 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
         className={cn(
-          // Base glassmorphism styles
-          "relative rounded-xl border border-white/8",
-          "bg-white/3 backdrop-blur-xl",
+          // Base glassmorphism styles (theme-aware via --color-glass-* tokens)
+          "relative rounded-xl border border-glass-border",
+          "bg-glass-bg backdrop-blur-xl",
           "transition-all duration-300 ease-out",
 
           // Variant: default
@@ -30,7 +30,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           // Variant: hover - lift effect
           variant === "hover" && [
             "hover:-translate-y-2 hover:shadow-2xl",
-            "hover:border-white/12 hover:bg-white/5",
+            "hover:border-accent/40 hover:bg-glass-hover",
           ],
 
           // Variant: accent - subtle violet border
@@ -45,7 +45,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         {...props}
       >
         {/* Inner gradient overlay for depth */}
-        <div className="absolute inset-0 rounded-xl bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-xl bg-linear-to-br from-foreground/5 to-transparent pointer-events-none" />
 
         {/* Content */}
         <m.div className="relative z-10">{children}</m.div>

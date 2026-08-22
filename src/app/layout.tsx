@@ -51,7 +51,7 @@ export default function RootLayout({
           >
             <LazyMotion features={domAnimation}>
               {/* Background grid pattern */}
-              <div className="fixed inset-0 bg-grid-web3 opacity-30 pointer-events-none" />
+              <div className="fixed inset-0 bg-grid-elegant opacity-30 pointer-events-none" />
 
               {/* Radial gradient glow at top */}
               <div className="fixed top-0 left-1/2 -translate-x-1/2 w-200 h-150 bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none" />
