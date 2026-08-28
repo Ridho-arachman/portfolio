@@ -121,6 +121,8 @@ test.describe("interaksi mobile nav @ 360px", () => {
 
     const menu = page.locator("#mobile-menu");
     await expect(menu).toBeVisible();
+    // Tunggu animasi motion selesai (opacity 1 → y settle ke 80) agar boundingBox akurat.
+    await expect(menu).toHaveCSS("opacity", "1");
 
     // Menu harus membentang selebar viewport dan menempel di bawah header 80px.
     const menuBox = await menu.boundingBox();
