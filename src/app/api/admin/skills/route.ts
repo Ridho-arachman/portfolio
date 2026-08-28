@@ -1,28 +1,12 @@
-import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
-import {
-  successResponse,
+import {successResponse,
   errorResponse,
   paginatedResponse,
-  parsePagination,
-} from "@/lib/api-helpers";
+  parsePagination, errorResponseFrom } from "@/lib/api-helpers";
+import { skillCreateSchema } from "@/schema/skill";
 
 export const dynamic = "force-dynamic";
-
-const createSkillSchema = z.object({
-  name: z.string().min(1),
-  iconUrl: z.string().optional(),
-  category: z.enum([
-    "FRONTEND",
-    "BACKEND",
-    "DATABASE",
-    "DEVOPS_TOOLS",
-    "SOFT_SKILL",
-  ]),
-  proficiency: z.number().min(1).max(100),
-  order: z.number(),
-});
 
 export async function GET(req: Request) {
   try {
@@ -47,10 +31,7 @@ export async function GET(req: Request) {
     const totalPages = Math.ceil(total / pageSize);
     return paginatedResponse(data, { page, pageSize, total, totalPages });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Skill operation failed");
   }
 }
 
@@ -58,7 +39,7 @@ export async function POST(req: Request) {
   try {
     await requireAdminSession();
     const body = await req.json();
-    const parsed = createSkillSchema.safeParse(body);
+    const parsed = skillCreateSchema.safeParse(body);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
@@ -69,7 +50,7 @@ export async function POST(req: Request) {
     const skill = await prisma.skill.create({
       data: {
         name: data.name,
-        iconUrl: data.iconUrl || null,
+        iconName: data.iconName || null,
         category: data.category,
         proficiency: data.proficiency,
         order: data.order,
@@ -78,9 +59,6 @@ export async function POST(req: Request) {
 
     return successResponse(skill, 201);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Skill operation failed");
   }
 }
