@@ -109,6 +109,7 @@ model Category {
   projects Project[]
 
   @@index([slug])
+  @@map("category")
 }
 
 model Project {
@@ -135,6 +136,7 @@ model Project {
   @@index([isPublished])
   @@index([categoryId])
   @@index([order])
+  @@map("project")
 }
 
 // =============================================================================
@@ -153,12 +155,13 @@ model Message {
 
   @@index([status])
   @@index([createdAt(sort: Desc)])
+  @@map("message")
 }
 
 model Skill {
   id          String        @id @default(cuid())
   name        String        @unique // e.g., "React", "PostgreSQL"
-  iconUrl     String? // URL icon (bisa dari Simple Icons atau local)
+  iconName    String? // Nama komponen react-icons (mis. "SiReact", "SiTypescript")
   category    SkillCategory
   proficiency Int // 1-100 (untuk animasi progress bar di UI)
   order       Int           @default(0)
@@ -167,6 +170,7 @@ model Skill {
 
   @@index([category])
   @@index([order])
+  @@map("skill")
 }
 
 model Experience {
@@ -192,6 +196,7 @@ model Experience {
   @@index([type])
   @@index([order])
   @@index([isPublished])
+  @@map("experience")
 }
 
 // =============================================================================
@@ -215,6 +220,7 @@ model Visit {
   @@index([countryCode])
   @@index([path])
   @@index([sessionId])
+  @@map("visit")
 }
 
 // =============================================================================
