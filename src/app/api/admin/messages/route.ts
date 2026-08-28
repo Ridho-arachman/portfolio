@@ -1,9 +1,9 @@
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import {
-  errorResponse,
   paginatedResponse,
   parsePagination,
+  errorResponseFrom,
 } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
@@ -48,9 +48,6 @@ export async function GET(req: Request) {
     const totalPages = Math.ceil(total / pageSize);
     return paginatedResponse(data, { page, pageSize, total, totalPages });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Message operation failed");
   }
 }

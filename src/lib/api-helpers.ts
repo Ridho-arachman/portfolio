@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { PaginationMeta } from "@/types/api";
+import { handleApiError } from "@/lib/prisma-errors";
 
 export function successResponse<T>(data: T, status = 200) {
   return NextResponse.json({ data }, { status });
@@ -7,6 +8,19 @@ export function successResponse<T>(data: T, status = 200) {
 
 export function errorResponse(error: string, status = 400) {
   return NextResponse.json({ error }, { status });
+}
+
+/**
+ * Convert a thrown error into a safe JSON error response.
+ * Maps Prisma error codes and the auth guard to proper statuses;
+ * everything else becomes `fallbackMessage` with status 500.
+ */
+export function errorResponseFrom(
+  error: unknown,
+  fallbackMessage = "Internal Server Error",
+) {
+  const info = handleApiError(error, fallbackMessage);
+  return errorResponse(info.message, info.status);
 }
 
 export function paginatedResponse<T>(

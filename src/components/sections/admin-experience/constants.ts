@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export const EXPERIENCE_TYPES = [
   { value: "Work", label: "Work", badgeClass: "bg-accent-muted text-accent" },
   {
@@ -33,36 +31,6 @@ export interface AdminExperience {
   createdAt: string;
   updatedAt: string;
 }
-
-export const experienceFormSchema = z.object({
-  role: z.string().min(3, "Role must be at least 3 characters"),
-  slug: z
-    .string()
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug: lowercase letters, numbers and hyphens only (e.g. my-role)",
-    ),
-  company: z.string().min(2, "Company must be at least 2 characters"),
-  type: z.enum(["Work", "Organization", "Freelance"]),
-  period: z.string().min(2, "Period must be at least 2 characters"),
-  location: z.string().min(2, "Location must be at least 2 characters"),
-  thumbnail: z.url("Enter a valid image URL"),
-  gallery: z.array(z.string()),
-  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
-  description: z
-    .string()
-    .refine(
-      (value) =>
-        value
-          .split("\n")
-          .some((line) => line.trim().length > 0),
-      "Add at least one achievement",
-    ),
-  isPublished: z.boolean().default(true),
-  order: z.number().int().min(0),
-});
-
-export type ExperienceFormValues = z.infer<typeof experienceFormSchema>;
 
 export const ADMIN_EXPERIENCE = {
   // List page

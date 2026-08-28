@@ -1,34 +1,10 @@
-import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
+import { slugify } from "@/utils/slug";
+import { experienceUpdateSchema } from "@/schema/experience";
 import { requireAdminSession } from "@/lib/session";
-import { successResponse, errorResponse } from "@/lib/api-helpers";
+import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
-
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-const updateExperienceSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(3).optional(),
-  company: z.string().min(2).optional(),
-  logoUrl: z.string().optional(),
-  thumbnail: z.string().optional(),
-  type: z.enum(["WORK", "ORGANIZATION", "FREELANCE", "EDUCATION", "CERTIFICATION"]).optional(),
-  location: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  isCurrent: z.boolean().optional(),
-  isPublished: z.boolean().optional(),
-  description: z.array(z.string()).optional(),
-  gallery: z.array(z.string()).optional(),
-  order: z.number().optional(),
-});
 
 export async function GET(
   _req: Request,
@@ -46,10 +22,7 @@ export async function GET(
 
     return successResponse(experience);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Experience operation failed");
   }
 }
 
@@ -61,7 +34,7 @@ export async function PUT(
     await requireAdminSession();
     const { id } = await params;
     const json = await req.json();
-    const parsed = updateExperienceSchema.safeParse(json);
+    const parsed = experienceUpdateSchema.safeParse(json);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.message, 400);
@@ -81,10 +54,7 @@ export async function PUT(
 
     return successResponse(experience);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Experience operation failed");
   }
 }
 
@@ -100,9 +70,6 @@ export async function DELETE(
 
     return successResponse({ deleted: true });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Experience operation failed");
   }
 }

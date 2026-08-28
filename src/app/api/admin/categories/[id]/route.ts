@@ -1,24 +1,10 @@
-import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
+import { slugify } from "@/utils/slug";
+import { categoryUpdateSchema } from "@/schema/category";
 import { requireAdminSession } from "@/lib/session";
-import { successResponse, errorResponse } from "@/lib/api-helpers";
+import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-const updateCategorySchema = z.object({
-  name: z.string().min(1).optional(),
-  slug: z.string().optional(),
-  description: z.string().optional(),
-  order: z.number().optional(),
-});
 
 export async function GET(
   _req: Request,
@@ -36,10 +22,7 @@ export async function GET(
 
     return successResponse(category);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Category operation failed");
   }
 }
 
@@ -51,7 +34,7 @@ export async function PUT(
     await requireAdminSession();
     const { id } = await params;
     const body = await req.json();
-    const parsed = updateCategorySchema.safeParse(body);
+    const parsed = categoryUpdateSchema.safeParse(body);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
@@ -64,7 +47,7 @@ export async function PUT(
 
     const data = parsed.data;
     const slug =
-      data.slug || (data.name ? generateSlug(data.name) : undefined);
+      data.slug || (data.name ? slugify(data.name) : undefined);
 
     const category = await prisma.category.update({
       where: { id },
@@ -80,10 +63,7 @@ export async function PUT(
 
     return successResponse(category);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Category operation failed");
   }
 }
 
@@ -104,9 +84,6 @@ export async function DELETE(
 
     return successResponse({ message: "Category deleted" });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Category operation failed");
   }
 }

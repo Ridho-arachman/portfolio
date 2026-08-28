@@ -10,6 +10,7 @@ describe("dashboard constants consistency", () => {
       "Categories",
       "Experience",
       "Certificates",
+      "Skills",
       "Messages",
       "Settings",
     ]);

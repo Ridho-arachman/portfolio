@@ -1,13 +1,9 @@
-import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
+import { messageStatusUpdateSchema } from "@/schema/message";
 import { requireAdminSession } from "@/lib/session";
-import { successResponse, errorResponse } from "@/lib/api-helpers";
+import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
-
-const updateMessageSchema = z.object({
-  status: z.enum(["NEW", "READ", "REPLIED", "ARCHIVED"]),
-});
 
 export async function GET(
   _req: Request,
@@ -25,10 +21,7 @@ export async function GET(
 
     return successResponse(message);
   } catch (error) {
-    const messageError =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = messageError === "Unauthorized" ? 401 : 500;
-    return errorResponse(messageError, status);
+    return errorResponseFrom(error, "Message operation failed");
   }
 }
 
@@ -40,7 +33,7 @@ export async function PUT(
     await requireAdminSession();
     const { id } = await params;
     const body = await req.json();
-    const parsed = updateMessageSchema.safeParse(body);
+    const parsed = messageStatusUpdateSchema.safeParse(body);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
@@ -58,10 +51,7 @@ export async function PUT(
 
     return successResponse(message);
   } catch (error) {
-    const messageError =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = messageError === "Unauthorized" ? 401 : 500;
-    return errorResponse(messageError, status);
+    return errorResponseFrom(error, "Message operation failed");
   }
 }
 
@@ -82,9 +72,6 @@ export async function DELETE(
 
     return successResponse({ message: "Message deleted" });
   } catch (error) {
-    const messageError =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = messageError === "Unauthorized" ? 401 : 500;
-    return errorResponse(messageError, status);
+    return errorResponseFrom(error, "Message operation failed");
   }
 }

@@ -1,5 +1,8 @@
-// lib/client-ip.ts
-// Ekstraksi IP klien dari header proxy (x-forwarded-for, x-real-ip, cf-connecting-ip).
+/**
+ * Extract the client IP from proxy headers
+ * (x-forwarded-for, cf-connecting-ip, x-real-ip).
+ * Returns "unknown" when no header carries an address.
+ */
 export function getClientIp(headers: Headers): string {
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) {

@@ -10,11 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TurnstileWidget } from "@/components/ui/turnstile";
 import { zodResolver } from "@/lib/zod-resolver";
-import {
-  CONTACT_FORM_FIELDS,
-  contactFormSchema,
-  type ContactFormValues,
-} from "./constants";
+import { contactFormSchema, type ContactFormValues } from "@/schema/contact";
+import { CONTACT_FORM_FIELDS } from "./constants";
 
 function translateSubmitError(code?: string, status?: number): string {
   if (status === 429 || code === "RATE_LIMITED") {

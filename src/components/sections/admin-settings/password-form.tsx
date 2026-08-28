@@ -6,10 +6,10 @@ import { zodResolver } from "@/lib/zod-resolver";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  ADMIN_SETTINGS,
   passwordSchema,
   type PasswordFormValues,
-} from "./constants";
+} from "@/schema/settings";
+import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
 import { SettingsSection } from "./settings-section";
 

@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     "web3",
   ],
   authors: [{ name: env.NEXT_PUBLIC_AUTHOR_NAME }],
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  icons: { icon: "/logo.png" },
   openGraph: {
     type: "website",
     locale: "id_ID",

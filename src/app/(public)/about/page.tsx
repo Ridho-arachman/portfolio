@@ -3,18 +3,17 @@ import { AboutHeroSection } from "@/components/sections/about-hero";
 import { AboutSection } from "@/components/sections/about";
 import { CoreValuesSection } from "@/components/sections/core-values";
 import { ExperienceSection } from "@/components/sections/experience";
-import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
-import { getEnv } from "@/lib/env";
+import { buildMetadata } from "@/lib/seo";
 
-const env = getEnv();
 
-export const metadata: Metadata = {
-  title: `About Me | ${env.NEXT_PUBLIC_SITE_NAME}`,
+export const metadata = buildMetadata({
+  title: "About Me",
   description:
     "Learn more about my background, core values, experience, and the technologies I work with.",
-};
+  path: "/about",
+});
 
 export default async function AboutPage() {
   const rawExperiences = await prisma.experience.findMany({

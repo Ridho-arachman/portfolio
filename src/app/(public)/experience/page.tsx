@@ -1,19 +1,20 @@
 import prisma from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { ExperienceListItem } from "@/components/sections/experience-list/experience-list-item";
 import { PageHero } from "@/components/sections/page-hero";
-import { Metadata } from "next";
 import { ServerPagination } from "@/components/ui/server-pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Briefcase } from "lucide-react";
 
 const PAGE_SIZE = 6;
 
-export const metadata: Metadata = {
-  title: "All Experiences | Ridho.dev",
+export const metadata = buildMetadata({
+  title: "Experience",
   description:
     "Daftar lengkap pengalaman profesional, peran kepemimpinan, dan pencapaian saya.",
-};
+  path: "/experience",
+});
 
 export default async function ExperienceListPage({
   searchParams,

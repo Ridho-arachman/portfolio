@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { contactFormSchema } from "@/components/sections/contact/constants";
-import { loginFormSchema } from "@/components/sections/admin-login/constants";
-import { certificateFormSchema } from "@/components/sections/admin-certificates/constants";
-import { experienceFormSchema } from "@/components/sections/admin-experience/constants";
-import { passwordSchema } from "@/components/sections/admin-settings/constants";
+import { contactFormSchema } from "@/schema/contact";
+import { loginFormSchema } from "@/schema/login";
+import { certificateFormSchema } from "@/schema/certificate";
+import { experienceFormSchema } from "@/schema/experience";
+import { passwordSchema } from "@/schema/settings";
 
 describe("contactFormSchema", () => {
   const valid = {

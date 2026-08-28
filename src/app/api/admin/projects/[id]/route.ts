@@ -1,35 +1,11 @@
-import { z } from "zod/v4";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
-import { successResponse, errorResponse } from "@/lib/api-helpers";
+import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
+import { projectUpdateSchema } from "@/schema/project";
 
 export const dynamic = "force-dynamic";
-
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-const updateProjectSchema = z.object({
-  title: z.string().min(3).optional(),
-  slug: z.string().optional(),
-  description: z.string().min(10).optional(),
-  thumbnail: z.string().url().optional(),
-  liveUrl: z.string().optional(),
-  repoUrl: z.string().optional(),
-  technologies: z.array(z.string()).optional(),
-  gallery: z.array(z.string()).optional(),
-  role: z.string().optional(),
-  year: z.string().optional(),
-  highlights: z.array(z.string()).optional(),
-  isPublished: z.boolean().optional(),
-  order: z.number().optional(),
-  categoryId: z.string().optional(),
-});
 
 export async function GET(
   _req: Request,
@@ -50,10 +26,7 @@ export async function GET(
 
     return successResponse(project);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Project operation failed");
   }
 }
 
@@ -65,7 +38,7 @@ export async function PUT(
     await requireAdminSession();
     const { id } = await params;
     const body = await req.json();
-    const parsed = updateProjectSchema.safeParse(body);
+    const parsed = projectUpdateSchema.safeParse(body);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
@@ -78,7 +51,7 @@ export async function PUT(
 
     const data = parsed.data;
     const slug =
-      data.slug || (data.title ? generateSlug(data.title) : undefined);
+      data.slug || (data.title ? slugify(data.title) : undefined);
 
     const project = await prisma.project.update({
       where: { id },
@@ -116,10 +89,7 @@ export async function PUT(
 
     return successResponse(project);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Project operation failed");
   }
 }
 
@@ -143,9 +113,6 @@ export async function DELETE(
 
     return successResponse({ message: "Project deleted" });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Project operation failed");
   }
 }

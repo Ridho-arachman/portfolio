@@ -10,19 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@/lib/zod-resolver";
 import {
-  ADMIN_CATEGORIES,
   categoryFormSchema,
-  type AdminCategory,
   type CategoryFormValues,
-} from "./constants";
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+} from "@/schema/category";
+import { ADMIN_CATEGORIES, type AdminCategory } from "./constants";
+import { slugify } from "@/utils/slug";
 
 export function CategoryForm({
   mode,

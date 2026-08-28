@@ -2,21 +2,20 @@ import { CertificateCard } from "@/components/sections/certificates/certificate-
 import { mapCertificateToData } from "@/components/sections/certificates/constants";
 import { PageHero } from "@/components/sections/page-hero";
 import prisma from "@/lib/prisma";
-import { Metadata } from "next";
-import { getEnv } from "@/lib/env";
+import { buildMetadata } from "@/lib/seo";
 import { ServerPagination } from "@/components/ui/server-pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Award } from "lucide-react";
 
-const env = getEnv();
 
 const PAGE_SIZE = 6;
 
-export const metadata: Metadata = {
-  title: `All Certificates | ${env.NEXT_PUBLIC_SITE_NAME}`,
+export const metadata = buildMetadata({
+  title: "Certificates",
   description:
     "Daftar lengkap sertifikasi profesional dan kredensial yang saya miliki.",
-};
+  path: "/certificates",
+});
 
 export default async function CertificatesListPage({
   searchParams,

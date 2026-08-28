@@ -1,34 +1,10 @@
-import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
+import { slugify } from "@/utils/slug";
+import { certificateUpdateSchema } from "@/schema/certificate";
 import { requireAdminSession } from "@/lib/session";
-import { successResponse, errorResponse } from "@/lib/api-helpers";
+import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
-
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-const updateCertificateSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(3).optional(),
-  issuer: z.string().min(2).optional(),
-  logoUrl: z.string().optional(),
-  thumbnail: z.string().optional(),
-  gallery: z.array(z.string()).optional(),
-  credentialId: z.string().optional(),
-  credentialUrl: z.string().optional(),
-  issueDate: z.string().optional(),
-  expiryDate: z.string().optional(),
-  skills: z.array(z.string()).optional(),
-  summary: z.array(z.string()).optional(),
-  isPublished: z.boolean().optional(),
-  order: z.number().optional(),
-});
 
 export async function GET(
   _req: Request,
@@ -46,10 +22,7 @@ export async function GET(
 
     return successResponse(certificate);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Certificate operation failed");
   }
 }
 
@@ -61,7 +34,7 @@ export async function PUT(
     await requireAdminSession();
     const { id } = await params;
     const body = await req.json();
-    const parsed = updateCertificateSchema.safeParse(body);
+    const parsed = certificateUpdateSchema.safeParse(body);
 
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
@@ -74,7 +47,7 @@ export async function PUT(
 
     const data = parsed.data;
     const slug =
-      data.slug || (data.title ? generateSlug(data.title) : undefined);
+      data.slug || (data.title ? slugify(data.title) : undefined);
 
     const certificate = await prisma.certificate.update({
       where: { id },
@@ -110,10 +83,7 @@ export async function PUT(
 
     return successResponse(certificate);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Certificate operation failed");
   }
 }
 
@@ -134,9 +104,6 @@ export async function DELETE(
 
     return successResponse({ message: "Certificate deleted" });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return errorResponse(message, status);
+    return errorResponseFrom(error, "Certificate operation failed");
   }
 }

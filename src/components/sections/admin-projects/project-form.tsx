@@ -14,19 +14,11 @@ import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
-  ADMIN_PROJECTS,
   projectFormSchema,
-  type AdminProject,
   type ProjectFormValues,
-} from "./constants";
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+} from "@/schema/project";
+import { ADMIN_PROJECTS, type AdminProject } from "./constants";
+import { slugify } from "@/utils/slug";
 
 function generateTempId(): string {
   return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;

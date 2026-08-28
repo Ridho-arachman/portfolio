@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Settings,
+  Wrench,
 } from "lucide-react";
 
 export interface AdminNavLink {
@@ -56,6 +57,7 @@ export const ADMIN_NAV_LINKS: AdminNavLink[] = [
   { label: "Categories", href: "/admin/categories", icon: FolderTree },
   { label: "Experience", href: "/admin/experience", icon: Briefcase },
   { label: "Certificates", href: "/admin/certificates", icon: Award },
+  { label: "Skills", href: "/admin/skills", icon: Wrench },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];

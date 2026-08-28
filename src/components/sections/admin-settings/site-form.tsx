@@ -5,11 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ADMIN_SETTINGS,
-  siteSchema,
-  type SiteFormValues,
-} from "./constants";
+import { siteSchema, type SiteFormValues } from "@/schema/settings";
+import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
 import { useSettingsStore } from "./settings-store";
 import { SettingsSection } from "./settings-section";

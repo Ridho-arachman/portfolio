@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { AdminSidebar } from "@/components/sections/admin-dashboard";
 import { AdminMobileSidebar } from "@/components/sections/admin-dashboard/admin-mobile-sidebar";
 import { AdminSidebarProvider } from "@/components/sections/admin-dashboard/admin-sidebar-context";
 import { AdminTopbarWrapper } from "@/components/sections/admin-dashboard/admin-topbar-wrapper";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  robots: { index: false, follow: false },
+};
 
 export default function AdminDashboardLayout({
   children,

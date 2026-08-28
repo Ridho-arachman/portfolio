@@ -1,14 +1,13 @@
 import { ContactSection } from "@/components/sections/contact";
-import { Metadata } from "next";
-import { getEnv } from "@/lib/env";
+import { buildMetadata } from "@/lib/seo";
 
-const env = getEnv();
 
-export const metadata: Metadata = {
-  title: `Contact | ${env.NEXT_PUBLIC_SITE_NAME}`,
+export const metadata = buildMetadata({
+  title: "Contact",
   description:
     "Get in touch with me — open to new opportunities, collaborations, and project discussions.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

@@ -2,6 +2,7 @@ import { ProjectDetail } from "@/components/sections/project-detail";
 import { getAdjacentProjects } from "@/components/sections/project-detail/use-project-detail";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import prisma from "@/lib/prisma";
+import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -42,18 +43,15 @@ export async function generateMetadata({
   const project = await fetchProject(slug);
 
   if (!project) {
-    return { title: "Project Not Found" };
+    return buildNotFoundMetadata("Project");
   }
 
-  return {
-    title: `${project.title} | Ridho.dev`,
-    description: project.description,
-    openGraph: {
-      title: project.title,
-      description: project.description,
-      images: [{ url: project.thumbnail, width: 800, height: 600 }],
-    },
-  };
+  return buildMetadata({
+    title: project.title,
+    description: project.description.slice(0, 155),
+    path: `/projects/${slug}`,
+    ogImage: project.thumbnail || undefined,
+  });
 }
 
 export default async function ProjectDetailPage({

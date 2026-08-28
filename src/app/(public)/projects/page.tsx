@@ -1,22 +1,21 @@
 import { ProjectCard } from "@/components/sections/projects/project-card";
 import { PageHero } from "@/components/sections/page-hero";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
-import { Metadata } from "next";
 import prisma from "@/lib/prisma";
-import { getEnv } from "@/lib/env";
+import { buildMetadata } from "@/lib/seo";
 import { ServerPagination } from "@/components/ui/server-pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FolderKanban } from "lucide-react";
 
-const env = getEnv();
 
 const PAGE_SIZE = 6;
 
-export const metadata: Metadata = {
-  title: `All Projects | ${env.NEXT_PUBLIC_SITE_NAME}`,
+export const metadata = buildMetadata({
+  title: "Projects",
   description:
     "Proyek pilihan — portofolio web, dashboard SaaS, dan API yang scalable dengan arsitektur modern.",
-};
+  path: "/projects",
+});
 
 export default async function ProjectsPage({
   searchParams,

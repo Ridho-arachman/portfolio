@@ -9,7 +9,8 @@ import {
   useCreateExperience,
   useUpdateExperience,
 } from "@/hooks/use-experience";
-import { ADMIN_EXPERIENCE, type ExperienceFormValues } from "./constants";
+import type { ExperienceFormValues } from "@/schema/experience";
+import { ADMIN_EXPERIENCE } from "./constants";
 import { ExperienceForm } from "./experience-form";
 
 export function ExperienceFormPage({

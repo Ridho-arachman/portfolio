@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export interface AdminCertificate {
   id: string;
   slug: string;
@@ -19,35 +17,6 @@ export interface AdminCertificate {
   createdAt: string;
   updatedAt: string;
 }
-
-export const certificateFormSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  slug: z
-    .string()
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug: lowercase letters, numbers and hyphens only (e.g. my-certificate)",
-    ),
-  issuer: z.string().min(2, "Issuer must be at least 2 characters"),
-  issueDate: z.string().min(3, "Issue date must be at least 3 characters"),
-  period: z.string().min(2, "Period must be at least 2 characters"),
-  credentialId: z.union([z.string().min(1), z.literal("")]).optional(),
-  credentialUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
-  thumbnail: z.url("Enter a valid image URL"),
-  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
-  gallery: z.array(z.string()),
-  skills: z.string(),
-  summary: z
-    .string()
-    .refine(
-      (value) => value.split("\n").some((line) => line.trim().length > 0),
-      "Add at least one summary point",
-    ),
-  isPublished: z.boolean(),
-  order: z.coerce.number().int("Order must be a whole number").min(0),
-});
-
-export type CertificateFormValues = z.infer<typeof certificateFormSchema>;
 
 export const ADMIN_CERTIFICATES = {
   title: "Certificates",

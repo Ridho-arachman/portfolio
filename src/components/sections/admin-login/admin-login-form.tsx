@@ -13,7 +13,8 @@ import { MagneticButton } from "@/components/ui/magnetic-button";
 import { TurnstileWidget } from "@/components/ui/turnstile";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@/lib/zod-resolver";
-import { ADMIN_LOGIN, loginFormSchema, type LoginFormValues } from "./constants";
+import { loginFormSchema, type LoginFormValues } from "@/schema/login";
+import { ADMIN_LOGIN } from "./constants";
 import type { Variants } from "framer-motion";
 
 const containerVariants: Variants = {

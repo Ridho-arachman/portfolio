@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export interface AdminProject {
   id: string;
   slug: string;
@@ -15,26 +13,6 @@ export interface AdminProject {
   createdAt: string;
   updatedAt: string;
 }
-
-export const projectFormSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  slug: z
-    .string()
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug: lowercase letters, numbers and hyphens only (e.g. my-project)",
-    ),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  thumbnail: z.url("Enter a valid image URL"),
-  liveUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
-  repoUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
-  technologies: z.string(),
-  gallery: z.array(z.string()),
-  isPublished: z.boolean(),
-  order: z.coerce.number().int("Order must be a whole number").min(0),
-});
-
-export type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
 export const ADMIN_PROJECTS = {
   title: "Projects",

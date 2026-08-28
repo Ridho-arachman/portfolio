@@ -4,6 +4,7 @@ import {
   type CertificateListData,
 } from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
+import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -54,11 +55,13 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const cert = await getCertificate(slug);
-  if (!cert) return { title: "Certificate Not Found" };
-  return {
-    title: `${cert.title} | Ridho.dev`,
-    description: cert.summary.join(" "),
-  };
+  if (!cert) return buildNotFoundMetadata("Certificate");
+  return buildMetadata({
+    title: cert.title,
+    description: cert.summary.join(" ").slice(0, 155),
+    path: `/certificates/${slug}`,
+    ogImage: cert.logoUrl || cert.thumbnail || undefined,
+  });
 }
 
 export default async function CertificateDetailPage({ params }: PageProps) {

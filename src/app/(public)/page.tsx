@@ -6,6 +6,17 @@ import { HeroSection } from "@/components/sections/hero";
 import { ProjectsSection } from "@/components/sections/projects";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import prisma from "@/lib/prisma";
+import { getClientEnv } from "@/lib/env";
+import { buildMetadata } from "@/lib/seo";
+
+const env = getClientEnv();
+
+export const metadata = buildMetadata({
+  title: `${env.NEXT_PUBLIC_SITE_NAME} | ${env.NEXT_PUBLIC_SITE_TAGLINE}`,
+  description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
+  path: "/",
+  absolute: true,
+});
 
 export default async function Home() {
   const [certificates, projects] = await Promise.all([

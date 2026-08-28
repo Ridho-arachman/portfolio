@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export interface AdminCategory {
   id: string;
   name: string;
@@ -9,20 +7,6 @@ export interface AdminCategory {
   createdAt: string;
   updatedAt: string;
 }
-
-export const categoryFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  slug: z
-    .string()
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug: lowercase letters, numbers and hyphens only (e.g. web-dev)",
-    ),
-  description: z.union([z.string().min(1), z.literal("")]).optional(),
-  order: z.coerce.number().int("Order must be a whole number").min(0),
-});
-
-export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 
 export const ADMIN_CATEGORIES = {
   title: "Categories",

@@ -14,21 +14,16 @@ import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
+  experienceFormSchema,
+  type ExperienceFormValues,
+} from "@/schema/experience";
+import { slugify } from "@/utils/slug";
+import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
-  experienceFormSchema,
   type AdminExperience,
-  type ExperienceFormValues,
   type ExperienceType,
 } from "./constants";
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function generateTempId(): string {
   return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;

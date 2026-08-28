@@ -2,19 +2,12 @@
 // Endpoint form kontak: validasi zod + CAPTCHA Turnstile + rate limit per IP
 // lalu simpan pesan ke tabel Message.
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { consumeRateLimit } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/client-ip";
-
-const contactSchema = z.object({
-  name: z.string().min(2).max(100),
-  email: z.email("Please enter a valid email address"),
-  subject: z.string().min(3).max(150),
-  content: z.string().min(10).max(5000),
-  captchaToken: z.string().optional(),
-});
+import { getClientIp } from "@/utils/client-ip";
+import { handleApiError } from "@/lib/prisma-errors";
+import { contactApiSchema } from "@/schema/contact";
 
 const CONTACT_RATE_LIMIT_MAX = 3;
 const CONTACT_RATE_LIMIT_WINDOW_SECONDS = 60;
@@ -60,7 +53,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "INVALID_JSON" }, { status: 400 });
   }
 
-  const parsed = contactSchema.safeParse(body);
+  const parsed = contactApiSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "VALIDATION_ERROR", details: parsed.error.flatten() },
@@ -76,8 +69,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, email, subject, content } = parsed.data;
-  await prisma.message.create({ data: { name, email, subject, content } });
+  try {
+    const { name, email, subject, content } = parsed.data;
+    await prisma.message.create({ data: { name, email, subject, content } });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "INTERNAL_SERVER_ERROR" },
+      { status: handleApiError(error).status },
+    );
+  }
 
   return NextResponse.json({ success: true });
 }
