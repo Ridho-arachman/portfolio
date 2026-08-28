@@ -56,3 +56,6 @@ next-env.d.ts
 graphify-out/
 
 /src/generated/prisma
+
+.vercel
+.env*
