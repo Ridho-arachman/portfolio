@@ -4,20 +4,13 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useState } from "react";
 import {
-  GeoJSON,
   MapContainer,
   Marker,
   TileLayer,
   Tooltip,
   useMap,
 } from "react-leaflet";
-import type { GeoJsonObject } from "geojson";
 import { Minus, Plus, RotateCcw } from "lucide-react";
-import {
-  countryFeaturesByCode,
-  worldCountries,
-  worldCountryFeatures,
-} from "@/lib/geo";
 import type { VisitorCountry } from "./constants";
 import "./visitor-map-leaflet.css";
 
@@ -28,9 +21,6 @@ const WORLD_BOUNDS = L.latLngBounds([
   [85, 180],
 ]);
 
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 export interface VisitorMapLeafletProps {
   countries: VisitorCountry[];
@@ -43,14 +33,6 @@ export interface VisitorMapLeafletProps {
 
 function pct(visits: number, total: number) {
   return total > 0 ? (visits / total) * 100 : 0;
-}
-
-function resolveVar(name: string, fallback: string) {
-  if (typeof window === "undefined") return fallback;
-  const value = getComputedStyle(document.documentElement)
-    .getPropertyValue(name)
-    .trim();
-  return value || fallback;
 }
 
 function cityBadgeIcon(visits: number) {
@@ -84,6 +66,7 @@ function DynamicMinZoom() {
   }, [map]);
   return null;
 }
+
 
 function FitBounds({ bounds }: { bounds: L.LatLngBounds | null }) {
   const map = useMap();
@@ -152,9 +135,7 @@ export function VisitorMapLeaflet({
   onSelectCountry,
   totalVisits,
 }: VisitorMapLeafletProps) {
-  const accent = resolveVar("--color-accent", "#a78bfa");
-
-  const visibleCountries = useMemo(() => {
+    const visibleCountries = useMemo(() => {
     if (selectedCode) {
       const selected = byCode.get(selectedCode);
       return selected ? [selected] : [];
@@ -175,9 +156,10 @@ export function VisitorMapLeaflet({
 
   const fitBounds = useMemo<L.LatLngBounds | null>(() => {
     if (selectedCode) {
-      const feature = countryFeaturesByCode.get(selectedCode);
-      if (feature) {
-        return (L.geoJSON(feature as never) as L.GeoJSON).getBounds();
+      const country = byCode.get(selectedCode);
+      if (country && country.cities.length > 0) {
+        const pts = country.cities.map(c => [c.lat, c.lng] as [number, number]);
+        return L.latLngBounds(pts);
       }
       return null;
     }
@@ -188,45 +170,6 @@ export function VisitorMapLeaflet({
     );
     return points.length > 0 ? L.latLngBounds(points) : null;
   }, [visibleCountries, selectedCode]);
-
-  const codeByFeatureId = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const world of worldCountries) {
-      if (world.code) map.set(world.id, world.code);
-    }
-    return map;
-  }, []);
-
-  const countryLayerData = useMemo(
-    () =>
-      ({
-        type: "FeatureCollection",
-        features: worldCountryFeatures,
-      }) as unknown as GeoJsonObject,
-    [],
-  );
-
-  const countryStyle = (feature?: unknown) => {
-    const code = codeByFeatureId.get(
-      String((feature as { id?: string | number } | undefined)?.id ?? ""),
-    );
-    const country = code ? (byCode.get(code) ?? null) : null;
-    if (!country) {
-      return { color: "rgba(255,255,255,0.08)", weight: 0.4, fillOpacity: 0 };
-    }
-    const isSelected = code === selectedCode;
-    const dimmed =
-      activeRegion !== "All" &&
-      country.region !== activeRegion;
-    const share = country.visits / totalVisits;
-    const opacity = dimmed ? 0.03 : 0.1 + 0.3 * Math.min(share * 22, 1);
-    return {
-      color: accent,
-      weight: isSelected ? 1.5 : 0.5,
-      fillColor: accent,
-      fillOpacity: isSelected ? 0.45 : opacity,
-    };
-  };
 
   return (
     <div className="visitor-leaflet relative h-full w-full">
@@ -242,28 +185,11 @@ export function VisitorMapLeaflet({
         className="h-full w-full"
       >
         <TileLayer
-          url={TILE_URL}
-          attribution={TILE_ATTRIBUTION}
-          subdomains="abcd"
-          noWrap
-        />
-
-        <GeoJSON
-          data={countryLayerData}
-          style={countryStyle}
-          eventHandlers={{
-            click: (event) => {
-              const code = codeByFeatureId.get(
-                String((event.sourceTarget?.feature as { id?: string | number })
-                  ?.id ?? ""),
-              );
-              if (code) {
-                event.originalEvent.stopPropagation();
-                onSelectCountry(code);
-              }
-            },
-          }}
-        />
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            subdomains="abc"
+            maxZoom={19}
+          />
 
         <ZoomedChildren minZoom={MIN_BADGE_ZOOM}>
           {visibleCountries.map((country) =>
