@@ -3,9 +3,11 @@
 import { LogOut, ShieldCheck } from "lucide-react";
 import * as m from "motion/react-m";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import type { Variants } from "motion/react";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/lib/auth-client";
 import {
   ADMIN_DASHBOARD,
   ADMIN_NAV_LINKS,
@@ -28,6 +30,19 @@ const navItemVariants: Variants = {
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      router.push("/admin/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
 <m.aside
@@ -103,14 +118,15 @@ export function AdminSidebar() {
             <p className="truncate text-xs text-text-muted">{ADMIN_USER.role}</p>
           </div>
         </div>
-        <Link
-          href="/admin/login"
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
           title={ADMIN_DASHBOARD.logoutLabel}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-3 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-3 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent disabled:opacity-50"
         >
           <LogOut className="h-4 w-4" />
-          {ADMIN_DASHBOARD.logoutLabel}
-        </Link>
+          {isLoggingOut ? "Signing out..." : ADMIN_DASHBOARD.logoutLabel}
+        </button>
       </div>
     </m.aside>
   );

@@ -4,9 +4,10 @@ import { LogOut, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import * as m from "motion/react-m";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/lib/auth-client";
 import { useAdminSidebar } from "./admin-sidebar-context";
 import {
   ADMIN_DASHBOARD,
@@ -17,6 +18,8 @@ import {
 export function AdminMobileSidebar() {
   const { isOpen, closeSidebar } = useAdminSidebar();
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Kunci scroll halaman di belakang saat drawer terbuka.
   useEffect(() => {
@@ -27,6 +30,18 @@ export function AdminMobileSidebar() {
       document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      closeSidebar();
+      router.push("/admin/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -127,15 +142,15 @@ export function AdminMobileSidebar() {
                   <p className="truncate text-xs text-text-muted">{ADMIN_USER.role}</p>
                 </div>
               </div>
-              <Link
-                href="/admin/login"
-                onClick={closeSidebar}
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
                 title={ADMIN_DASHBOARD.logoutLabel}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-3 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-glass-border bg-glass-bg px-3 py-3 text-sm text-text-secondary transition-all hover:border-accent/40 hover:text-accent disabled:opacity-50"
               >
                 <LogOut className="h-4 w-4" />
-                {ADMIN_DASHBOARD.logoutLabel}
-              </Link>
+                {isLoggingOut ? "Signing out..." : ADMIN_DASHBOARD.logoutLabel}
+              </button>
             </div>
           </m.div>
         </>
