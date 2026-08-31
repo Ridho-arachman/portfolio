@@ -40,7 +40,7 @@ function securityHeaders(isProduction: boolean) {
 const ngrokDomain = process.env.NEXT_PUBLIC_NGROK_DOMAIN;
 
 const nextConfig: NextConfig = {
-  reactCompiler: process.env.NODE_ENV === "production",
+  reactCompiler: false,
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
   images: {
     remotePatterns: [
