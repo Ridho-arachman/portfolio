@@ -192,24 +192,13 @@ export function AdminDashboard() {
     <div className="flex flex-1 flex-col">
       <main className="space-y-6 p-4 sm:p-6 lg:p-8">
         {analyticsLoading ? (
-          <>
-            <ChartSkeleton />
-            <MapSkeleton />
-          </>
+          <ChartSkeleton />
         ) : analytics ? (
-          <>
-            <VisitsChart
-              visitsOverview={analytics.visitsOverview}
-              totalVisits={analytics.totalVisits}
-              deltaLabel={analytics.deltaLabel}
-            />
-            <VisitorMap
-              visitorLocations={analytics.visitorLocations}
-              totalVisits={analytics.totalVisits}
-              deltaLabel={analytics.deltaLabel}
-              regions={analytics.regions}
-            />
-          </>
+          <VisitsChart
+            visitsOverview={analytics.visitsOverview}
+            totalVisits={analytics.totalVisits}
+            deltaLabel={analytics.deltaLabel}
+          />
         ) : null}
 
         <m.section
@@ -225,6 +214,17 @@ export function AdminDashboard() {
                 <StatCard key={stat.label} stat={stat} />
               ))}
         </m.section>
+
+        {analyticsLoading ? (
+          <MapSkeleton />
+        ) : analytics ? (
+          <VisitorMap
+            visitorLocations={analytics.visitorLocations}
+            totalVisits={analytics.totalVisits}
+            deltaLabel={analytics.deltaLabel}
+            regions={analytics.regions}
+          />
+        ) : null}
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <PanelCard
