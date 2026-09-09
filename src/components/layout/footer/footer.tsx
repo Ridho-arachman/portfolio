@@ -1,21 +1,13 @@
 "use client";
 
-import * as m from "motion/react-m";
 import { FooterBottom } from "./footer-bottom";
 import { FooterBrand } from "./footer-brand";
 import { FooterLinks } from "./footer-links";
 import { FooterSocial } from "./footer-social";
-import { FOOTER_VIEWPORT } from "./use-footer-animations";
 
 export function Footer() {
   return (
-    <m.footer
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={FOOTER_VIEWPORT}
-      transition={{ duration: 0.8 }}
-      className="relative border-t border-glass-border bg-bg-secondary/80 backdrop-blur-xl"
-    >
+    <footer className="relative border-t border-glass-border bg-bg-secondary/80 backdrop-blur-xl">
       {/* Top Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-accent to-transparent" />
 
@@ -33,6 +25,6 @@ export function Footer() {
 
         <FooterBottom />
       </div>
-    </m.footer>
+    </footer>
   );
 }

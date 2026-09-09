@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DesktopNav } from "./desktop-nav";
@@ -18,12 +17,9 @@ export function Navbar() {
     pathname === "/contact" || pathname.startsWith("/contact");
 
   return (
-    <m.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+    <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300 animate-fade-in-down",
         isScrolled
           ? "bg-bg-primary/60 backdrop-blur-2xl border-b border-glass-border shadow-sm"
           : "bg-transparent",
@@ -40,17 +36,10 @@ export function Navbar() {
           <DesktopNav />
 
           {/* 3. Desktop CTA Button (Shadcn UI) */}
-          <m.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="hidden md:block"
-          >
+          <div className="hidden md:block animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
             <Button
               className={cn(
-                "rounded-full font-medium text-sm transition-all duration-300",
+                "rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95",
                 isActiveContact
                   ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
                   : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20 hover:border-accent",
@@ -58,12 +47,12 @@ export function Navbar() {
             >
               <Link href="/contact">Let&apos;s Talk</Link>
             </Button>
-          </m.div>
+          </div>
 
           {/* 4. Mobile Menu (Toggle + Dropdown) */}
           <MobileNav />
         </div>
       </div>
-    </m.header>
+    </header>
   );
 }

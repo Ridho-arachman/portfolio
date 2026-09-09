@@ -99,6 +99,11 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://*.tile.openstreetmap.org" />
         <link rel="dns-prefetch" href="https://*.basemaps.cartocdn.com" />
         <link rel="manifest" href="/manifest.json" />
+
+        {/* Preload critical resources */}
+        <link rel="preload" as="image" href="/avatar-hero.webp" type="image/webp" />
+        <link rel="preload" as="image" href="/avatar-hero.avif" type="image/avif" />
+        <link rel="preload" as="font" href="https://fonts.gstatic.com/s/geist/v4/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" crossOrigin="anonymous" />
       </head>
       <body className="relative min-h-screen bg-bg-primary text-text-primary antialiased overflow-x-hidden">
         <StructuredData type="Person" />

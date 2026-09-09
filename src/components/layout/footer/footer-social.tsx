@@ -1,36 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import * as m from "motion/react-m";
 import Link from "next/link";
 import { SOCIAL_LINKS } from "./constants";
-import { FOOTER_VIEWPORT } from "./use-footer-animations";
 
 export function FooterSocial() {
   return (
-    <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={FOOTER_VIEWPORT}
-      transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-    >
+    <div className="animate-fade-in-up delay-200">
       <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
         Connect
       </h4>
       <div className="flex gap-3">
         {SOCIAL_LINKS.map(({ href, icon: Icon, label }, index) => (
-          <m.div
+          <div
             key={label}
-            initial={{ opacity: 0, scale: 0, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={FOOTER_VIEWPORT}
-            transition={{
-              duration: 0.4,
-              delay: 0.3 + index * 0.1,
-              ease: "easeOut",
-            }}
-            whileHover={{ scale: 1.1, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${300 + index * 100}ms` }}
           >
             <Button
               variant="outline"
@@ -52,9 +37,9 @@ export function FooterSocial() {
                 <span className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_15px_rgba(167,139,250,0.3)]" />
               </Link>
             </Button>
-          </m.div>
+          </div>
         ))}
       </div>
-    </m.div>
+    </div>
   );
 }

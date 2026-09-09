@@ -18,17 +18,22 @@ export function AboutAvatar({}: AboutAvatarProps) {
 
         {/* The Avatar Image - Optimized for LCP */}
         <div className="relative rounded-3xl overflow-visible">
-          <Image
-            src="/avatar.png"
-            alt="Ridho Arachman"
-            width={600}
-            height={800}
-            className="w-full h-100 md:h-125 object-contain object-center drop-shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_35px_rgba(168,85,247,0.6)]"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
-            placeholder="blur"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-          />
+          <picture>
+            <source srcSet="/avatar-hero.avif" type="image/avif" />
+            <source srcSet="/avatar-hero.webp" type="image/webp" />
+            <Image
+              src="/avatar.png"
+              alt="Ridho Arachman"
+              width={800}
+              height={1000}
+              className="w-full h-100 md:h-125 object-contain object-center drop-shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_35px_rgba(168,85,247,0.6)]"
+              priority
+              fetchPriority="high"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 500px"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+            />
+          </picture>
 
           {/* Floating Glassmorphism Badge */}
           <AvatarBadge />

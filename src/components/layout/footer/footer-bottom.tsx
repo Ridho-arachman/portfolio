@@ -1,19 +1,10 @@
 "use client";
 
-import * as m from "motion/react-m";
-import { FOOTER_VIEWPORT } from "./use-footer-animations";
-
 export function FooterBottom() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <m.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={FOOTER_VIEWPORT}
-      transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-      className="pt-8 border-t border-glass-border flex flex-col md:flex-row justify-between items-center gap-4"
-    >
+    <div className="pt-8 border-t border-glass-border flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in-up delay-500">
       <p className="text-text-muted text-sm text-center md:text-left">
         © {currentYear} Ridho Arachman. Built with{" "}
         <span className="text-accent font-medium">Next.js</span> &{" "}
@@ -27,6 +18,6 @@ export function FooterBottom() {
         </span>
         <span>System Online</span>
       </div>
-    </m.div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "./constants";
@@ -19,13 +18,7 @@ export function DesktopNav() {
       {NAV_LINKS.map((link, index) => {
         const active = isActive(link.href);
         return (
-          <m.li
-            key={link.href}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="relative"
-          >
+          <li key={link.href} className="relative animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
             <Link
               href={link.href}
               className={cn(
@@ -39,18 +32,10 @@ export function DesktopNav() {
 
               {/* Animasi Sliding Pill untuk Active State */}
               {active && (
-                <m.span
-                  layoutId="active-nav-pill"
-                  className="absolute inset-0 rounded-full bg-accent-muted -z-10"
-                  transition={{
-                    type: "spring",
-                    bounce: 0.2,
-                    duration: 0.6,
-                  }}
-                />
+                <span className="absolute inset-0 rounded-full bg-accent-muted -z-10 animate-slide-in" />
               )}
             </Link>
-          </m.li>
+          </li>
         );
       })}
     </ul>

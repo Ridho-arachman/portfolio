@@ -1,12 +1,11 @@
 "use client";
 
-import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
 
 export function NavbarLogo() {
   return (
-    <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    <div className="hover:scale-105 active:scale-95 transition-transform duration-200">
       <Link href="/" className="group flex items-center gap-2">
         <Image
           src="/logo-optimized.webp"
@@ -23,6 +22,6 @@ export function NavbarLogo() {
           Ridho.dev
         </span>
       </Link>
-    </m.div>
+    </div>
   );
 }

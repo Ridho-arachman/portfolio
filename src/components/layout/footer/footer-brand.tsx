@@ -1,17 +1,10 @@
 "use client";
 
-import * as m from "motion/react-m";
 import Image from "next/image";
-import { FOOTER_VIEWPORT } from "./use-footer-animations";
 
 export function FooterBrand() {
   return (
-    <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={FOOTER_VIEWPORT}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-    >
+    <div className="animate-fade-in-up">
       <div className="flex items-center gap-3 mb-3">
         <Image
           src="/logo-optimized.webp"
@@ -32,6 +25,6 @@ export function FooterBrand() {
         Information Systems student crafting immersive web experiences with
         modern tech stacks.
       </p>
-    </m.div>
+    </div>
   );
 }
