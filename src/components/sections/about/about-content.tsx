@@ -1,25 +1,10 @@
-// components/sections/about-content.tsx (atau sesuai path Anda)
 "use client";
 
-import * as m from "motion/react-m";
-import {
-  AboutContentProps,
-  contentVariants,
-  HIGHLIGHT_POINTS,
-  itemVariants,
-  REPLAY_VIEWPORT,
-} from "./constants";
+import { AboutContentProps, HIGHLIGHT_POINTS } from "./constants";
 
-export function AboutContent({ textY }: AboutContentProps) {
+export function AboutContent({}: AboutContentProps) {
   return (
-    <m.div
-      style={{ y: textY }}
-      variants={contentVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={REPLAY_VIEWPORT}
-      className="space-y-6"
-    >
+    <div className="space-y-6 animate-fade-in-up delay-300">
       <h3 className="text-2xl md:text-3xl font-bold text-text-primary">
         Hi, I&apos;m <span className="text-accent">Ridho Arachman</span>
       </h3>
@@ -42,18 +27,9 @@ export function AboutContent({ textY }: AboutContentProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
         {HIGHLIGHT_POINTS.map((item, idx) => (
-          <m.div
+          <div
             key={idx}
-            custom={idx}
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={REPLAY_VIEWPORT}
-            whileHover={{
-              x: 5,
-              backgroundColor: "rgba(255, 255, 255, 0.03)",
-            }}
-            className="flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-glass-border transition-all duration-300 cursor-default"
+            className="flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-glass-border transition-all duration-300 cursor-default animate-fade-in-up delay-400"
           >
             <item.icon className="w-5 h-5 text-accent mt-1 shrink-0" />
             <div>
@@ -62,9 +38,9 @@ export function AboutContent({ textY }: AboutContentProps) {
               </p>
               <p className="text-xs text-text-muted">{item.desc}</p>
             </div>
-          </m.div>
+          </div>
         ))}
       </div>
-    </m.div>
+    </div>
   );
 }

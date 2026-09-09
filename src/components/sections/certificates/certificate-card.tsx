@@ -40,8 +40,12 @@ export function CertificateCard({
                 <Image
                   src={cert.thumbnail}
                   alt={cert.title}
-                  fill
+                  width={800}
+                  height={600}
                   className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-accent/5 text-accent">

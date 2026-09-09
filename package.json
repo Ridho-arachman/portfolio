@@ -1,5 +1,5 @@
 {
-  "name": "portfolio",
+  "name": "portfolio ridho",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -25,6 +25,7 @@
     "docker:prod": "docker compose -f docker/docker-compose.prod.yml up --build -d",
     "docker:prod:down": "docker compose -f docker/docker-compose.prod.yml down",
     "docker:prod:logs": "docker compose -f docker/docker-compose.prod.yml logs -f",
+    "analyze": "ANALYZE=true next build",
     "prepare": "husky"
   },
   "dependencies": {
@@ -65,6 +66,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
+    "@next/bundle-analyzer": "^15.0.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
@@ -79,10 +81,12 @@
     "@vitejs/plugin-react": "^5.2.0",
     "@vitest/coverage-v8": "^4.1.10",
     "babel-plugin-react-compiler": "1.0.0",
+    "chrome-launcher": "^1.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "husky": "^9.1.7",
     "jsdom": "^30.0.1",
+    "lighthouse": "^13.4.1",
     "prisma": "^7.9.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",

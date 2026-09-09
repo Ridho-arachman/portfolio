@@ -54,10 +54,28 @@ export function MagneticButton({
   const springX = useSpring(x, { stiffness: 150, damping: 15 });
   const springY = useSpring(y, { stiffness: 150, damping: 15 });
 
+  // Store rect to avoid getBoundingClientRect on every mousemove (prevents forced reflow)
+  const rectRef = useRef<DOMRect | null>(null);
+
+  // Update rect on resize and initial mount
+  useEffect(() => {
+    if (!ref.current) return;
+    rectRef.current = ref.current.getBoundingClientRect();
+    
+    const handleResize = () => {
+      if (ref.current) {
+        rectRef.current = ref.current.getBoundingClientRect();
+      }
+    };
+    
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!magnetEnabled || !ref.current) return;
+    if (!magnetEnabled || !ref.current || !rectRef.current) return;
     const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const { left, top, width, height } = rectRef.current;
 
     const centerX = left + width / 2;
     const centerY = top + height / 2;

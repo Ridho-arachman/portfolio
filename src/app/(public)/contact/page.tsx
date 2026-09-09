@@ -1,6 +1,7 @@
 import { ContactSection } from "@/components/sections/contact";
 import { buildMetadata } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
   title: "Contact",

@@ -13,17 +13,17 @@ export function AboutHeroBackground({
     <>
       {/* Layer 1: Deep Background Blobs */}
       <m.div
-        style={{ y: bgY1 }}
+        style={{ y: bgY1, willChange: "transform" }}
         className="absolute top-0 left-1/4 w-150 h-150 bg-accent/10 rounded-full blur-[150px] pointer-events-none"
       />
       <m.div
-        style={{ y: bgY2 }}
+        style={{ y: bgY2, willChange: "transform" }}
         className="absolute bottom-0 right-1/4 w-125 h-125 bg-white/5 rounded-full blur-[150px] pointer-events-none"
       />
 
       {/* Layer 2: Perspective Grid */}
       <m.div
-        style={{ y: bgY3 }}
+        style={{ y: bgY3, willChange: "transform" }}
         className="absolute inset-0 bg-grid-elegant opacity-20 pointer-events-none"
       />
 
@@ -38,6 +38,7 @@ export function AboutHeroBackground({
             damping: 30,
             stiffness: 80,
           }),
+          willChange: "transform",
         }}
         className="absolute top-1/3 right-1/3 w-2 h-2 bg-accent rounded-full pointer-events-none shadow-[0_0_10px_rgba(167,139,250,0.8)]"
       />
@@ -51,6 +52,7 @@ export function AboutHeroBackground({
             damping: 30,
             stiffness: 80,
           }),
+          willChange: "transform",
         }}
         className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/60 rounded-full pointer-events-none shadow-[0_0_15px_rgba(167,139,250,0.6)]"
       />

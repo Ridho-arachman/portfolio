@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { buildMetadata } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
   title: "About Me",

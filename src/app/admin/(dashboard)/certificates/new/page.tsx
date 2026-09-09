@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { CertificateFormPage } from "@/components/sections/admin-certificates";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "New Certificate",
   robots: {

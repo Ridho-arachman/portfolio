@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { CategoryFormPage } from "@/components/sections/admin-categories";
+import { CategoryFormPageWrapper } from "@/components/sections/admin-categories/category-form-page-wrapper";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "New Category",
@@ -10,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function NewCategoryPage() {
-  return <CategoryFormPage mode="create" />;
+  return <CategoryFormPageWrapper mode="create" />;
 }

@@ -5,32 +5,46 @@ import {
   useTransform,
   type Variants,
 } from "framer-motion";
-import { type RefObject } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
 export function useHeroAnimations(
-  containerRef: RefObject<HTMLDivElement | null>, // <-- Perbaikan di sini
+  containerRef: RefObject<HTMLDivElement | null>,
   isMobile: boolean,
 ) {
   const { scrollY } = useScroll();
 
-  // Scroll Parallax
+  // Scroll Parallax - transform-only properties for compositor thread
   const bgY = useTransform(scrollY, [0, 600], [0, 250]);
   const bgScale = useTransform(scrollY, [0, 600], [1, 1.3]);
   const textY = useTransform(scrollY, [0, 600], [0, -150]);
   const textOpacity = useTransform(scrollY, [0, 500], [1, 0]);
-  const textBlur = useTransform(scrollY, [0, 500], ["blur(0px)", "blur(10px)"]);
+  // Avoid filter animations on main thread - use opacity instead
+  // const textBlur = useTransform(scrollY, [0, 500], ["blur(0px)", "blur(10px)"]);
 
   const gridY = useTransform(scrollY, [0, 600], [100, 400]);
   const gridOpacity = useTransform(scrollY, [0, 300], [0, 0.3]);
 
-  // Mouse 3D Tilt
+  // Mouse 3D Tilt - cache rect to avoid forced reflow on every mousemove
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const rectRef = useRef<DOMRect | null>(null);
+
+  // Update rect on mount and resize
+  useEffect(() => {
+    if (!containerRef.current) return;
+    rectRef.current = containerRef.current.getBoundingClientRect();
+    const handleResize = () => {
+      if (containerRef.current) {
+        rectRef.current = containerRef.current.getBoundingClientRect();
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [containerRef]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isMobile || !containerRef.current) return;
-    const { left, top, width, height } =
-      containerRef.current.getBoundingClientRect();
+    if (isMobile || !containerRef.current || !rectRef.current) return;
+    const { left, top, width, height } = rectRef.current;
     const x = (e.clientX - left) / width - 0.5;
     const y = (e.clientY - top) / height - 0.5;
     mouseX.set(x);
@@ -47,7 +61,7 @@ export function useHeroAnimations(
     springConfig,
   );
 
-  // Animation Variants
+  // Animation Variants - reduce blur/filter animations for performance
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -57,11 +71,10 @@ export function useHeroAnimations(
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 60, filter: "blur(10px)" },
+    hidden: { opacity: 0, y: 60 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration: 1, ease: "circOut" },
     },
   };
@@ -71,7 +84,7 @@ export function useHeroAnimations(
     bgScale,
     textY,
     textOpacity,
-    textBlur,
+    // textBlur removed - filter animations are expensive
     gridY,
     gridOpacity,
     rotateX,

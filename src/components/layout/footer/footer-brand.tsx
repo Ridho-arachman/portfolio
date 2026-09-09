@@ -14,13 +14,15 @@ export function FooterBrand() {
     >
       <div className="flex items-center gap-3 mb-3">
         <Image
-          src="/logo.png"
+          src="/logo-optimized.webp"
           alt="Ridho.dev Logo"
-          width={80} // Lebar dasar
-          height={100} // Tinggi dasar (lebih besar agar portrait)
+          width={80}
+          height={100}
           className="w-10 h-10 rounded-sm object-cover shadow-sm"
-          unoptimized
           priority
+          sizes="40px"
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         />
         <h3 className="text-2xl font-bold text-gradient-elegant mb-3">
           Ridho.dev

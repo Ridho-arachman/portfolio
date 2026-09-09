@@ -7,6 +7,7 @@ import {
   FolderTree,
   MessageSquare,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import * as m from "motion/react-m";
 import type { Variants } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,10 +17,19 @@ import { useAdminCertificates } from "@/hooks/use-certificates";
 import { useAdminExperiences } from "@/hooks/use-experience";
 import { PanelCard } from "./panel-card";
 import { StatCard } from "./stat-card";
-import { VisitsChart } from "./visits-chart";
-import { VisitorMap } from "./visitor-map";
 import { ADMIN_DASHBOARD } from "./constants";
 import type { RecentItem, VisitPoint, VisitorCountry } from "./constants";
+
+// Lazy-load heavy admin components (recharts, leaflet) - admin only
+const VisitsChart = dynamic(() => import("./visits-chart").then((mod) => mod.VisitsChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+});
+
+const VisitorMap = dynamic(() => import("./visitor-map").then((mod) => mod.VisitorMap), {
+  ssr: false,
+  loading: () => <MapSkeleton />,
+});
 
 interface AnalyticsData {
   visitsOverview: VisitPoint[];

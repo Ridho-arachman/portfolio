@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 function securityHeaders(isProduction: boolean) {
   return [
@@ -39,10 +40,19 @@ function securityHeaders(isProduction: boolean) {
 
 const ngrokDomain = process.env.NEXT_PUBLIC_NGROK_DOMAIN;
 
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig: NextConfig = {
   reactCompiler: false,
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
+  
+  // Image Optimization - Critical for LCP
   images: {
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -60,17 +70,54 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
+    // Allow local images to be optimized
+    dangerouslyAllowSVG: false,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  // Experimental features for performance
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "react-icons",
+      "@tanstack/react-query",
+      "@tanstack/react-table",
+      "zustand",
+      "motion",
+      "recharts",
+      "clsx",
+      "tailwind-merge",
+    ],
+    // Reduce hydration mismatch
+    optimizeCss: true,
+  },
+
+  // Compiler options for smaller bundles
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 
   allowedDevOrigins: ngrokDomain ? [ngrokDomain] : undefined,
+  
   async headers() {
     return [
       {
         source: "/(.*)",
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
+      // Add preconnect hints via headers for critical origins
+      {
+        source: "/",
+        headers: [
+          { key: "Link", value: "<https://images.unsplash.com>; rel=preconnect; crossorigin" },
+          { key: "Link", value: "<https://picsum.photos>; rel=preconnect; crossorigin" },
+          { key: "Link", value: "<https://challenges.cloudflare.com>; rel=preconnect; crossorigin" },
+          { key: "Link", value: "<https://*.supabase.co>; rel=preconnect; crossorigin" },
+        ],
+      },
     ];
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

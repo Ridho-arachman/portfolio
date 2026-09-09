@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { AdminDashboard } from "@/components/sections/admin-dashboard";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dashboard",
   robots: {

@@ -43,7 +43,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             height={600}
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
             style={{ transform: "translateZ(20px)" }}
-            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
           />
         </div>
 
@@ -84,8 +86,12 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                   <Image
                     src={img}
                     alt={`Preview ${idx + 1}`}
-                    fill
+                    width={48}
+                    height={48}
                     className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                    sizes="48px"
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                   />
                 </div>
               ))}

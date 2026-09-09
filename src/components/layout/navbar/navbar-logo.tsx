@@ -9,13 +9,15 @@ export function NavbarLogo() {
     <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
       <Link href="/" className="group flex items-center gap-2">
         <Image
-          src="/logo.png"
+          src="/logo-optimized.webp"
           alt="Ridho.dev Logo"
-          width={80} // Lebar dasar
-          height={100} // Tinggi dasar (lebih besar agar portrait)
+          width={80}
+          height={100}
           className="w-10 h-10 rounded-sm object-cover shadow-sm"
-          unoptimized
           priority
+          sizes="40px"
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         />
         <span className="text-xl font-bold text-gradient-elegant">
           Ridho.dev

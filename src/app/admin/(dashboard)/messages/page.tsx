@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { MessagesInbox } from "@/components/sections/admin-messages";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Messages",
   robots: {

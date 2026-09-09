@@ -1,12 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-
 import { Sparkles } from "lucide-react";
 import * as m from "motion/react-m";
 import { AboutHeroContentProps } from "./constants";
-
-
 
 export function AboutHeroContent({
   textY,
@@ -17,7 +14,7 @@ export function AboutHeroContent({
 }: AboutHeroContentProps) {
   return (
     <m.div
-      style={{ y: textY, opacity: textOpacity, scale: textScale }}
+      style={{ y: textY, opacity: textOpacity, scale: textScale, willChange: "transform, opacity" }}
       className="relative z-10 container mx-auto px-4 text-center max-w-4xl"
     >
       <m.div variants={containerVariants} initial="hidden" animate="visible">
@@ -35,6 +32,7 @@ export function AboutHeroContent({
         <m.h1
           variants={itemVariants}
           className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9]"
+          style={{ willChange: "transform" }}
         >
           About{" "}
           <span className="text-gradient-elegant inline-block relative">

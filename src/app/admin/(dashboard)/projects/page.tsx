@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ProjectsList } from "@/components/sections/admin-projects";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Projects",
   robots: {

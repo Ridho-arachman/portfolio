@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { CategoryFormPage } from "@/components/sections/admin-categories";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Edit Category",
   robots: {

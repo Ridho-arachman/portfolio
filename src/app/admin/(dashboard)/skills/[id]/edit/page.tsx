@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { SkillFormPage } from "@/components/sections/admin-skills";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Edit Skill",
   robots: {

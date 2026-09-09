@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CertificatesList } from "@/components/sections/admin-certificates";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Certificates",
   robots: {

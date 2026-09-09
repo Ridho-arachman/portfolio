@@ -1,23 +1,11 @@
-import * as m from "motion/react-m";
 import { HeroBackgroundProps } from "./constants";
 
-export function HeroBackground({
-  bgY,
-  bgScale,
-  gridY,
-  gridOpacity,
-}: HeroBackgroundProps) {
+export function HeroBackground({}: HeroBackgroundProps) {
   return (
     <>
       {/* Background Orbs - Elegant Monochrome */}
-      <m.div
-        style={{ y: bgY, scale: bgScale }}
-        className="absolute top-[-10%] left-[-10%] w-150 h-150 md:w-225 md:h-225 bg-accent/10 rounded-full blur-[150px] pointer-events-none"
-      />
-      <m.div
-        style={{ y: bgY, scale: bgScale }}
-        className="absolute bottom-[-10%] right-[-10%] w-125 h-125 md:w-200 md:h-200 bg-white/5 rounded-full blur-[150px] pointer-events-none"
-      />
+      <div className="absolute top-[-10%] left-[-10%] w-150 h-150 md:w-225 md:h-225 bg-accent/10 rounded-full blur-[150px] pointer-events-none animate-float" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-125 h-125 md:w-200 md:h-200 bg-white/5 rounded-full blur-[150px] pointer-events-none animate-float-delayed" />
 
       {/* Noise Texture */}
       <div
@@ -28,10 +16,7 @@ export function HeroBackground({
       />
 
       {/* Perspective Grid */}
-      <m.div
-        style={{ y: gridY, opacity: gridOpacity }}
-        className="absolute bottom-0 left-0 right-0 h-[60vh] bg-grid-elegant pointer-events-none"
-      />
+      <div className="absolute bottom-0 left-0 right-0 h-[60vh] bg-grid-elegant pointer-events-none animate-grid-float" />
     </>
   );
 }

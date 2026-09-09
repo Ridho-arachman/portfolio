@@ -13,7 +13,7 @@ export function useAboutHeroAnimations() {
     offset: ["start start", "end start"],
   });
 
-  // Mouse tracking
+  // Mouse tracking - use passive listener for better performance
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -25,21 +25,22 @@ export function useAboutHeroAnimations() {
       mouseY.set(y);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    // Use passive listener for better scroll performance
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  // Parallax Transforms - Background layers
+  // Parallax Transforms - Background layers (transform-only for compositor)
   const bgY1 = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const bgY2 = useTransform(scrollYProgress, [0, 1], [0, -150]);
   const bgY3 = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
-  // Text Transforms
+  // Text Transforms - avoid filter animations
   const textY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const textScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
 
-  // Variants
+  // Variants - remove blur/filter animations for performance
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -49,11 +50,10 @@ export function useAboutHeroAnimations() {
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 80, filter: "blur(20px)" },
+    hidden: { opacity: 0, y: 80 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration: 1.2, ease: "circOut" },
     },
   };

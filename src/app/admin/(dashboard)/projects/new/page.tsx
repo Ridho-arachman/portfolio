@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ProjectFormPage } from "@/components/sections/admin-projects";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "New Project",
   robots: {
