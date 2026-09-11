@@ -1,5 +1,5 @@
-import { AboutSection } from "@/components/sections/about";
 import { HeroSection } from "@/components/sections/hero";
+import { AboutSection } from "@/components/sections/about";
 import prisma from "@/lib/prisma";
 import { getClientEnv } from "@/lib/env";
 import { buildMetadata } from "@/lib/seo";
@@ -16,6 +16,8 @@ export const metadata = buildMetadata({
   path: "/",
   absolute: true,
 });
+
+export const revalidate = 60;
 
 export default async function Home() {
   const [certificates, projects] = await Promise.all([

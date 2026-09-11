@@ -47,6 +47,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig: NextConfig = {
   reactCompiler: false,
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
+  compress: true, // Enable gzip compression
   
   // Image Optimization - Critical for LCP
   images: {
@@ -70,7 +71,6 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
-    // Allow local images to be optimized
     dangerouslyAllowSVG: false,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -89,7 +89,6 @@ const nextConfig: NextConfig = {
       "clsx",
       "tailwind-merge",
     ],
-    // Reduce hydration mismatch
     optimizeCss: true,
   },
 
@@ -105,6 +104,20 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: securityHeaders(process.env.NODE_ENV === "production"),
+      },
+      // Cache static assets aggressively
+      {
+        source: "/_next/static/(.*)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      // Cache public assets (images, fonts)
+      {
+        source: "/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ico)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
       },
       // Add preconnect hints via headers for critical origins
       {
