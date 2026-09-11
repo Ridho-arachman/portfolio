@@ -1,13 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { LazyMotion, domAnimation } from "motion/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MagneticButton } from "./magnetic-button";
 
 /**
  * jsdom does not implement window.matchMedia. MagneticButton relies on
- * `(pointer: fine)` and motion's useReducedMotion relies on
- * `(prefers-reduced-motion: reduce)`, so both queries are mocked here.
+ * `(pointer: fine)`, so the query is mocked here.
  */
 function setupMatchMedia(matches: Record<string, boolean>) {
   Object.defineProperty(window, "matchMedia", {
@@ -27,11 +25,7 @@ function setupMatchMedia(matches: Record<string, boolean>) {
 }
 
 function renderButton() {
-  return render(
-    <LazyMotion features={domAnimation}>
-      <MagneticButton>Magnetic CTA</MagneticButton>
-    </LazyMotion>,
-  );
+  return render(<MagneticButton>Magnetic CTA</MagneticButton>);
 }
 
 describe("MagneticButton", () => {
@@ -58,20 +52,18 @@ describe("MagneticButton", () => {
 
     fireEvent.mouseMove(button, { clientX: 40, clientY: 40 });
 
-    expect(button.style.transform).not.toContain("translate");
+    // On coarse pointers, transform should be 0 (no magnetic effect)
+    expect(button.style.transform).toBe("translate(0px, 0px)");
   });
 
-  it("does not apply a magnetic transform when prefers-reduced-motion", () => {
-    setupMatchMedia({
-      "(pointer: fine)": true,
-      "(prefers-reduced-motion: reduce)": true,
-    });
+  it("applies a magnetic transform on fine pointers", () => {
+    setupMatchMedia({ "(pointer: fine)": true });
 
     renderButton();
     const button = screen.getByRole("button", { name: /magnetic cta/i });
 
     fireEvent.mouseMove(button, { clientX: 40, clientY: 40 });
 
-    expect(button.style.transform).not.toContain("translate");
+    expect(button.style.transform).toContain("translate");
   });
 });

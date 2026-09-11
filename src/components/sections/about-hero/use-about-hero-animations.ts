@@ -1,62 +1,47 @@
-import {
-  useMotionValue,
-  useScroll,
-  useTransform,
-  type Variants,
-} from "framer-motion";
-import { useEffect, useRef } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 
 export function useAboutHeroAnimations() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-
-  // Mouse tracking - use passive listener for better performance
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const [scrollYProgress, setScrollYProgress] = useState(0);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      mouseX.set(x);
-      mouseY.set(y);
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const handleScroll = () => {
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const progress = 1 - Math.max(0, Math.min(1, (rect.bottom - viewportHeight) / (rect.height + viewportHeight)));
+      setScrollYProgress(progress);
     };
 
-    // Use passive listener for better scroll performance
+    const handleMouseMove = (e: MouseEvent) => {
+      setMouseX((e.clientX / window.innerWidth - 0.5) * 2);
+      setMouseY((e.clientY / window.innerHeight - 0.5) * 2);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
 
-  // Parallax Transforms - Background layers (transform-only for compositor)
-  const bgY1 = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const bgY2 = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const bgY3 = useTransform(scrollYProgress, [0, 1], [0, 100]);
+    handleScroll(); // Initial calculation
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
-  // Text Transforms - avoid filter animations
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const textScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
-
-  // Variants - remove blur/filter animations for performance
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.3 },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 80 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "circOut" },
-    },
-  };
+  // CSS-based transform values (computed from scrollYProgress and mouse position)
+  const bgY1 = scrollYProgress * 200;
+  const bgY2 = scrollYProgress * -150;
+  const bgY3 = scrollYProgress * 100;
+  const textY = scrollYProgress * -100;
+  const textOpacity = Math.max(0, 1 - scrollYProgress * 2);
+  const textScale = 1 - scrollYProgress * 0.1;
 
   return {
     sectionRef,
@@ -69,7 +54,5 @@ export function useAboutHeroAnimations() {
     textY,
     textOpacity,
     textScale,
-    containerVariants,
-    itemVariants,
   };
 }

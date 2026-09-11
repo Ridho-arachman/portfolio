@@ -1,5 +1,3 @@
-import { type MotionValue, type Variants } from "framer-motion";
-
 export interface Project {
   id: number;
   slug: string;
@@ -19,15 +17,7 @@ export interface ProjectCardProps {
   index: number;
 }
 
-export interface ProjectsBackgroundProps {
-  bgY1: MotionValue<number>;
-  bgY2: MotionValue<number>;
-}
-
-export const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 80 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-};
+export type ProjectsBackgroundProps = Record<string, never>;
 
 export const REPLAY_VIEWPORT = {
   once: false,

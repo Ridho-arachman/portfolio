@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Award, Calendar, ShieldCheck } from "lucide-react";
-import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
 import { type CertificateCardProps } from "./constants";
@@ -14,19 +13,17 @@ export function CertificateCard({
 }: CertificateCardProps) {
   return (
     // 1. Outer Wrapper: Animasi Scroll Reveal (Fade In + Slide Up)
-    <m.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }} // Bisa di-replay saat scroll
-      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-      className="h-full"
+    <div
+      className="h-full animate-fade-in-up"
+      style={{
+        animationDelay: `${index * 100}ms`,
+        animationFillMode: 'both',
+      }}
     >
       <Link href={`/certificates/${cert.slug}`} className="group block h-full">
         {/* 2. Inner Wrapper: Animasi Hover Lift (Naik sedikit saat di-hover) */}
-        <m.div
-          whileHover={{ y: -4 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="h-full"
+        <div
+          className="h-full transition-transform duration-300 hover:-translate-y-1"
         >
           {/* Shadcn UI Card */}
           <Card
@@ -132,8 +129,8 @@ export function CertificateCard({
               )}
             </div>
           </Card>
-        </m.div>
+        </div>
       </Link>
-    </m.div>
+    </div>
   );
 }

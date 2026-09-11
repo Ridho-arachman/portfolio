@@ -76,21 +76,18 @@ export function MobileNav() {
             })}
 
             <li className="pt-4 mt-2 border-t border-glass-border animate-fade-in-up delay-400">
-              <Button
+              <Link
+                href="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  "w-full rounded-full font-medium text-sm transition-all duration-300",
+                  "inline-flex w-full items-center justify-center py-3 px-4 rounded-full font-medium text-sm transition-all duration-300",
                   isActive("/contact")
                     ? "bg-accent text-bg-primary border-accent"
                     : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20",
                 )}
               >
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Let&apos;s Talk
-                </Link>
-              </Button>
+                Let&apos;s Talk
+              </Link>
             </li>
           </ul>
         </div>

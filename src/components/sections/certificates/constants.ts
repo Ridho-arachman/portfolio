@@ -1,4 +1,3 @@
-import type { MotionValue } from "framer-motion";
 import type { Certificate } from "@/generated/prisma/client";
 
 export interface CertificateListData {
@@ -21,10 +20,7 @@ export interface CertificateCardProps {
   index?: number;
 }
 
-export interface CertificatesBackgroundProps {
-  bgY1: MotionValue<number>;
-  bgY2: MotionValue<number>;
-}
+export type CertificatesBackgroundProps = Record<string, never>;
 
 export const CERTIFICATES_VIEWPORT = {
   once: false,

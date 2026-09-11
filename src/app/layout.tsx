@@ -1,133 +1,113 @@
-// app/layout.tsx
-import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
-import { VisitTracker } from "@/components/visit-tracker";
-import { Providers } from "@/lib/providers";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { Geist } from "next/font/google";
-import type { Metadata } from "next";
-import { getEnv } from "@/lib/env";
-import { StructuredData } from "@/components/seo/structured-data";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/lib/providers";
+import { Navbar } from "@/components/layout/navbar/navbar";
+import { Footer } from "@/components/layout/footer/footer";
 
-const geist = Geist({ 
-  subsets: ["latin"], 
-  variable: "--font-geist",
+const inter = Inter({
+  subsets: ["latin"],
   display: "swap",
+  variable: "--font-inter",
   preload: true,
-  adjustFontFallback: true,
-  weight: "variable",
 });
 
-const env = getEnv();
-
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ridhoarachman.dev"),
   title: {
-    default: `${env.NEXT_PUBLIC_SITE_NAME} | ${env.NEXT_PUBLIC_SITE_TAGLINE}`,
-    template: `%s | ${env.NEXT_PUBLIC_SITE_NAME}`,
+    default: "Ridho Arachman | Full Stack Developer",
+    template: "%s | Ridho Arachman",
   },
-  description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
+  description:
+    "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
   keywords: [
-    "portfolio",
-    "web developer",
-    "information systems",
-    "next.js",
-    "web3",
-    "full stack developer",
-    "react developer",
-    "typescript developer",
+    "Full Stack Developer",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Information Systems",
+    "E-Business",
+    "Web Developer",
+    "Portfolio",
   ],
-  authors: [{ name: env.NEXT_PUBLIC_AUTHOR_NAME }],
-  creator: env.NEXT_PUBLIC_AUTHOR_NAME,
-  publisher: env.NEXT_PUBLIC_SITE_NAME,
-  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
-  icons: {
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    shortcut: "/favicon-32x32.png",
-    apple: "/apple-touch-icon.png",
-  },
-  manifest: "/manifest.json",
-  robots: {
-    index: true,
-    follow: true,
-  },
+  authors: [{ name: "Ridho Arachman", url: "https://ridhoarachman.dev" }],
+  creator: "Ridho Arachman",
+  publisher: "Ridho Arachman",
+  robots: "index, follow",
   openGraph: {
     type: "website",
-    locale: "id_ID",
-    url: env.NEXT_PUBLIC_SITE_URL,
-    siteName: env.NEXT_PUBLIC_SITE_NAME,
-    title: `${env.NEXT_PUBLIC_SITE_NAME} | ${env.NEXT_PUBLIC_SITE_TAGLINE}`,
-    description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
+    locale: "en_US",
+    url: "https://ridhoarachman.dev",
+    siteName: "Ridho Arachman | Portfolio",
+    title: "Ridho Arachman | Full Stack Developer",
+    description:
+      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences.",
     images: [
       {
-        url: `${env.NEXT_PUBLIC_SITE_URL}/avatar.png`,
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: `${env.NEXT_PUBLIC_AUTHOR_NAME} - ${env.NEXT_PUBLIC_AUTHOR_TITLE}`,
+        alt: "Ridho Arachman - Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${env.NEXT_PUBLIC_SITE_NAME} | ${env.NEXT_PUBLIC_SITE_TAGLINE}`,
-    description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
-    images: [`${env.NEXT_PUBLIC_SITE_URL}/avatar.png`],
-    creator: "@ridho_arachman",
+    title: "Ridho Arachman | Full Stack Developer",
+    description:
+      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences.",
+    images: ["/og-image.png"],
+    creator: "@ridhoarachman",
   },
   verification: {
-    google: env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+    google: "google-site-verification-code",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0f" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="id" suppressHydrationWarning className={geist.variable}>
+    <html lang="en" className={`${inter.variable} scroll-smooth`}>
       <head>
-        {/* Preconnect to critical origins for faster resource loading */}
+        {/* Preload critical LCP image */}
+        <link
+          rel="preload"
+          as="image"
+          href="/avatar-hero.avif"
+          type="image/avif"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/avatar-hero.webp"
+          type="image/webp"
+        />
+        {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://*.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://*.tile.openstreetmap.org" />
-        <link rel="dns-prefetch" href="https://*.basemaps.cartocdn.com" />
-        <link rel="manifest" href="/manifest.json" />
-
-        {/* Preload critical resources */}
-        <link rel="preload" as="image" href="/avatar-hero.webp" type="image/webp" />
-        <link rel="preload" as="image" href="/avatar-hero.avif" type="image/avif" />
-        <link rel="preload" as="font" href="https://fonts.gstatic.com/s/geist/v4/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
-      <body className="relative min-h-screen bg-bg-primary text-text-primary antialiased overflow-x-hidden">
-        <StructuredData type="Person" />
-        <StructuredData type="WebSite" />
+      <body className="bg-bg-primary text-text-primary antialiased">
         <Providers>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-              {/* Background grid pattern */}
-              <div className="fixed inset-0 bg-grid-elegant opacity-30 pointer-events-none" />
-
-              {/* Radial gradient glow at top */}
-              <div className="fixed top-0 left-1/2 -translate-x-1/2 w-200 h-150 bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none" />
-              <div className="fixed top-20 right-0 w-150 h-100 bg-neon-cyan/10 rounded-full blur-[100px] pointer-events-none" />
-
-              {/* Main content wrapper */}
-              <div className="relative z-10 flex flex-col min-h-screen">{children}</div>
-
-              <ThemeToggleFloating />
-              <VisitTracker />
-          </ThemeProvider>
+          <Navbar />
+          <main id="main-content" className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
         </Providers>
       </body>
     </html>

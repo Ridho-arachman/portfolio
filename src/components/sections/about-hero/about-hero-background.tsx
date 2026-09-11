@@ -1,5 +1,3 @@
-import { useSpring, useTransform } from "framer-motion";
-import * as m from "motion/react-m";
 import { AboutHeroBackgroundProps } from "./constants";
 
 export function AboutHeroBackground({
@@ -12,49 +10,33 @@ export function AboutHeroBackground({
   return (
     <>
       {/* Layer 1: Deep Background Blobs */}
-      <m.div
-        style={{ y: bgY1, willChange: "transform" }}
-        className="absolute top-0 left-1/4 w-150 h-150 bg-accent/10 rounded-full blur-[150px] pointer-events-none"
+      <div
+        className="absolute top-0 left-1/4 w-150 h-150 bg-accent/10 rounded-full blur-[150px] pointer-events-none animate-parallax-y"
+        style={{ transform: `translateY(${bgY1}px)` } as React.CSSProperties}
       />
-      <m.div
-        style={{ y: bgY2, willChange: "transform" }}
-        className="absolute bottom-0 right-1/4 w-125 h-125 bg-white/5 rounded-full blur-[150px] pointer-events-none"
+      <div
+        className="absolute bottom-0 right-1/4 w-125 h-125 bg-white/5 rounded-full blur-[150px] pointer-events-none animate-parallax-y-reverse"
+        style={{ transform: `translateY(${bgY2}px)` } as React.CSSProperties}
       />
 
       {/* Layer 2: Perspective Grid */}
-      <m.div
-        style={{ y: bgY3, willChange: "transform" }}
-        className="absolute inset-0 bg-grid-elegant opacity-20 pointer-events-none"
+      <div
+        className="absolute inset-0 bg-grid-elegant opacity-20 pointer-events-none animate-parallax-y"
+        style={{ transform: `translateY(${bgY3}px)` } as React.CSSProperties}
       />
 
       {/* Layer 3: Small Particles (Mouse Parallax Only) */}
-      <m.div
+      <div
+        className="absolute top-1/3 right-1/3 w-2 h-2 bg-accent rounded-full pointer-events-none shadow-[0_0_10px_rgba(167,139,250,0.8)] animate-mouse-parallax"
         style={{
-          x: useSpring(useTransform(mouseX, [-1, 1], [-80, 80]), {
-            damping: 30,
-            stiffness: 80,
-          }),
-          y: useSpring(useTransform(mouseY, [-1, 1], [-80, 80]), {
-            damping: 30,
-            stiffness: 80,
-          }),
-          willChange: "transform",
-        }}
-        className="absolute top-1/3 right-1/3 w-2 h-2 bg-accent rounded-full pointer-events-none shadow-[0_0_10px_rgba(167,139,250,0.8)]"
+          transform: `translate(${mouseX * 80}px, ${mouseY * 80}px)`,
+        } as React.CSSProperties}
       />
-      <m.div
+      <div
+        className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/60 rounded-full pointer-events-none shadow-[0_0_15px_rgba(167,139,250,0.6)] animate-mouse-parallax"
         style={{
-          x: useSpring(useTransform(mouseX, [-1, 1], [-100, 100]), {
-            damping: 30,
-            stiffness: 80,
-          }),
-          y: useSpring(useTransform(mouseY, [-1, 1], [-100, 100]), {
-            damping: 30,
-            stiffness: 80,
-          }),
-          willChange: "transform",
-        }}
-        className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/60 rounded-full pointer-events-none shadow-[0_0_15px_rgba(167,139,250,0.6)]"
+          transform: `translate(${mouseX * 100}px, ${mouseY * 100}px)`,
+        } as React.CSSProperties}
       />
 
       {/* Noise Texture */}

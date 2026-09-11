@@ -1,22 +1,33 @@
 import { ProjectDetail } from "@/components/sections/project-detail";
-import { getAdjacentProjects } from "@/components/sections/project-detail/use-project-detail";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import type { Project } from "@/components/sections/projects/constants";
 import prisma from "@/lib/prisma";
 import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-function fetchProject(slug: string) {
+async function fetchProject(slug: string) {
   return prisma.project.findFirst({
     where: { slug, isPublished: true },
   });
 }
 
-function fetchAllPublishedProjects() {
+async function fetchAllPublishedProjects() {
   return prisma.project.findMany({
     where: { isPublished: true },
     orderBy: { order: "asc" },
   });
+}
+
+function getAdjacentProjects(
+  projects: Project[],
+  slug: string,
+): { prev: Project | null; next: Project | null } {
+  const index = projects.findIndex((p) => p.slug === slug);
+  return {
+    prev: index > 0 ? projects[index - 1] : null,
+    next: index < projects.length - 1 ? projects[index + 1] : null,
+  };
 }
 
 export async function generateStaticParams() {
@@ -27,9 +38,6 @@ export async function generateStaticParams() {
     });
     return projects.map((p) => ({ slug: p.slug }));
   } catch {
-    // Hermetic build fallback: saat database tidak terjangkau (mis. CI build
-    // tanpa DB), lewahkan pra-render params dan biarkan halaman dirender
-    // on-demand alih-alih menggagalkan `next build`.
     return [];
   }
 }

@@ -15,11 +15,6 @@ export function AboutHeroSection() {
     bgY1,
     bgY2,
     bgY3,
-    textY,
-    textOpacity,
-    textScale,
-    containerVariants,
-    itemVariants,
   } = useAboutHeroAnimations();
 
   return (
@@ -39,9 +34,6 @@ export function AboutHeroSection() {
       {/* 2. Floating Tech Icons */}
       <FloatingTechIcon
         icon={Code2}
-        mouseX={mouseX}
-        mouseY={mouseY}
-        scrollY={scrollYProgress}
         intensity={40}
         floatDuration={5}
         scrollIntensity={250}
@@ -49,9 +41,6 @@ export function AboutHeroSection() {
       />
       <FloatingTechIcon
         icon={Database}
-        mouseX={mouseX}
-        mouseY={mouseY}
-        scrollY={scrollYProgress}
         intensity={25}
         floatDuration={4}
         scrollIntensity={180}
@@ -59,9 +48,6 @@ export function AboutHeroSection() {
       />
       <FloatingTechIcon
         icon={Globe}
-        mouseX={mouseX}
-        mouseY={mouseY}
-        scrollY={scrollYProgress}
         intensity={60}
         floatDuration={6}
         scrollIntensity={220}
@@ -69,13 +55,7 @@ export function AboutHeroSection() {
       />
 
       {/* 3. Main Content */}
-      <AboutHeroContent
-        textY={textY}
-        textOpacity={textOpacity}
-        textScale={textScale}
-        containerVariants={containerVariants}
-        itemVariants={itemVariants}
-      />
+      <AboutHeroContent scrollYProgress={scrollYProgress} />
     </section>
   );
 }

@@ -4,34 +4,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
-import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
-import { cardVariants, ProjectCardProps, REPLAY_VIEWPORT } from "./constants";
-import { useProjectCardTilt } from "./use-project-card-tilt";
+import { ProjectCardProps } from "./constants";
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
-  const { cardRef, rotateX, rotateY, handleMouseMove, handleMouseLeave } =
-    useProjectCardTilt();
-
   return (
-    <m.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={REPLAY_VIEWPORT}
-      transition={{ delay: index * 0.15 }}
-      className="group relative h-full"
+    <div
+      className="group relative h-full animate-fade-in-up"
+      style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both' }}
     >
       {/* Glow Effect behind card */}
       <div className="absolute -inset-0.5 bg-linear-to-br from-accent/30 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <Card
         className="relative h-full rounded-3xl bg-glass-bg backdrop-blur-xl transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(167,139,250,0.15)]"
-        style={{ borderWidth: 0, boxShadow: "none" }} // <-- PAKSA HAPUS BORDER & SHADOW DEFAULT
+        style={{ borderWidth: 0, boxShadow: "none" }}
       >
         {/* Image Container */}
         <div className="relative h-56 overflow-hidden">
@@ -42,7 +29,6 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             width={800}
             height={600}
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-            style={{ transform: "translateZ(20px)" }}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
@@ -50,10 +36,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
 
         {/* Shadcn UI Card Content */}
-        <CardContent
-          className="p-6 space-y-4"
-          style={{ transform: "translateZ(30px)" }}
-        >
+        <CardContent className="p-6 space-y-4">
           {/* Tags using Shadcn Badge */}
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
@@ -118,6 +101,6 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           </Button>
         </CardContent>
       </Card>
-    </m.div>
+    </div>
   );
 }

@@ -4,30 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { PROJECT_DETAIL } from "./constants";
 import type { Project } from "./constants";
 import { ArrowLeft, Calendar, User } from "lucide-react";
-import type { MotionValue } from "framer-motion";
-import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
 
 interface ProjectDetailHeroProps {
   project: Project;
-  headerY: MotionValue<number>;
-  headerScale: MotionValue<number>;
-  headerOpacity: MotionValue<number>;
 }
 
-export function ProjectDetailHero({
-  project,
-  headerY,
-  headerScale,
-  headerOpacity,
-}: ProjectDetailHeroProps) {
+export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
   return (
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-      <m.div
-        style={{ y: headerY, scale: headerScale }}
-        className="absolute inset-0"
-      >
+      <div className="absolute inset-0">
         <Image
           src={project.image}
           alt={project.title}
@@ -35,7 +22,7 @@ export function ProjectDetailHero({
           className="object-cover"
           priority
         />
-      </m.div>
+      </div>
 
       <div className="absolute inset-0 bg-linear-to-t from-bg-primary via-bg-primary/60 to-transparent" />
       <div className="absolute inset-0 bg-linear-to-b from-bg-primary/40 to-transparent" />
@@ -52,16 +39,9 @@ export function ProjectDetailHero({
         </div>
       </div>
 
-      <m.div
-        style={{ opacity: headerOpacity }}
-        className="absolute bottom-0 left-0 right-0 z-10 pb-12"
-      >
+      <div className="absolute bottom-0 left-0 right-0 z-10 pb-12 animate-fade-in-up delay-300">
         <div className="container mx-auto px-4 max-w-5xl">
-          <m.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <div className="animate-fade-in-up delay-200">
             <div className="flex flex-wrap gap-2 mb-4">
               {project.tags.slice(0, 3).map((tag) => (
                 <Badge
@@ -88,9 +68,9 @@ export function ProjectDetailHero({
                 </span>
               )}
             </div>
-          </m.div>
+          </div>
         </div>
-      </m.div>
+      </div>
     </div>
   );
 }

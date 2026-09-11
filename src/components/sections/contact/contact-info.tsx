@@ -3,7 +3,6 @@
 import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Clock, Mail, MapPin, type LucideIcon } from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
 import {
   CONTACT_EMAIL,
@@ -31,15 +30,9 @@ const INFO_ITEMS: InfoItem[] = [
 
 export function ContactInfo() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
-      transition={{ duration: 0.6 }}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in-up delay-100">
       {INFO_ITEMS.map((item) => (
-        <GlassCard key={item.label} variant="hover" className="p-6">
+        <GlassCard key={item.label} variant="hover" className="p-6 animate-fade-in-up delay-200">
           <div className="relative z-10 flex items-start gap-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-muted border border-accent/30 text-accent">
               <item.icon className="w-5 h-5" />
@@ -65,7 +58,7 @@ export function ContactInfo() {
         </GlassCard>
       ))}
 
-      <GlassCard variant="hover" className="p-6 sm:col-span-2">
+      <GlassCard variant="hover" className="p-6 sm:col-span-2 animate-fade-in-up delay-300">
         <div className="relative z-10">
           <p className="text-xs font-semibold tracking-wider uppercase text-text-muted mb-4">
             Or find me on
@@ -87,6 +80,6 @@ export function ContactInfo() {
           </div>
         </div>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }

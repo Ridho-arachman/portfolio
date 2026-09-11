@@ -5,7 +5,6 @@ import { FloatingTechIcon } from "@/components/sections/about-hero/floating-tech
 import { useAboutHeroAnimations } from "@/components/sections/about-hero/use-about-hero-animations";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
-import * as m from "motion/react-m";
 import { PAGE_HERO_ICONS, type PageHeroProps } from "./constants";
 
 // Posisi & konfigurasi ikon mengapung — identik dengan AboutHeroSection
@@ -43,11 +42,6 @@ export function PageHero({
     bgY1,
     bgY2,
     bgY3,
-    textY,
-    textOpacity,
-    textScale,
-    containerVariants,
-    itemVariants,
   } = useAboutHeroAnimations();
 
   return (
@@ -69,9 +63,6 @@ export function PageHero({
         <FloatingTechIcon
           key={`${badge}-icon-${i}`}
           icon={Icon}
-          mouseX={mouseX}
-          mouseY={mouseY}
-          scrollY={scrollYProgress}
           intensity={FLOAT_CONFIG[i].intensity}
           floatDuration={FLOAT_CONFIG[i].floatDuration}
           scrollIntensity={FLOAT_CONFIG[i].scrollIntensity}
@@ -80,49 +71,43 @@ export function PageHero({
       ))}
 
       {/* Konten utama */}
-      <m.div
-        style={{ y: textY, opacity: textOpacity, scale: textScale }}
-        className="relative z-10 container mx-auto px-4 text-center max-w-4xl"
+      <div
+        className="relative z-10 container mx-auto px-4 text-center max-w-4xl animate-fade-in-up"
+        style={{
+          transform: `translateY(${scrollYProgress * -100}px) scale(${1 - scrollYProgress * 0.1})`,
+          opacity: Math.max(0, 1 - scrollYProgress * 2),
+        } as React.CSSProperties}
       >
-        <m.div variants={containerVariants} initial="hidden" animate="visible">
-          <m.div variants={itemVariants} className="mb-6">
+        <div className="animate-fade-in-up">
+          <div className="mb-6 animate-fade-in-up delay-100">
             <Badge
               variant="outline"
               className="px-4 py-2 rounded-full border-accent/30 bg-accent-muted/50 text-accent text-xs font-semibold tracking-wider uppercase"
             >
               {badge}
             </Badge>
-          </m.div>
+          </div>
 
-          <m.h1
-            variants={itemVariants}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9]"
-          >
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9] animate-fade-in-up delay-200">
             {title}{" "}
             <span className="text-gradient-elegant inline-block relative">
               {titleAccent}
               <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
             </span>
-          </m.h1>
+          </h1>
 
-          <m.p
-            variants={itemVariants}
-            className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto leading-relaxed"
-          >
+          <p className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-300">
             {description}
-          </m.p>
+          </p>
 
           {/* Garis dekoratif */}
-          <m.div
-            variants={itemVariants}
-            className="mt-12 flex items-center justify-center gap-3"
-          >
+          <div className="mt-12 flex items-center justify-center gap-3 animate-fade-in-up delay-400">
             <div className="h-px w-16 bg-linear-to-r from-transparent to-accent/50" />
             <Sparkles className="w-5 h-5 text-accent" />
             <div className="h-px w-16 bg-linear-to-l from-transparent to-accent/50" />
-          </m.div>
-        </m.div>
-      </m.div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

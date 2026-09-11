@@ -2,17 +2,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  type HTMLMotionProps,
-} from "motion/react";
-import * as m from "motion/react-m";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface MagneticButtonProps extends Omit<
-  HTMLMotionProps<"button">,
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
   "children"
 > {
   children: React.ReactNode;
@@ -43,16 +36,12 @@ export function MagneticButton({
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
-  const prefersReducedMotion = useReducedMotion();
   const isFinePointer = useFinePointer();
   // Magnet effect hanya aktif untuk pointer presisi (mouse) tanpa reduced motion.
-  const magnetEnabled = isFinePointer && !prefersReducedMotion;
+  const magnetEnabled = isFinePointer;
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const springX = useSpring(x, { stiffness: 150, damping: 15 });
-  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
 
   // Store rect to avoid getBoundingClientRect on every mousemove (prevents forced reflow)
   const rectRef = useRef<DOMRect | null>(null);
@@ -80,20 +69,22 @@ export function MagneticButton({
     const centerX = left + width / 2;
     const centerY = top + height / 2;
 
-    x.set((clientX - centerX) * 0.3);
-    y.set((clientY - centerY) * 0.3);
+    setX((clientX - centerX) * 0.3);
+    setY((clientY - centerY) * 0.3);
   };
 
   const handleMouseLeave = () => {
-    if (!magnetEnabled) return;
-    x.set(0);
-    y.set(0);
+    setX(0);
+    setY(0);
   };
 
   return (
-    <m.button
+    <button
       ref={ref}
-      style={{ x: springX, y: springY }}
+      style={{ 
+        transform: `translate(${x}px, ${y}px)`,
+        transition: 'transform 0.15s ease-out'
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
@@ -106,6 +97,6 @@ export function MagneticButton({
 
       {/* Subtle glow effect */}
       <div className="absolute inset-0 bg-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-    </m.button>
+    </button>
   );
 }

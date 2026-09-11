@@ -1,12 +1,9 @@
 import { Code2, Database, Globe } from "lucide-react";
 
-export interface AboutAvatarProps {}
-
-export interface AboutBackgroundProps {}
-
-export interface AboutContentProps {}
-
-export interface AvatarBackgroundProps {}
+export type AboutAvatarProps = Record<string, never>;
+export type AboutBackgroundProps = Record<string, never>;
+export type AboutContentProps = Record<string, never>;
+export type AvatarBackgroundProps = Record<string, never>;
 
 export const HIGHLIGHT_POINTS = [
   {

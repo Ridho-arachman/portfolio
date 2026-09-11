@@ -3,9 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useScroll, useTransform } from "framer-motion";
 import { ArrowUpRight, Award } from "lucide-react";
-import * as m from "motion/react-m";
 import Link from "next/link";
 import { useRef } from "react";
 import { CERTIFICATES_VIEWPORT, type CertificateListData } from "./constants";
@@ -18,28 +16,14 @@ interface CertificatesSectionProps {
 
 export function CertificatesSection({ certificates }: CertificatesSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Parallax Background Elements
-  const bgY1 = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const bgY2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden pb-14">
-      <CertificatesBackground bgY1={bgY1} bgY2={bgY2} />
+      <CertificatesBackground />
 
       <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
-        <m.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={CERTIFICATES_VIEWPORT}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16 md:mb-24"
-        >
+        <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
           <Badge
             variant="outline"
             className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
@@ -53,7 +37,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
             Professional certifications and credentials that validate my skills
             and continuous learning journey.
           </p>
-        </m.div>
+        </div>
 
         {/* Certificates Grid */}
         {certificates.length === 0 ? (
@@ -61,7 +45,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
             icon={Award}
             title="No certificates yet"
             description="Certificates will appear here once published."
-            className="mb-16"
+            className="mb-16 animate-fade-in-up delay-200"
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
@@ -72,13 +56,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
         )}
 
         {/* View All CTA */}
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center"
-        >
+        <div className="text-center animate-fade-in-up delay-400">
           <Button
             size="lg"
             className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group"
@@ -91,7 +69,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
               <ArrowUpRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
           </Button>
-        </m.div>
+        </div>
       </div>
     </section>
   );

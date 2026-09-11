@@ -1,21 +1,31 @@
 "use client";
 
 import { EmptyState } from "@/components/ui/empty-state";
-import { useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import { Briefcase } from "lucide-react";
-import * as m from "motion/react-m";
-import { useRef } from "react";
 import { ExperienceCard } from "./experience-card";
 import type { Experience } from "./constants";
 
 export function ExperienceTimeline({ experiences }: { experiences: Experience[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
+  const [scrollYProgress, setScrollYProgress] = useState(0);
 
-  const scaleY = useTransform(scrollYProgress, [0.1, 0.9], [0, 1]);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const progress = 1 - Math.max(0, Math.min(1, (rect.bottom - viewportHeight) / (rect.height + viewportHeight)));
+      setScrollYProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   if (experiences.length === 0) {
     return (
@@ -33,9 +43,9 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
       <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-glass-border -translate-x-1/2" />
       
       {/* Animated Progress Line */}
-      <m.div
-        style={{ scaleY, transformOrigin: "top" }}
-        className="absolute left-4 md:left-1/2 top-0 w-px bg-accent -translate-x-1/2 shadow-[0_0_10px_rgba(167,139,250,0.5)]"
+      <div
+        className="absolute left-4 md:left-1/2 top-0 w-px bg-accent -translate-x-1/2 shadow-[0_0_10px_rgba(167,139,250,0.5)] animate-timeline-progress"
+        style={{ transformOrigin: "top", transform: `scaleY(${scrollYProgress})` } as React.CSSProperties}
       />
 
       {/* Cards List */}

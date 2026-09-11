@@ -4,44 +4,29 @@ import { Badge } from "@/components/ui/badge";
 import { CERTIFICATE_DETAIL } from "./constants";
 import type { CertificateListData } from "./constants";
 import { ArrowLeft, Award, Calendar, ShieldCheck } from "lucide-react";
-import type { MotionValue } from "framer-motion";
-import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
 
 interface CertificateDetailHeroProps {
   cert: CertificateListData;
-  headerY: MotionValue<number>;
-  headerScale: MotionValue<number>;
-  headerOpacity: MotionValue<number>;
 }
 
-export function CertificateDetailHero({
-  cert,
-  headerY,
-  headerScale,
-  headerOpacity,
-}: CertificateDetailHeroProps) {
+export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
   return (
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-      <m.div
-        style={{ y: headerY, scale: headerScale }}
-        className="absolute inset-0"
-      >
+      <div className="absolute inset-0">
         {cert.thumbnail ? (
-          <Image
+          <img
             src={cert.thumbnail}
             alt={cert.title}
-            fill
-            className="object-cover"
-            priority
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-accent/5">
             <Award className="h-24 w-24 opacity-20 text-accent" />
           </div>
         )}
-      </m.div>
+      </div>
 
       <div className="absolute inset-0 bg-linear-to-t from-bg-primary via-bg-primary/60 to-transparent" />
       <div className="absolute inset-0 bg-linear-to-b from-bg-primary/40 to-transparent" />
@@ -58,16 +43,9 @@ export function CertificateDetailHero({
         </div>
       </div>
 
-      <m.div
-        style={{ opacity: headerOpacity }}
-        className="absolute bottom-0 left-0 right-0 z-10 pb-12"
-      >
+      <div className="absolute bottom-0 left-0 right-0 z-10 pb-12 animate-fade-in-up delay-300">
         <div className="container mx-auto px-4 max-w-5xl">
-          <m.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <div className="animate-fade-in-up delay-200">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <Badge
                 variant="outline"
@@ -97,9 +75,9 @@ export function CertificateDetailHero({
                 <Calendar className="w-4 h-4 text-accent" /> {cert.period}
               </span>
             </div>
-          </m.div>
+          </div>
         </div>
-      </m.div>
+      </div>
     </div>
   );
 }

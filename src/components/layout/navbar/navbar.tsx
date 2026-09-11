@@ -35,18 +35,19 @@ export function Navbar() {
           {/* 2. Desktop Navigation */}
           <DesktopNav />
 
-          {/* 3. Desktop CTA Button (Shadcn UI) */}
+          {/* 3. Desktop CTA Button (Shadcn UI) - Fixed: Link styled as button, no Button wrapping Link */}
           <div className="hidden md:block animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
-            <Button
+            <Link
+              href="/contact"
               className={cn(
-                "rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95",
+                "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-2.5 transition-all duration-300 hover:scale-105 active:scale-95",
                 isActiveContact
                   ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
                   : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20 hover:border-accent",
               )}
             >
-              <Link href="/contact">Let&apos;s Talk</Link>
-            </Button>
+              Let&apos;s Talk
+            </Link>
           </div>
 
           {/* 4. Mobile Menu (Toggle + Dropdown) */}
