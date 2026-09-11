@@ -1,4 +1,4 @@
-import { ExperienceDetail } from "@/components/sections/experience-detail";
+import { ExperienceDetailPageContent } from "./experience-detail-content";
 import prisma from "@/lib/prisma";
 import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
@@ -16,16 +16,13 @@ export async function generateStaticParams() {
     });
     return experiences.map((exp) => ({ slug: exp.slug }));
   } catch {
-    // Hermetic build fallback: saat database tidak terjangkau (mis. CI build
-    // tanpa DB), lewahkan pra-render params dan biarkan halaman dirender
-    // on-demand alih-alih menggagalkan `next build`.
     return [];
   }
 }
 
 export async function generateMetadata({
   params,
-}: ExperienceDetailPageProps): Promise<Metadata> {
+}: ExperienceDetailPageProps): Promise<any> {
   const { slug } = await params;
   const experience = await prisma.experience.findFirst({
     where: { slug },
@@ -33,14 +30,13 @@ export async function generateMetadata({
   });
 
   if (!experience) {
-    return buildNotFoundMetadata("Experience");
+    return { title: "Not Found" };
   }
 
-  return buildMetadata({
+  return {
     title: `${experience.title} — ${experience.company}`,
     description: `Detail pengalaman ${experience.title} di ${experience.company}.`,
-    path: `/experience/${slug}`,
-  });
+  };
 }
 
 export default async function ExperienceDetailPage({
@@ -67,5 +63,5 @@ export default async function ExperienceDetailPage({
   const prev = index > 0 ? allMapped[index - 1] : null;
   const next = index < allMapped.length - 1 ? allMapped[index + 1] : null;
 
-  return <ExperienceDetail exp={exp} prev={prev} next={next} />;
+  return <ExperienceDetailPageContent exp={exp} prev={prev} next={next} />;
 }

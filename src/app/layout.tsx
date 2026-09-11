@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/lib/providers";
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { Footer } from "@/components/layout/footer/footer";
 
@@ -82,7 +81,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} scroll-smooth`}>
       <head>
-        {/* Preload critical LCP image */}
         <link
           rel="preload"
           as="image"
@@ -95,20 +93,17 @@ export default function RootLayout({
           href="/avatar-hero.webp"
           type="image/webp"
         />
-        {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
-        <Providers>
-          <Navbar />
-          <main id="main-content" className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
+        <Navbar />
+        <main id="main-content" className="min-h-screen">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

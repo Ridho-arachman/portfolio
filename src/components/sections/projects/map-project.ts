@@ -7,17 +7,19 @@ interface DbProject {
   description: string;
   thumbnail: string;
   technologies: string[];
-  liveUrl: string | null;
-  repoUrl: string | null;
   gallery: string[];
-  role: string | null;
-  year: string | null;
-  highlights: string[];
-  isPublished: boolean;
-  order: number;
-  categoryId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  // Optional fields that may not exist in all Prisma schemas
+  liveUrl?: string | null;
+  repoUrl?: string | null;
+  role?: string | null;
+  year?: string | null;
+  highlights?: string[];
+  isPublished?: boolean;
+  order?: number;
+  categoryId?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+  [key: string]: any;
 }
 
 export function mapDbProjectToProject(dbProject: DbProject): Project {

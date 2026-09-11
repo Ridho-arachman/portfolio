@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "./constants";
+import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 
 export function DesktopNav() {
   const pathname = usePathname();
@@ -38,6 +39,11 @@ export function DesktopNav() {
           </li>
         );
       })}
+
+      {/* Theme Toggle */}
+      <li className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+        <ThemeToggleFloating />
+      </li>
     </ul>
   );
 }

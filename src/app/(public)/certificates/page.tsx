@@ -1,14 +1,7 @@
-import { CertificateCard } from "@/components/sections/certificates/certificate-card";
+import { CertificatesPageContent } from "./certificates-content";
 import { mapCertificateToData } from "@/components/sections/certificates/constants";
-import { PageHero } from "@/components/sections/page-hero";
 import prisma from "@/lib/prisma";
 import { buildMetadata } from "@/lib/seo";
-import { ServerPagination } from "@/components/ui/server-pagination";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Award } from "lucide-react";
-
-
-const PAGE_SIZE = 6;
 
 export const metadata = buildMetadata({
   title: "Certificates",
@@ -17,6 +10,8 @@ export const metadata = buildMetadata({
   path: "/certificates",
 });
 
+export const dynamic = "force-dynamic";
+
 export default async function CertificatesListPage({
   searchParams,
 }: {
@@ -24,6 +19,8 @@ export default async function CertificatesListPage({
 }) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
+
+  const PAGE_SIZE = 6;
 
   const [certificates, total] = await Promise.all([
     prisma.certificate.findMany({
@@ -38,41 +35,5 @@ export default async function CertificatesListPage({
   const data = certificates.map(mapCertificateToData);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
-      {/* Hero bergaya About */}
-      <PageHero
-        badge="Credentials"
-        title="My"
-        titleAccent="Certificates"
-        description="Professional certifications and credentials validating my expertise in cloud, front-end, data, and UX design."
-        iconSet="certificates"
-      />
-
-      {/* Grid List */}
-      <section className="container mx-auto px-4 max-w-5xl pb-20">
-        {data.length === 0 ? (
-          <EmptyState
-            icon={Award}
-            title="No certificates yet"
-            description="Certificates will appear here once published."
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data.map((cert, index) => (
-              <CertificateCard key={cert.id} cert={cert} index={index} />
-            ))}
-          </div>
-        )}
-
-        <div className="mt-12">
-          <ServerPagination
-            page={page}
-            totalPages={totalPages}
-            basePath="/certificates"
-          />
-        </div>
-      </section>
-    </div>
-  );
+  return <CertificatesPageContent data={data} page={page} totalPages={totalPages} />;
 }

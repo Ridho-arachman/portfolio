@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_LINKS } from "./constants";
+import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 
 export function MobileNav() {
   const pathname = usePathname();
@@ -88,6 +88,11 @@ export function MobileNav() {
               >
                 Let&apos;s Talk
               </Link>
+            </li>
+
+            {/* Theme Toggle in Mobile Menu */}
+            <li className="pt-2 animate-fade-in-up delay-500">
+              <ThemeToggleFloating />
             </li>
           </ul>
         </div>

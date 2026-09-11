@@ -1,12 +1,8 @@
-import { HeroSection } from "@/components/sections/hero";
-import { AboutSection } from "@/components/sections/about";
+import { HomePageContent } from "./home-content";
+import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import prisma from "@/lib/prisma";
 import { getClientEnv } from "@/lib/env";
 import { buildMetadata } from "@/lib/seo";
-import { Skeleton } from "@/components/ui/skeleton";
-import HomeContent from "./home-content";
-
-export const dynamic = "force-dynamic";
 
 const env = getClientEnv();
 
@@ -17,7 +13,7 @@ export const metadata = buildMetadata({
   absolute: true,
 });
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [certificates, projects] = await Promise.all([
@@ -34,17 +30,8 @@ export default async function Home() {
   ]);
 
   return (
-    <HomeContent
-      projects={projects.map((p) => ({
-        id: Number(p.id),
-        slug: p.slug,
-        title: p.title,
-        description: p.description,
-        image: p.thumbnail,
-        tags: p.technologies,
-        gallery: p.gallery,
-        link: `/projects/${p.slug}`,
-      }))}
+    <HomePageContent
+      projects={projects.map(mapDbProjectToProject)}
       certificates={certificates.map((c) => ({
         id: Number(c.id),
         slug: c.slug,

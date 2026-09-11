@@ -1,5 +1,6 @@
 "use client";
 
+import { Providers } from "@/lib/providers";
 import dynamic from "next/dynamic";
 import { HeroSection } from "@/components/sections/hero";
 import { AboutSection } from "@/components/sections/about";
@@ -90,19 +91,19 @@ const ContactSection = dynamic(
   }
 );
 
-interface HomeContentProps {
+interface HomePageContentProps {
   projects: Project[];
   certificates: CertificateListData[];
 }
 
-export default function HomeContent({ projects, certificates }: HomeContentProps) {
+export function HomePageContent({ projects, certificates }: HomePageContentProps) {
   return (
-    <>
+    <Providers>
       <HeroSection />
       <AboutSection />
       <ProjectsSection projects={projects} />
       <CertificatesSection certificates={certificates} />
       <ContactSection />
-    </>
+    </Providers>
   );
 }

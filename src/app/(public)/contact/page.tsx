@@ -1,7 +1,5 @@
-import { ContactSection } from "@/components/sections/contact";
+import { ContactPageContent } from "./contact-content";
 import { buildMetadata } from "@/lib/seo";
-
-export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
   title: "Contact",
@@ -10,10 +8,8 @@ export const metadata = buildMetadata({
   path: "/contact",
 });
 
+export const dynamic = "force-dynamic";
+
 export default function ContactPage() {
-  return (
-    <main className="min-h-screen pt-32 bg-bg-primary overflow-x-hidden">
-      <ContactSection />
-    </main>
-  );
+  return <ContactPageContent />;
 }

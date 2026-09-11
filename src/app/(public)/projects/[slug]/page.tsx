@@ -1,9 +1,7 @@
-import { ProjectDetail } from "@/components/sections/project-detail";
-import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
-import type { Project } from "@/components/sections/projects/constants";
+import { ProjectDetailPageContent } from "./project-detail-content";
 import prisma from "@/lib/prisma";
 import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
-import { Metadata } from "next";
+import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import { notFound } from "next/navigation";
 
 async function fetchProject(slug: string) {
@@ -20,9 +18,9 @@ async function fetchAllPublishedProjects() {
 }
 
 function getAdjacentProjects(
-  projects: Project[],
+  projects: { slug: string; title: string }[],
   slug: string,
-): { prev: Project | null; next: Project | null } {
+): { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null } {
   const index = projects.findIndex((p) => p.slug === slug);
   return {
     prev: index > 0 ? projects[index - 1] : null,
@@ -44,29 +42,26 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: { params: Promise<{ slug: string }> }): Promise<any> {
   const { slug } = await params;
   const project = await fetchProject(slug);
 
   if (!project) {
-    return buildNotFoundMetadata("Project");
+    return { title: "Not Found" };
   }
 
-  return buildMetadata({
+  return {
     title: project.title,
     description: project.description.slice(0, 155),
-    path: `/projects/${slug}`,
-    ogImage: project.thumbnail || undefined,
-  });
+    openGraph: {
+      images: project.thumbnail ? [project.thumbnail] : [],
+    },
+  };
 }
 
 export default async function ProjectDetailPage({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+}: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   const [dbProject, allDbProjects] = await Promise.all([
@@ -82,5 +77,5 @@ export default async function ProjectDetailPage({
   const allProjects = allDbProjects.map(mapDbProjectToProject);
   const { prev, next } = getAdjacentProjects(allProjects, slug);
 
-  return <ProjectDetail project={project} prev={prev} next={next} />;
+  return <ProjectDetailPageContent project={project} prev={prev} next={next} />;
 }
