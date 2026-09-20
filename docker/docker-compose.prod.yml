@@ -3,11 +3,27 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.prod # <--- PANGGIL DOCKERFILE PROD
+      # Build args wajib: dipakai saat `next build` untuk static generation
+      # (ISR). Jika kosong, halaman publik jatuh ke dynamic rendering =>
+      # setiap request query Supabase (TTFB +700ms) dan respons no-store
+      # (bfcache diblokir). Isi via .env di VPS; fallback menjamin deploy tetap jalan.
+      args:
+        DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres}
+        BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+        BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://ridhoarachman.dev}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+        SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
     container_name: nextjs_prod
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-https://ridhoarachman.dev}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
     extra_hosts:
       - "host.docker.internal:host-gateway" 
     networks:
