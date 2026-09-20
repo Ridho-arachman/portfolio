@@ -1,3 +1,4 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
@@ -65,6 +66,10 @@ export async function POST(req: Request) {
         gallery: data.gallery ?? [],
       },
     });
+
+    revalidatePath("/experience");
+    revalidatePath(`/experience/${experience.slug}`);
+    revalidateTag("experiences", { expire: 0 });
 
     return successResponse(experience, 201);
   } catch (error) {

@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { projectCreateSchema } from "@/schema/project";
@@ -71,6 +71,7 @@ export async function POST(req: Request) {
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${project.slug}`);
+    revalidateTag("projects", { expire: 0 });
 
     return successResponse(project, 201);
   } catch (error) {

@@ -6,8 +6,10 @@ vi.mock("@/lib/session", () => ({
 }));
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { POST as createRoute } from "./route";
@@ -70,6 +72,7 @@ describe("POST /api/admin/certificates", () => {
       where: { slug: `${prefix}-aws-certificate` },
     });
     expect(row?.issuer).toBe("Amazon Web Services");
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("certificates", { expire: 0 });
   });
 
   it("rejects a short issuer with 400", async () => {

@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
 vi.mock("@/lib/session", () => ({
@@ -22,7 +23,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { DELETE, PUT } from "./route";
@@ -62,6 +63,7 @@ describe("PUT /api/admin/projects/[id]", () => {
     const calls = vi.mocked(revalidatePath).mock.calls;
     expect(calls).toContainEqual(["/projects"]);
     expect(calls).toContainEqual(["/projects/stable-slug"]);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
   it("also invalidates the previous slug path when the slug changes", async () => {
@@ -84,6 +86,7 @@ describe("PUT /api/admin/projects/[id]", () => {
     expect(calls).toContainEqual(["/projects"]);
     expect(calls).toContainEqual(["/projects/new-slug"]);
     expect(calls).toContainEqual(["/projects/old-slug"]);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
   it("does not revalidate when the project is missing (404)", async () => {
@@ -95,6 +98,7 @@ describe("PUT /api/admin/projects/[id]", () => {
 
     expect(res.status).toBe(404);
     expect(vi.mocked(revalidatePath).mock.calls.length).toBe(0);
+    expect(vi.mocked(revalidateTag).mock.calls.length).toBe(0);
   });
 });
 
@@ -126,6 +130,7 @@ describe("DELETE /api/admin/projects/[id]", () => {
     const calls = vi.mocked(revalidatePath).mock.calls;
     expect(calls).toContainEqual(["/projects"]);
     expect(calls).toContainEqual(["/projects/gone-slug"]);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
   it("does not revalidate when the project is missing (404)", async () => {
@@ -142,5 +147,6 @@ describe("DELETE /api/admin/projects/[id]", () => {
 
     expect(res.status).toBe(404);
     expect(vi.mocked(revalidatePath).mock.calls.length).toBe(0);
+    expect(vi.mocked(revalidateTag).mock.calls.length).toBe(0);
   });
 });

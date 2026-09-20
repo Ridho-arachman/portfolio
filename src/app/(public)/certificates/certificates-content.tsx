@@ -1,20 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { Providers } from "@/lib/providers";
 import { CertificateCard } from "@/components/sections/certificates/certificate-card";
 import { PageHero } from "@/components/sections/page-hero";
-import { ServerPagination } from "@/components/ui/server-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Award } from "lucide-react";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
 
+const PAGE_SIZE = 6;
+
 interface CertificatesPageContentProps {
   data: CertificateListData[];
-  page: number;
-  totalPages: number;
 }
 
-export function CertificatesPageContent({ data, page, totalPages }: CertificatesPageContentProps) {
+export function CertificatesPageContent({ data }: CertificatesPageContentProps) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(data.length / PAGE_SIZE);
+  const visibleData = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   return (
     <Providers>
       <div className="flex flex-col min-h-screen overflow-x-hidden">
@@ -35,19 +40,17 @@ export function CertificatesPageContent({ data, page, totalPages }: Certificates
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              {data.map((cert, index) => (
+              {visibleData.map((cert, index) => (
                 <CertificateCard key={cert.id} cert={cert} index={index} />
               ))}
             </div>
           )}
 
-          <div className="mt-12">
-            <ServerPagination
-              page={page}
-              totalPages={totalPages}
-              basePath="/certificates"
-            />
-          </div>
+          {totalPages > 1 && (
+            <div className="mt-12">
+              <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+            </div>
+          )}
         </section>
       </div>
     </Providers>

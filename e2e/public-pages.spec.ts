@@ -27,7 +27,9 @@ test("home page shows hero call to action", async ({ page }) => {
     page.getByRole("heading", { level: 1 }),
   ).toContainText("Future");
   await expect(page.getByText("Available for hire", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Contact Me" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Let's Talk" }).first(),
+  ).toBeVisible();
 });
 
 test("contact navigation link points to the contact page", async ({
@@ -35,7 +37,7 @@ test("contact navigation link points to the contact page", async ({
 }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: "Contact Me" }).click();
+  await page.getByRole("link", { name: "Let's Talk" }).first().click();
 
   await expect(page).toHaveURL(/\/contact$/);
   await expect(page.getByRole("heading", { level: 2 })).toContainText(

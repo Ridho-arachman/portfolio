@@ -6,8 +6,10 @@ vi.mock("@/lib/session", () => ({
 }));
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { POST as createRoute } from "./route";
@@ -74,6 +76,7 @@ describe("POST /api/admin/experience", () => {
     });
     expect(row?.company).toBe("Tech Corp");
     expect(row?.type).toBe("WORK");
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("experiences", { expire: 0 });
   });
 
   it("rejects an invalid type with 400", async () => {

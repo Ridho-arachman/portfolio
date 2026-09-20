@@ -158,6 +158,9 @@ jobs:
         run: npx prisma db push
 
       - name: 🖥️ Install Playwright browsers
+      - name: 🧬 Generate Prisma Client
+        run: npx prisma generate
+
         run: npx playwright install --with-deps chromium
 
       - name: 🧪 End-to-End Tests

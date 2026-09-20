@@ -1,3 +1,4 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { certificateUpdateSchema } from "@/schema/certificate";
@@ -81,6 +82,10 @@ export async function PUT(
       },
     });
 
+    revalidatePath("/certificates");
+    revalidatePath(`/certificates/${certificate.slug}`);
+    revalidateTag("certificates", { expire: 0 });
+
     return successResponse(certificate);
   } catch (error) {
     return errorResponseFrom(error, "Certificate operation failed");
@@ -101,6 +106,10 @@ export async function DELETE(
     }
 
     await prisma.certificate.delete({ where: { id } });
+
+    revalidatePath("/certificates");
+    revalidatePath(`/certificates/${existing.slug}`);
+    revalidateTag("certificates", { expire: 0 });
 
     return successResponse({ message: "Certificate deleted" });
   } catch (error) {

@@ -1,3 +1,4 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { experienceUpdateSchema } from "@/schema/experience";
@@ -52,6 +53,10 @@ export async function PUT(
       data: updateData,
     });
 
+    revalidatePath("/experience");
+    revalidatePath(`/experience/${experience.slug}`);
+    revalidateTag("experiences", { expire: 0 });
+
     return successResponse(experience);
   } catch (error) {
     return errorResponseFrom(error, "Experience operation failed");
@@ -66,7 +71,16 @@ export async function DELETE(
     await requireAdminSession();
     const { id } = await params;
 
+    const existing = await prisma.experience.findUnique({ where: { id } });
+    if (!existing) {
+      return errorResponse("Experience not found", 404);
+    }
+
     await prisma.experience.delete({ where: { id } });
+
+    revalidatePath("/experience");
+    revalidatePath(`/experience/${existing.slug}`);
+    revalidateTag("experiences", { expire: 0 });
 
     return successResponse({ deleted: true });
   } catch (error) {

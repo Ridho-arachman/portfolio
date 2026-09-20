@@ -6,9 +6,10 @@ vi.mock("@/lib/session", () => ({
 }));
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { POST as createRoute } from "./route";
@@ -71,6 +72,7 @@ describe("POST /api/admin/projects", () => {
 
     expect(vi.mocked(revalidatePath)).toHaveBeenCalledWith("/projects");
     expect(vi.mocked(revalidatePath)).toHaveBeenCalledWith(`/projects/${json.data.slug}`);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
   it("maps a duplicate slug (P2002) to a 409 conflict", async () => {

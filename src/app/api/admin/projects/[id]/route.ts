@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
@@ -86,6 +86,7 @@ export async function PUT(
     if (project.slug !== existing.slug) {
       revalidatePath(`/projects/${existing.slug}`);
     }
+    revalidateTag("projects", { expire: 0 });
 
     return successResponse(project);
   } catch (error) {
@@ -110,6 +111,7 @@ export async function DELETE(
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${existing.slug}`);
+    revalidateTag("projects", { expire: 0 });
 
     return successResponse({ message: "Project deleted" });
   } catch (error) {

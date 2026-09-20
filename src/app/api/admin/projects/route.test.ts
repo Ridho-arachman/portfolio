@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
 vi.mock("@/lib/session", () => ({
@@ -21,7 +22,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { POST } from "./route";
@@ -64,6 +65,7 @@ describe("POST /api/admin/projects", () => {
     const calls = vi.mocked(revalidatePath).mock.calls;
     expect(calls).toContainEqual(["/projects"]);
     expect(calls).toContainEqual(["/projects/audit-fix-project"]);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
   it("does not revalidate when creation fails", async () => {
@@ -75,6 +77,7 @@ describe("POST /api/admin/projects", () => {
 
     expect(res.status).toBe(500);
     expect(vi.mocked(revalidatePath).mock.calls.length).toBe(0);
+    expect(vi.mocked(revalidateTag).mock.calls.length).toBe(0);
   });
 
   it("does not revalidate on validation error", async () => {
@@ -82,5 +85,6 @@ describe("POST /api/admin/projects", () => {
 
     expect(res.status).toBe(400);
     expect(vi.mocked(revalidatePath).mock.calls.length).toBe(0);
+    expect(vi.mocked(revalidateTag).mock.calls.length).toBe(0);
   });
 });
