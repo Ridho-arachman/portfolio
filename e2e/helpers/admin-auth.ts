@@ -1,7 +1,7 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { hash } from "@node-rs/argon2";
+import { hash, verify } from "bcrypt";
 import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient({
@@ -48,7 +48,7 @@ export async function ensureAdminUser(request: APIRequestContext) {
       where: { providerId_accountId: { providerId: "credential", accountId: E2E_ADMIN.email } },
     });
     if (!existingAccount) {
-      const hashedPassword = await hash(E2E_ADMIN.password);
+      const hashedPassword = await hash(E2E_ADMIN.password, 12);
       await prisma.account.create({
         data: {
           id: randomUUID(),
@@ -62,8 +62,8 @@ export async function ensureAdminUser(request: APIRequestContext) {
     return;
   }
 
-  // Create user directly in DB (bypass CAPTCHA) - hash password with argon2
-  const hashedPassword = await hash(E2E_ADMIN.password);
+  // Create user directly in DB (bypass CAPTCHA) - hash password with bcrypt
+  const hashedPassword = await hash(E2E_ADMIN.password, 12);
 
   const user = await prisma.user.create({
     data: {
@@ -81,7 +81,7 @@ export async function ensureAdminUser(request: APIRequestContext) {
       accountId: E2E_ADMIN.email,
       providerId: "credential",
       userId: user.id,
-      password: await hash(E2E_ADMIN.password),
+      password: hashedPassword,
     },
   });
 }
@@ -103,14 +103,14 @@ export async function ensureRegularUser(request: APIRequestContext) {
           accountId: E2E_USER.email,
           providerId: "credential",
           userId: existing.id,
-          password: await hash(E2E_USER.password),
+          password: await hash(E2E_USER.password, 12),
         },
       });
     }
     return;
   }
 
-  const hashedPassword = await hash(E2E_USER.password);
+  const hashedPassword = await hash(E2E_USER.password, 12);
 
   const user = await prisma.user.create({
     data: {
@@ -128,7 +128,7 @@ export async function ensureRegularUser(request: APIRequestContext) {
       accountId: E2E_USER.email,
       providerId: "credential",
       userId: user.id,
-      password: await hash(E2E_USER.password),
+      password: hashedPassword,
     },
   });
 }
@@ -141,8 +141,8 @@ export async function loginAsEmail(page: Page, email: string) {
     email === E2E_ADMIN.email ? E2E_ADMIN.password : E2E_USER.password;
 
   await page.goto("/admin/login");
-  // Use more specific selector for the email input in the login form
-  await page.locator('input[id="email"], input[name="email"]').first().fill(email);
+  // Use specific selector for the email input in the login form (avoid mailto link)
+  await page.locator('input[id="email"]').fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign In" }).click();
   // Tunggu form submit selesai: URL berubah dari /admin/login,

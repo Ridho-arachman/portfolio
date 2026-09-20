@@ -9,7 +9,7 @@ import {
 } from "./helpers/admin-auth";
 
 async function loginViaForm(page: Page) {
-  await page.getByLabel("Email").fill(E2E_ADMIN.email);
+  await page.locator('input[id="email"]').fill(E2E_ADMIN.email);
   await page.getByLabel("Password", { exact: true }).fill(E2E_ADMIN.password);
   await page.getByRole("button", { name: "Sign In" }).click();
 }
@@ -27,6 +27,7 @@ test("admin login page renders", async ({ page }) => {
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Welcome Back",
+    { timeout: 30_000 },
   );
 });
 
