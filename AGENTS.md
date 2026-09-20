@@ -50,7 +50,54 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
 
 ---
 
-## 5. Testing Requirements
+## 5. Anti-Looping & Disiplin Eksekusi (WAJIB)
+
+Aturan ini lahir dari insiden nyata: agent memanggil perintah `grep` yang sama berulang-ulang tanpa henti karena tidak membaca hasil dengan benar. Perilaku ini **dilarang keras**.
+
+- ❌ **Dilarang mengulang perintah yang sama** (grep, curl, read, build, dll) lebih dari **2 kali** dengan hasil yang sama/kosong. Jika 2 percobaan tidak membuahkan hasil baru, **STOP** dan ganti pendekatan.
+- ✅ **Setiap perintah harus dibaca hasilnya sebelum lanjut.** Jika output kosong/terpotong/gagal, jangan ulangi perintah identik — diagnosa dulu penyebabnya (mis. output disimpan ke file, encoding beda, tool tidak tersedia).
+- ✅ **Batas maksimal 3 iterasi per sub-masalah.** Bila setelah 3 percobaan belum selesai:
+  1. Hentikan semua percobaan.
+  2. Dokumentasikan apa yang sudah dicoba dan mengapa gagal.
+  3. Laporkan ke user atau ganti strategi (tool lain, pendekatan lain), jangan mengulang hal yang sama.
+- ✅ **Bedakan antara "belum berhasil" dan "tidak akan berhasil".** Jika hambatan adalah artefak lingkungan (mis. Lighthouse localhost memaksa HTTPS, tool tidak ada di Windows), hentikan investigasi dan jelaskan sebagai keterbatasan, bukan terus mencoba.
+- ✅ **Verifikasi hasil sebelum mengklaim sukses.** Baca output, bandingkan dengan ekspektasi, baru simpulkan. Jangan menembak perintah beruntun tanpa memeriksa hasil.
+
+---
+
+## 6. Performance & Lighthouse Quality Gate (WAJIB)
+
+Menambah fitur **bukan hanya soal design/tampilan bagus** — kualitas web (performance, accessibility, best practices, SEO) harus tetap terjaga. Setiap perubahan UI/fitur yang memengaruhi halaman **WAJIB** diuji dengan Lighthouse.
+
+### Ambang batas minimal
+| Kategori | Target |
+|---|---|
+| Performance | ≥ 95 |
+| Accessibility | ≥ 95 |
+| Best Practices | ≥ 95 |
+| SEO | ≥ 100 |
+
+### Kapan Lighthouse wajib dijalankan
+- Setiap menambah/mengubah fitur atau komponen yang tampil di halaman publik.
+- Setiap mengubah layout, styling, gambar, font, atau script client-side.
+- Sebelum commit untuk perubahan UI, jalankan Lighthouse pada **mobile dan desktop**.
+
+### Cara menjalankan (baseline wajib, agar hasil komparabel)
+- Gunakan **Lighthouse versi terbaru** dengan throttling default (simulate), jangan `--preset=desktop`.
+- Audit terhadap **production build** (`npm run build` → jalankan server standalone), bukan `next dev`.
+- Uji **mobile** (412×823 dsf 1.75) dan **desktop** (1350×940 dsf 1).
+- Simpan hasil sebagai JSON, bandingkan antar-commit, jangan hapus artefak pembanding sebelum analisa selesai.
+
+### Aturan perbaikan
+- ✅ Perbaiki temuan **score 0** pada `color-contrast`, `target-size`, `image-size-responsive`, `errors-in-console` bila itu berasal dari kode aplikasi.
+- ✅ Kontras & touch target: pastikan nilai eksplisit (bukan bergantung pada CSS variable yang tidak ter-resolve di semua konteks); touch target minimal 48×48px.
+- ✅ Gambar: gunakan `next/image` dengan dimensi sesuai agar `image-size-responsive` lulus.
+- ⚠️ **Artefak lingkungan tidak dihitung sebagai bug kode.** Contoh: Lighthouse terhadap hostname lokal memaksa HTTPS → `ERR_SSL_PROTOCOL_ERROR`. Pada kasus ini, dokumentasikan sebagai keterbatasan lingkungan (akan hilang di produksi dengan SSL valid), jangan buang waktu memperbaikinya di kode.
+- ✅ Catat skor Lighthouse terakhir di deskripsi commit atau laporan tugas agar regresi terdeteksi.
+
+---
+
+## 7. Testing Requirements
 
 Setiap fitur baru atau perubahan behavior **WAJIB** disertai test yang sesuai:
 
