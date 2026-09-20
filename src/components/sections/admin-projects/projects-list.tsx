@@ -29,6 +29,8 @@ import { useAdminProjects, useDeleteProject } from "@/hooks/use-projects";
 import { usePagination } from "@/hooks/use-pagination";
 import { Pagination } from "@/components/ui/pagination";
 import type { AdminProject } from "./constants";
+// Import nuqs adapter for Next.js App Router
+import "nuqs/adapters/next";
 
 export function ProjectsList() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
