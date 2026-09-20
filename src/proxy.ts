@@ -42,16 +42,10 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Konfigurasi: Hanya jalankan middleware untuk path ini (hemat resource)
+// Konfigurasi: Hanya jalankan middleware untuk route /admin.
+// Matcher lama mencakup semua path => bundle better-auth + Prisma ~700KB
+// dieksekusi di SETIAP request (home page, API publik) => +30-100ms TTFB.
+// Logika middleware hanya melindungi /admin, jadi persempit ke /admin/:path*.
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    "/((?!_next/static|_next/image|favicon.ico|public|api/auth).*)",
-  ],
+  matcher: ["/admin/:path*"],
 };
