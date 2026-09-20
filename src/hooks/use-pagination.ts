@@ -1,5 +1,6 @@
 "use client";
 
+import "nuqs/adapters/next";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useCallback, useMemo } from "react";
 
