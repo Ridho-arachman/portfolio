@@ -3,9 +3,8 @@ import { expect, test } from "@playwright/test";
 test("renders the contact section with a form", async ({ page }) => {
   await page.goto("/contact");
 
-  await expect(page.getByRole("heading", { level: 2 })).toContainText(
-    "Together",
-  );
+  // Target the main contact heading specifically (not the footer "Ridho.dev" h2)
+  await expect(page.getByRole("heading", { name: "Let's Work Together" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Name" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Email" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Subject" })).toBeVisible();

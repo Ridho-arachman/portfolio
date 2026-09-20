@@ -48,7 +48,7 @@ export async function ensureAdminUser(request: APIRequestContext) {
       where: { providerId_accountId: { providerId: "credential", accountId: E2E_ADMIN.email } },
     });
     if (!existingAccount) {
-      const hashedPassword = await hash(E2E_ADMIN.password, 12);
+const hashedPassword = await hash(E2E_ADMIN.password, 10);
       await prisma.account.create({
         data: {
           id: randomUUID(),
@@ -96,21 +96,21 @@ export async function ensureRegularUser(request: APIRequestContext) {
     const existingAccount = await prisma.account.findUnique({
       where: { providerId_accountId: { providerId: "credential", accountId: E2E_USER.email } },
     });
-    if (!existingAccount) {
+if (!existingAccount) {
       await prisma.account.create({
         data: {
           id: randomUUID(),
           accountId: E2E_USER.email,
           providerId: "credential",
           userId: existing.id,
-          password: await hash(E2E_USER.password, 12),
+          password: await hash(E2E_USER.password, 10),
         },
       });
     }
     return;
   }
 
-  const hashedPassword = await hash(E2E_USER.password, 12);
+  const hashedPassword = await hash(E2E_USER.password, 10);
 
   const user = await prisma.user.create({
     data: {

@@ -40,7 +40,6 @@ test("contact navigation link points to the contact page", async ({
   await page.getByRole("link", { name: "Let's Talk" }).first().click();
 
   await expect(page).toHaveURL(/\/contact$/);
-  await expect(page.getByRole("heading", { level: 2 })).toContainText(
-    "Together",
-  );
+  // Target the main contact heading specifically (not the footer "Ridho.dev" h2)
+  await expect(page.getByRole("heading", { name: "Let's Work Together" })).toBeVisible();
 });
