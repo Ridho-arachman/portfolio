@@ -25,11 +25,8 @@ test.afterAll(async () => {
 test("admin login page renders", async ({ page }) => {
   await page.goto("/admin/login");
 
-  // Wait for motion animation to complete - heading animates in from hidden
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Welcome Back",
-    { timeout: 60_000 },
-  );
+  // Wait for heading to be visible with expected text (handles motion animation)
+  await expect(page.getByRole("heading", { level: 1, name: "Welcome Back" })).toBeVisible({ timeout: 60_000 });
 });
 
 test("admin login validates credentials", async ({ page }) => {

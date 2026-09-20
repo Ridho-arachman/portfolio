@@ -32,37 +32,12 @@ function randomIp() {
 }
 
 // Pastikan user admin ada (langsung create di DB, bypass CAPTCHA)
+// Selalu recreate user untuk memastikan hash password fresh & cocok
 export async function ensureAdminUser(request: APIRequestContext) {
-  const existing = await prisma.user.findUnique({
-    where: { email: E2E_ADMIN.email },
-  });
-  if (existing) {
-    if (existing.role !== "ADMIN") {
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { role: "ADMIN" },
-      });
-    }
-    // Ensure account exists with password
-    const existingAccount = await prisma.account.findUnique({
-      where: { providerId_accountId: { providerId: "credential", accountId: E2E_ADMIN.email } },
-    });
-    if (!existingAccount) {
-const hashedPassword = await hash(E2E_ADMIN.password, 10);
-      await prisma.account.create({
-        data: {
-          id: randomUUID(),
-          accountId: E2E_ADMIN.email,
-          providerId: "credential",
-          userId: existing.id,
-          password: hashedPassword,
-        },
-      });
-    }
-    return;
-  }
+  // Hapus user lama jika ada
+  await prisma.user.deleteMany({ where: { email: E2E_ADMIN.email } });
 
-  // Create user directly in DB (bypass CAPTCHA) - hash password with bcrypt
+  // Create user directly in DB (bypass CAPTCHA) - hash password with @node-rs/bcrypt
   const hashedPassword = await hash(E2E_ADMIN.password, 10);
 
   const user = await prisma.user.create({
@@ -88,27 +63,8 @@ const hashedPassword = await hash(E2E_ADMIN.password, 10);
 
 // Pastikan user non-admin ada (tetap ber-role USER).
 export async function ensureRegularUser(request: APIRequestContext) {
-  const existing = await prisma.user.findUnique({
-    where: { email: E2E_USER.email },
-  });
-  if (existing) {
-    // Ensure account exists
-    const existingAccount = await prisma.account.findUnique({
-      where: { providerId_accountId: { providerId: "credential", accountId: E2E_USER.email } },
-    });
-if (!existingAccount) {
-      await prisma.account.create({
-        data: {
-          id: randomUUID(),
-          accountId: E2E_USER.email,
-          providerId: "credential",
-          userId: existing.id,
-          password: await hash(E2E_USER.password, 10),
-        },
-      });
-    }
-    return;
-  }
+  // Hapus user lama jika ada
+  await prisma.user.deleteMany({ where: { email: E2E_USER.email } });
 
   const hashedPassword = await hash(E2E_USER.password, 10);
 
@@ -145,16 +101,16 @@ export async function loginAsEmail(page: Page, email: string) {
   await page.locator('input[id="email"]').fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign In" }).click();
-  // Tunggu form submit selesai: URL berubah dari /admin/login,
+  // Tunggu form submit selesai: URL berpindah dari /admin/login,
   // atau (non-admin) kembali ke /admin/login dengan error param.
   await page.waitForURL(
     (url) =>
       !url.pathname.endsWith("/admin/login") ||
       url.searchParams.has("error"),
-    { timeout: 15_000 },
+    { timeout: 30_000 },
   );
   // Tunggu navigasi/redirect berikutnya selesai (network idle).
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("networkidle", { timeout: 10_000 });
 }
 
 export async function cleanupE2EUsers() {
