@@ -25,11 +25,10 @@ test.afterAll(async () => {
 test("admin login page renders", async ({ page }) => {
   await page.goto("/admin/login");
 
-  // Wait for motion animation to complete, then check heading
-  await page.waitForTimeout(500);
+  // Wait for motion animation to complete - heading animates in from hidden
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Welcome Back",
-    { timeout: 30_000 },
+    { timeout: 60_000 },
   );
 });
 

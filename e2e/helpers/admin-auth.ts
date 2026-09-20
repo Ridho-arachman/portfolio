@@ -1,7 +1,7 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { hash } from "bcrypt";
+import { hash } from "@node-rs/bcrypt";
 import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient({
