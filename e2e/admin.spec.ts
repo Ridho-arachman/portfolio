@@ -25,9 +25,10 @@ test.afterAll(async () => {
 test("admin login page renders", async ({ page }) => {
   await page.goto("/admin/login");
 
-  // Wait for h1 to be in DOM (motion animation may hide in headless CI)
-  const heading = page.locator("h1").first();
-  await expect(heading).toContainText("Welcome Back", { timeout: 60_000 });
+  // Wait for login form to be visible (motion animation may hide heading in headless CI)
+  await expect(page.locator('input[id="email"]')).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator('input[id="password"]')).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
 });
 
 test("admin login validates credentials", async ({ page }) => {
