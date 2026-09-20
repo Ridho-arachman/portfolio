@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { setAdapter } from "nuqs/adapters/next";
+import "nuqs/adapters/next";
 
 export function NuqsAdapterLoader() {
-  useEffect(() => {
-    // Ensure the nuqs adapter is registered for Next.js App Router
-    setAdapter("next");
-  }, []);
-
+  // This component ensures the nuqs adapter is loaded for Next.js App Router
+  // The import above registers the adapter automatically
   return null;
 }
