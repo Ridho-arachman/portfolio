@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { Footer } from "@/components/layout/footer/footer";
+import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ridhoarachman.dev"),
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     siteName: "Ridho Arachman | Portfolio",
     title: "Ridho Arachman | Full Stack Developer",
     description:
-      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences.",
+      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
     images: [
       {
         url: "/og-image.png",
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ridho Arachman | Full Stack Developer",
     description:
-      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences.",
+      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
     images: ["/og-image.png"],
     creator: "@ridhoarachman",
   },
@@ -79,6 +80,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
+        <NuqsAdapterLoader />
         <Navbar />
         <main id="main-content" className="min-h-screen">
           {children}
