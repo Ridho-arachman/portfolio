@@ -25,8 +25,9 @@ test.afterAll(async () => {
 test("admin login page renders", async ({ page }) => {
   await page.goto("/admin/login");
 
-  // Wait for "Welcome Back" text in DOM (motion animation may hide element in headless CI)
-  await expect(page.locator('text="Welcome Back"')).toHaveCount(1, { timeout: 60_000 });
+  // Wait for h1 to be in DOM (motion animation may hide in headless CI)
+  const heading = page.locator("h1").first();
+  await expect(heading).toContainText("Welcome Back", { timeout: 60_000 });
 });
 
 test("admin login validates credentials", async ({ page }) => {
