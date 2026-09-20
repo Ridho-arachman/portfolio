@@ -8,19 +8,18 @@ import { useEffect, useState } from "react";
 import { NAV_LINKS } from "./constants";
 import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 
-export function MobileNav() {
+export function MobileNavClient() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Tutup menu saat rute berubah (mis. navigasi via back/forward) -
-  // pola "adjust state during render" yang direkomendasikan React.
+  // Tutup menu saat rute berubah
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
     setIsMobileMenuOpen(false);
   }
 
-  // Tutup menu dengan tombol Escape.
+  // Tutup menu dengan tombol Escape
   useEffect(() => {
     if (!isMobileMenuOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,7 +39,7 @@ export function MobileNav() {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden p-2 text-text-secondary hover:text-accent transition-colors rounded-lg hover:bg-accent-muted"
+        className="md:hidden p-2 text-gray-900 dark:text-white hover:text-accent transition-colors rounded-lg hover:bg-accent-muted"
         aria-label="Toggle mobile menu"
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-menu"
@@ -53,7 +52,7 @@ export function MobileNav() {
       {isMobileMenuOpen && (
         <div
           id="mobile-menu"
-          className="md:hidden absolute inset-x-0 top-full bg-bg-primary border-b border-glass-border shadow-lg overflow-hidden animate-slide-down"
+          className="md:hidden absolute inset-x-0 top-full bg-white dark:bg-gray-950 border-b border-glass-border shadow-lg overflow-hidden animate-slide-down"
         >
           <ul className="container mx-auto px-4 py-6 space-y-2">
             {NAV_LINKS.map((link, index) => {

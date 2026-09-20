@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,15 +8,15 @@ export function NavbarLogo() {
         <Image
           src="/logo-optimized.webp"
           alt="Ridho.dev Logo"
-          width={80}
-          height={100}
+          width={240}
+          height={300}
           className="w-10 h-10 rounded-sm object-cover shadow-sm"
           priority
           sizes="40px"
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         />
-        <span className="text-xl font-bold text-gradient-elegant">
+        <span className="text-xl font-bold text-gray-900 dark:text-white">
           Ridho.dev
         </span>
       </Link>

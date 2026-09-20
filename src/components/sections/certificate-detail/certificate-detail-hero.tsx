@@ -16,10 +16,13 @@ export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
       <div className="absolute inset-0">
         {cert.thumbnail ? (
-          <img
+          <Image
             src={cert.thumbnail}
             alt={cert.title}
+            fill
             className="w-full h-full object-cover"
+            priority
+            sizes="100vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-accent/5">

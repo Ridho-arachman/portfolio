@@ -13,8 +13,7 @@ export default function NotFound() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-bg-primary">
       {/* Background */}
-      <div className="absolute top-1/4 left-1/4 w-100 h-100 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-125 h-125 bg-white/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 text-center px-4 max-w-2xl mx-auto space-y-8">

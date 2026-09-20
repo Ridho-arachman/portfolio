@@ -14,9 +14,6 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden">
-      {/* Background Blob - CSS animation */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-125 h-125 bg-accent/5 rounded-full blur-[120px] pointer-events-none animate-float" />
-
       <div className="container relative z-10 mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">

@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "./constants";
-import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 
 export function DesktopNav() {
   const pathname = usePathname();
@@ -23,10 +22,10 @@ export function DesktopNav() {
             <Link
               href={link.href}
               className={cn(
-                "relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300",
+                "relative px-6 py-4 rounded-full text-sm font-medium transition-colors duration-300 min-h-[56px] min-w-[56px] flex items-center justify-center",
                 active
-                  ? "text-accent"
-                  : "text-text-secondary hover:text-text-primary",
+                  ? "text-accent bg-accent/10"
+                  : "text-gray-900 dark:text-white hover:text-accent hover:bg-accent/5",
               )}
             >
               {link.label}
@@ -39,11 +38,6 @@ export function DesktopNav() {
           </li>
         );
       })}
-
-      {/* Theme Toggle */}
-      <li className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-        <ThemeToggleFloating />
-      </li>
     </ul>
   );
 }

@@ -1,32 +1,43 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DesktopNav } from "./desktop-nav";
-import { MobileNav } from "./mobile-nav";
+import { cn } from "@/lib/utils";
 import { NavbarLogo } from "./navbar-logo";
-import { useNavbarScroll } from "./use-navbar-scroll";
+import { DesktopNav } from "./desktop-nav";
+import { MobileNavClient } from "./mobile-nav-client";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
   const pathname = usePathname();
-  const isScrolled = useNavbarScroll();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const isActiveContact =
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+const isActiveContact =
     pathname === "/contact" || pathname.startsWith("/contact");
 
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300 animate-fade-in-down",
+        "fixed top-0 left-0 right-0 z-50 isolate transition-colors duration-300 animate-fade-in-down",
         isScrolled
-          ? "bg-bg-primary/60 backdrop-blur-2xl border-b border-glass-border shadow-sm"
-          : "bg-transparent",
+          ? "bg-white dark:bg-gray-950 border-b border-glass-border shadow-sm"
+          : "bg-white dark:bg-gray-950",
       )}
+      style={{ backgroundColor: "rgb(255 255 255)" }}
     >
-      {/* Tinggi total header selalu 80px (h-20) agar offset pt-20 pada
-          <main> presisi di semua state scroll. */}
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* 1. Logo */}
@@ -35,12 +46,12 @@ export function Navbar() {
           {/* 2. Desktop Navigation */}
           <DesktopNav />
 
-          {/* 3. Desktop CTA Button (Shadcn UI) - Fixed: Link styled as button, no Button wrapping Link */}
+          {/* 3. Desktop CTA Button */}
           <div className="hidden md:block animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
             <Link
               href="/contact"
               className={cn(
-                "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-2.5 transition-all duration-300 hover:scale-105 active:scale-95",
+                "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 min-h-[48px] min-w-[48px]",
                 isActiveContact
                   ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
                   : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20 hover:border-accent",
@@ -50,8 +61,8 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* 4. Mobile Menu (Toggle + Dropdown) */}
-          <MobileNav />
+          {/* 4. Mobile Menu (Client Component) */}
+          <MobileNavClient />
         </div>
       </div>
     </header>
