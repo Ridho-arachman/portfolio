@@ -4,6 +4,8 @@ import { AdminMobileSidebar } from "@/components/sections/admin-dashboard/admin-
 import { AdminSidebarProvider } from "@/components/sections/admin-dashboard/admin-sidebar-context";
 import { AdminTopbarWrapper } from "@/components/sections/admin-dashboard/admin-topbar-wrapper";
 import { QueryClientProviderWrapper } from "@/components/providers/query-client-provider";
+// Import nuqs adapter for Next.js App Router
+import "nuqs/adapters/next";
 
 export const metadata: Metadata = {
   title: "Dashboard",
