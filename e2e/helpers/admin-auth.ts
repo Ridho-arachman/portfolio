@@ -1,8 +1,6 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { hash } from "@node-rs/bcrypt";
-import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({
@@ -31,34 +29,33 @@ function randomIp() {
   return `127.0.0.${Math.floor(Math.random() * 250) + 1}`;
 }
 
-// Pastikan user admin ada (langsung create di DB, bypass CAPTCHA)
-// Selalu recreate user untuk memastikan hash password fresh & cocok
+// Pastikan user admin ada (via API sign-up untuk hash yang konsisten)
 export async function ensureAdminUser(request: APIRequestContext) {
   // Hapus user lama jika ada
   await prisma.user.deleteMany({ where: { email: E2E_ADMIN.email } });
 
-  // Create user directly in DB (bypass CAPTCHA) - hash password with @node-rs/bcrypt
-  const hashedPassword = await hash(E2E_ADMIN.password, 10);
-
-  const user = await prisma.user.create({
+  // Sign up via API untuk hash password yang konsisten dengan better-auth
+  const response = await request.post(`${SERVER_ORIGIN}/api/auth/sign-up/email`, {
     data: {
       email: E2E_ADMIN.email,
+      password: E2E_ADMIN.password,
       name: E2E_ADMIN.name,
-      role: "ADMIN",
-      emailVerified: true,
     },
   });
 
-  // Create account with password for credentials provider
-  await prisma.account.create({
-    data: {
-      id: randomUUID(),
-      accountId: E2E_ADMIN.email,
-      providerId: "credential",
-      userId: user.id,
-      password: hashedPassword,
-    },
-  });
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to create admin user: ${response.status()} ${body}`);
+  }
+
+  // Update role ke ADMIN (sign-up default USER)
+  const user = await prisma.user.findUnique({ where: { email: E2E_ADMIN.email } });
+  if (user && user.role !== "ADMIN") {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: "ADMIN" },
+    });
+  }
 }
 
 // Pastikan user non-admin ada (tetap ber-role USER).
@@ -66,27 +63,19 @@ export async function ensureRegularUser(request: APIRequestContext) {
   // Hapus user lama jika ada
   await prisma.user.deleteMany({ where: { email: E2E_USER.email } });
 
-  const hashedPassword = await hash(E2E_USER.password, 10);
-
-  const user = await prisma.user.create({
+  // Sign up via API untuk hash password yang konsisten dengan better-auth
+  const response = await request.post(`${SERVER_ORIGIN}/api/auth/sign-up/email`, {
     data: {
       email: E2E_USER.email,
+      password: E2E_USER.password,
       name: E2E_USER.name,
-      role: "USER",
-      emailVerified: true,
     },
   });
 
-  // Create account with password for credentials provider
-  await prisma.account.create({
-    data: {
-      id: randomUUID(),
-      accountId: E2E_USER.email,
-      providerId: "credential",
-      userId: user.id,
-      password: hashedPassword,
-    },
-  });
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to create regular user: ${response.status()} ${body}`);
+  }
 }
 
 // Login via browser form — cookie session otomatis ter-set di browser context.
