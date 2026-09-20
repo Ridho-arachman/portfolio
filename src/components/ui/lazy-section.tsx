@@ -11,17 +11,18 @@ interface LazySectionProps {
 }
 
 /**
- * Delays mounting `children` until the wrapper approaches the viewport.
- *
- * Below-fold sections (projects, certificates, contact) stay unloaded on
- * first paint, which cuts main-thread work, script execution and network
- * bytes during the critical path (Total Blocking Time / LCP). `placeholder`
- * keeps the page height stable so there is no layout shift while loading.
- */
+   * Delays mounting `children` until the wrapper approaches the viewport.
+   *
+   * Defaults to a negative bottom margin (mount when the section is ~200px
+   * inside the viewport) so below-fold bundles stay unloaded on first paint —
+   * cuts main-thread work (Total Blocking Time), script execution and network
+   * bytes during the critical path. `placeholder` keeps the page height stable
+   * so there is no layout shift while loading.
+   */
 export function LazySection({
   children,
   placeholder = null,
-  rootMargin = "400px 0px",
+  rootMargin = "0px 0px -200px 0px",
 }: LazySectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);

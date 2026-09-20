@@ -2,11 +2,21 @@
 
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LazySection } from "@/components/ui/lazy-section";
 import { PublicProviders } from "@/lib/public-providers";
 import type { Project } from "@/components/sections/projects/constants";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
+
+// CSS-only skeleton (mimics ui/skeleton) so the shared zustand/lucide chunk
+// that Skeleton pulls in never loads on the home critical path.
+function SkeletonBar({ className }: { className: string }) {
+  return (
+    <div
+      aria-hidden
+      className={`animate-pulse rounded-md bg-muted ${className}`}
+    />
+  );
+}
 
 function BelowFoldSkeleton() {
   return (
@@ -14,38 +24,38 @@ function BelowFoldSkeleton() {
       <section className="relative overflow-hidden pb-14">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 md:mb-24">
-            <Skeleton className="h-6 w-32 mx-auto rounded-full mb-4" />
-            <Skeleton className="h-10 w-64 mx-auto" />
-            <Skeleton className="h-6 w-80 mx-auto mt-4" />
+            <SkeletonBar className="h-6 w-32 mx-auto rounded-full mb-4" />
+            <SkeletonBar className="h-10 w-64 mx-auto" />
+            <SkeletonBar className="h-6 w-80 mx-auto mt-4" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-80 rounded-3xl">
-                <Skeleton className="h-full w-full" />
+                <SkeletonBar className="h-full w-full" />
               </div>
             ))}
           </div>
           <div className="text-center">
-            <Skeleton className="h-12 w-48 mx-auto rounded-full" />
+            <SkeletonBar className="h-12 w-48 mx-auto rounded-full" />
           </div>
         </div>
       </section>
       <section className="relative overflow-hidden pb-14">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 md:mb-24">
-            <Skeleton className="h-6 w-32 mx-auto rounded-full mb-4" />
-            <Skeleton className="h-10 w-64 mx-auto" />
-            <Skeleton className="h-6 w-80 mx-auto mt-4" />
+            <SkeletonBar className="h-6 w-32 mx-auto rounded-full mb-4" />
+            <SkeletonBar className="h-10 w-64 mx-auto" />
+            <SkeletonBar className="h-6 w-80 mx-auto mt-4" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-80 rounded-2xl">
-                <Skeleton className="h-full w-full" />
+                <SkeletonBar className="h-full w-full" />
               </div>
             ))}
           </div>
           <div className="text-center">
-            <Skeleton className="h-12 w-48 mx-auto rounded-full" />
+            <SkeletonBar className="h-12 w-48 mx-auto rounded-full" />
           </div>
         </div>
       </section>
@@ -53,15 +63,15 @@ function BelowFoldSkeleton() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
-              <Skeleton className="h-6 w-32 rounded-full mb-4" />
-              <Skeleton className="h-10 w-80" />
-              <Skeleton className="h-6 w-96 mt-4" />
+              <SkeletonBar className="h-6 w-32 rounded-full mb-4" />
+              <SkeletonBar className="h-10 w-80" />
+              <SkeletonBar className="h-6 w-96 mt-4" />
             </div>
             <div className="space-y-4">
-              <Skeleton className="h-12 w-full rounded-xl" />
-              <Skeleton className="h-12 w-full rounded-xl" />
-              <Skeleton className="h-32 w-full rounded-xl" />
-              <Skeleton className="h-12 w-48 rounded-xl" />
+              <SkeletonBar className="h-12 w-full rounded-xl" />
+              <SkeletonBar className="h-12 w-full rounded-xl" />
+              <SkeletonBar className="h-32 w-full rounded-xl" />
+              <SkeletonBar className="h-12 w-48 rounded-xl" />
             </div>
           </div>
         </div>
@@ -93,7 +103,7 @@ export function HomePageContent({
   return (
     <PublicProviders>
       {children}
-      <LazySection placeholder={<BelowFoldSkeleton />} rootMargin="40px 0px">
+      <LazySection placeholder={<BelowFoldSkeleton />} rootMargin="0px 0px -200px 0px">
         <BelowFoldSections projects={projects} certificates={certificates} />
       </LazySection>
     </PublicProviders>
