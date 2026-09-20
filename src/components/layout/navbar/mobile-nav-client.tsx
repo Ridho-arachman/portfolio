@@ -39,7 +39,7 @@ export function MobileNavClient() {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden p-2 text-gray-900 dark:text-white hover:text-accent transition-colors rounded-lg hover:bg-accent-muted"
+        className="md:hidden p-3 text-gray-900 dark:text-white hover:text-accent transition-colors rounded-lg hover:bg-accent-muted min-h-[48px] min-w-[48px] flex items-center justify-center"
         aria-label="Toggle mobile menu"
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-menu"
@@ -59,16 +59,24 @@ export function MobileNavClient() {
               const active = isActive(link.href);
               return (
                 <li key={link.href} className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={cn(
-                      "block py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 min-h-[56px] min-w-[56px] flex items-center",
-                      active
-                        ? "text-accent bg-accent/10"
-                        : "text-gray-900 dark:text-white hover:text-accent hover:bg-accent/5",
-                    )}
-                  >
+<Link
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "block py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 min-h-[56px] min-w-[56px] flex items-center",
+                        active
+                          ? "bg-accent/10"
+                          : "hover:bg-accent/5",
+                      )}
+                      style={{
+                        color: "#000000",
+                        textDecoration: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        minHeight: "56px",
+                        minWidth: "56px",
+                      }}
+                    >
                     {link.label}
                   </Link>
                 </li>
@@ -82,8 +90,8 @@ export function MobileNavClient() {
                 className={cn(
                   "inline-flex w-full items-center justify-center py-4 px-4 rounded-full font-medium text-sm transition-all duration-300 min-h-[48px] min-w-[48px]",
                   isActive("/contact")
-                    ? "bg-accent text-bg-primary border-accent"
-                    : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20",
+                    ? "bg-accent text-white border-accent"
+                    : "bg-black text-white border-black hover:bg-gray-900",
                 )}
               >
                 Let&apos;s Talk

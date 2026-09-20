@@ -27,11 +27,11 @@ export function HeroContent() {
           experiences with modern tech stacks.
         </p>
 
-        {/* CTA Buttons - pure HTML links, no client JS */}
+{/* CTA Buttons - pure HTML links, no client JS */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <Link
             href="/projects"
-            className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base h-auto rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base h-auto rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 min-h-[48px] min-w-[48px] flex items-center justify-center"
           >
             View Projects
             <svg className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -41,10 +41,10 @@ export function HeroContent() {
 
           <Link
             href="/contact"
-            className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/8 px-8 py-4 text-base font-medium text-text-primary transition-all hover:bg-white/5 hover:border-accent/50 hover:text-accent"
+            className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/8 px-8 py-4 text-base font-medium text-text-primary transition-all hover:bg-white/5 hover:border-accent/50 hover:text-accent min-h-[48px] min-w-[48px] flex items-center justify-center"
           >
             <svg className="h-4 w-4 shrink-0 group-hover:rotate-180 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9 3-9m0 18c-1.657 0-3-4.03 3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
             </svg>
             <span>Contact Me</span>
           </Link>

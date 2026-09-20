@@ -53,9 +53,10 @@ const isActiveContact =
               className={cn(
                 "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 min-h-[48px] min-w-[48px]",
                 isActiveContact
-                  ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
-                  : "bg-accent-muted border border-accent/50 text-accent hover:bg-accent/20 hover:border-accent",
+                  ? "bg-accent text-white shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
+                  : "bg-black text-white border border-black hover:bg-gray-900",
               )}
+              style={{ minHeight: "48px", minWidth: "48px" }}
             >
               Let&apos;s Talk
             </Link>
