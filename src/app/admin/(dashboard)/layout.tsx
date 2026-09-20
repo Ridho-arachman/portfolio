@@ -4,8 +4,7 @@ import { AdminMobileSidebar } from "@/components/sections/admin-dashboard/admin-
 import { AdminSidebarProvider } from "@/components/sections/admin-dashboard/admin-sidebar-context";
 import { AdminTopbarWrapper } from "@/components/sections/admin-dashboard/admin-topbar-wrapper";
 import { QueryClientProviderWrapper } from "@/components/providers/query-client-provider";
-// Import nuqs adapter for Next.js App Router
-import "nuqs/adapters/next";
+import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -21,6 +20,7 @@ export default function AdminDashboardLayout({
     <AdminSidebarProvider>
       <AdminMobileSidebar />
       <AdminTopbarWrapper />
+      <NuqsAdapterLoader />
       <QueryClientProviderWrapper>
         <div className="relative flex min-h-screen overflow-x-clip bg-bg-primary">
           <div className="fixed top-[-10%] right-[-10%] w-150 h-150 bg-accent/5 rounded-full blur-[130px] pointer-events-none" />
