@@ -7,5 +7,5 @@ export function NuqsAdapterProvider({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 }
