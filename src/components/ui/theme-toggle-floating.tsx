@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence } from "framer-motion"; // Standarisasi ke framer-motion
+import { AnimatePresence } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import * as m from "motion/react-m";
 import { useTheme } from "next-themes";

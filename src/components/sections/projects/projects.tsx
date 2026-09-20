@@ -62,7 +62,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
               "group rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300",
             )}
           >
-            View All Projects
+            View Projects
             <ArrowUpRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </Link>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
@@ -17,12 +16,6 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
       <div className="container relative z-10 mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
-          <Badge
-            variant="outline"
-            className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
-          >
-            My Journey
-          </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Work <span className="text-gradient-elegant">Experience</span>
           </h2>

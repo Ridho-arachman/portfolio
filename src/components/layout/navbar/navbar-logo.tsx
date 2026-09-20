@@ -22,10 +22,7 @@ export function NavbarLogo() {
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                 aria-hidden="true"
               />
-              <span
-                className="text-xl font-bold"
-                style={{ color: "#000000" }}
-              >
+              <span className="text-xl font-bold text-text-primary">
                 Ridho.dev
               </span>
             </Link>

@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 export function useAboutHeroAnimations() {
   const sectionRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   const [scrollYProgress, setScrollYProgress] = useState(0);
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    if (!section || prefersReducedMotion) return;
 
     const handleScroll = () => {
       if (!section) return;
@@ -33,7 +35,7 @@ export function useAboutHeroAnimations() {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   // CSS-based transform values (computed from scrollYProgress and mouse position)
   const bgY1 = scrollYProgress * 200;

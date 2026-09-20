@@ -17,8 +17,8 @@
   --color-bg-tertiary: #f4f4f5;
 
   /* Accent (Tetap sama di kedua mode untuk konsistensi brand) */
-  --color-accent: #8b5cf6; /* Sedikit lebih gelap di light mode agar kontras */
-  --color-accent-hover: #a78bfa;
+  --color-accent: #7c3aed; /* Violet 600 - kontras AA 5.46:1 di atas #fafafa */
+  --color-accent-hover: #8b5cf6; /* Hover lebih terang dari base (pola sama seperti dark) */
   --color-accent-muted: rgba(139, 92, 246, 0.1);
 
   /* Text Colors */
@@ -43,12 +43,12 @@
   --popover-foreground: #09090b;
   --card: #ffffff;
   --card-foreground: #09090b;
-  --primary: #8b5cf6;
+  --primary: #7c3aed;
   --primary-foreground: #fafafa;
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
+  --ring: #7c3aed;
+  --chart-1: #7c3aed;
   --chart-2: #06b6d4;
   --chart-3: #f59e0b;
   --chart-4: #10b981;
@@ -70,7 +70,7 @@
   /* Text Colors */
   --color-text-primary: #fafafa;
   --color-text-secondary: #a3a3a3;
-  --color-text-muted: #737373;
+  --color-text-muted: #8e8e93; /* Kontras AA 6.25:1 di atas #050505 */
 
   /* Glass Effects (Dark Mode) */
   --color-glass-bg: rgba(255, 255, 255, 0.03);
@@ -282,4 +282,19 @@
 
 .animate-marquee {
   animation: marquee 35s linear infinite;
+}
+
+/* ============================================
+ * 8. REDUCED MOTION (Aksesibilitas WAJIB)
+ * ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

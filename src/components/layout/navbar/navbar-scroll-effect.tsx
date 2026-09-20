@@ -30,9 +30,7 @@ export function NavbarScrollEffect({ children, className }: NavbarScrollEffectPr
       ref={headerRef}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 isolate transition-colors duration-300 animate-fade-in-down",
-        isScrolled
-          ? "bg-white dark:bg-gray-950 border-b border-glass-border shadow-sm"
-          : "bg-white dark:bg-gray-950",
+        isScrolled ? "bg-bg-secondary border-b border-glass-border shadow-sm" : "bg-bg-secondary",
         className
       )}
     >

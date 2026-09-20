@@ -31,12 +31,9 @@ const isActiveContact =
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 isolate transition-colors duration-300 animate-fade-in-down",
-        isScrolled
-          ? "bg-white dark:bg-gray-950 border-b border-glass-border shadow-sm"
-          : "bg-white dark:bg-gray-950",
+        "fixed top-0 left-0 right-0 z-50 isolate transition-colors duration-300 animate-fade-in-down bg-bg-secondary",
+        isScrolled && "border-b border-glass-border shadow-sm",
       )}
-      style={{ backgroundColor: "rgb(255 255 255)" }}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
@@ -53,10 +50,9 @@ const isActiveContact =
               className={cn(
                 "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 min-h-[48px] min-w-[48px]",
                 isActiveContact
-                  ? "bg-accent text-white shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
-                  : "bg-black text-white border border-black hover:bg-gray-900",
+                  ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
+                  : "bg-text-primary text-bg-primary border border-text-primary hover:opacity-85",
               )}
-              style={{ minHeight: "48px", minWidth: "48px" }}
             >
               Let&apos;s Talk
             </Link>

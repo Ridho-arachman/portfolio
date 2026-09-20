@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowUpRight, Award } from "lucide-react";
@@ -25,12 +24,6 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
       <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
-          <Badge
-            variant="outline"
-            className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
-          >
-            Credentials
-          </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             My <span className="text-gradient-elegant">Certificates</span>
           </h2>
@@ -66,7 +59,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
               "group rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300",
             )}
           >
-            View All Certificates
+            View Certificates
             <ArrowUpRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </Link>
         </div>

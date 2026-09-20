@@ -4,7 +4,6 @@ import { AboutHeroBackground } from "@/components/sections/about-hero/about-hero
 import { FloatingTechIcon } from "@/components/sections/about-hero/floating-tech-icon";
 import { useAboutHeroAnimations } from "@/components/sections/about-hero/use-about-hero-animations";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
 import { PAGE_HERO_ICONS, type PageHeroProps } from "./constants";
 
 // Posisi & konfigurasi ikon mengapung — identik dengan AboutHeroSection
@@ -24,7 +23,7 @@ const FLOAT_CONFIG = [
 /**
  * Hero halaman publik yang mengadopsi penuh desain AboutHeroSection:
  * latar blob parallax + grid perspektif + noise, badge pill, judul raksasa
- * bergradasi dengan glow, subjudul, dan garis dekoratif Sparkles.
+ * bergradasi dengan glow, subjudul, dan garis dekoratif aksen.
  */
 export function PageHero({
   badge,
@@ -101,11 +100,7 @@ export function PageHero({
           </p>
 
           {/* Garis dekoratif */}
-          <div className="mt-12 flex items-center justify-center gap-3 animate-fade-in-up delay-400">
-            <div className="h-px w-16 bg-linear-to-r from-transparent to-accent/50" />
-            <Sparkles className="w-5 h-5 text-accent" />
-            <div className="h-px w-16 bg-linear-to-l from-transparent to-accent/50" />
-          </div>
+          <div className="mt-12 mx-auto h-px w-24 bg-linear-to-r from-transparent via-accent/50 to-transparent animate-fade-in-up delay-400" />
         </div>
       </div>
     </section>

@@ -20,7 +20,6 @@ export function DesktopNav() {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#000000", // Explicit black for maximum contrast
     textDecoration: "none",
   };
 
@@ -42,10 +41,7 @@ export function DesktopNav() {
                   ? "bg-accent/10"
                   : "hover:bg-accent/5",
               )}
-              style={{
-                ...linkStyle,
-                backgroundColor: active ? "rgba(167, 139, 250, 0.1)" : undefined,
-              }}
+              style={linkStyle}
             >
               {link.label}
 

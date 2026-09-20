@@ -39,7 +39,7 @@ export function MobileNavClient() {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden p-3 text-gray-900 dark:text-white hover:text-accent transition-colors rounded-lg hover:bg-accent-muted min-h-[48px] min-w-[48px] flex items-center justify-center"
+        className="md:hidden p-3 text-text-primary hover:text-accent transition-colors rounded-lg hover:bg-accent-muted min-h-[48px] min-w-[48px] flex items-center justify-center"
         aria-label="Toggle mobile menu"
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-menu"
@@ -52,7 +52,7 @@ export function MobileNavClient() {
       {isMobileMenuOpen && (
         <div
           id="mobile-menu"
-          className="md:hidden absolute inset-x-0 top-full bg-white dark:bg-gray-950 border-b border-glass-border shadow-lg overflow-hidden animate-slide-down"
+          className="md:hidden absolute inset-x-0 top-full bg-bg-secondary border-b border-glass-border shadow-lg overflow-hidden animate-slide-down"
         >
           <ul className="container mx-auto px-4 py-6 space-y-2">
             {NAV_LINKS.map((link, index) => {
@@ -69,7 +69,6 @@ export function MobileNavClient() {
                           : "hover:bg-accent/5",
                       )}
                       style={{
-                        color: "#000000",
                         textDecoration: "none",
                         display: "flex",
                         alignItems: "center",
@@ -90,8 +89,8 @@ export function MobileNavClient() {
                 className={cn(
                   "inline-flex w-full items-center justify-center py-4 px-4 rounded-full font-medium text-sm transition-all duration-300 min-h-[48px] min-w-[48px]",
                   isActive("/contact")
-                    ? "bg-accent text-white border-accent"
-                    : "bg-black text-white border-black hover:bg-gray-900",
+                    ? "bg-accent text-bg-primary border-accent"
+                    : "bg-text-primary text-bg-primary border-text-primary hover:opacity-85",
                 )}
               >
                 Let&apos;s Talk

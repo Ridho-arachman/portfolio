@@ -85,11 +85,6 @@ export function AdminLoginBackground() {
       />
 
       {/* Floating Particles */}
-      <m.div
-        animate={{ y: [0, -16, 0], rotate: [45, 60, 45], opacity: [0.5, 0.9, 0.5] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        className="absolute top-[18%] left-[12%] w-6 h-6 border-2 border-accent/25 rounded-md pointer-events-none"
-      />
       <MagneticParticle
         strength={0.3}
         className="absolute top-[28%] right-[14%] w-4 h-4 pointer-events-none"

@@ -22,7 +22,7 @@ export function ContactSection() {
             variant="outline"
             className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
           >
-            Get In Touch
+            Contact
           </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Let&apos;s Work{" "}

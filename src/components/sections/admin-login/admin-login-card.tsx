@@ -1,6 +1,6 @@
 "use client";
 
-import { useMotionValue, useSpring, useTransform, type Variants } from "framer-motion";
+import { useMotionValue, useSpring, useTransform, useReducedMotion, type Variants } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import * as m from "motion/react-m";
 import { AdminLoginForm } from "./admin-login-form";
@@ -25,15 +25,16 @@ const itemVariants: Variants = {
 };
 
 export function AdminLoginCard({ error }: { error?: string }) {
+  const prefersReducedMotion = useReducedMotion();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   const rotateX = useSpring(
-    useTransform(mouseY, [-1, 1], [6, -6]),
+    useTransform(mouseY, [-1, 1], prefersReducedMotion ? [0, 0] : [6, -6]),
     springConfig,
   );
   const rotateY = useSpring(
-    useTransform(mouseX, [-1, 1], [-6, 6]),
+    useTransform(mouseX, [-1, 1], prefersReducedMotion ? [0, 0] : [-6, 6]),
     springConfig,
   );
 
@@ -77,18 +78,9 @@ export function AdminLoginCard({ error }: { error?: string }) {
             >
               {/* Logo */}
               <div className="relative">
-                <m.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
-                  className="absolute -inset-3 rounded-full border-2 border-dashed border-accent/40"
-                />
                 <div className="relative w-20 h-20 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent shadow-[0_0_30px_rgba(167,139,250,0.25)]">
                   <ShieldCheck className="w-9 h-9" />
                 </div>
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-accent" />
-                </span>
               </div>
 
               {/* Badge */}

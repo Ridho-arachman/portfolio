@@ -15,7 +15,7 @@ export function HeroContent() {
         </div>
 
         {/* Main Heading - static, no client JS */}
-        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-8 leading-[0.9] font-[system-ui]">
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-8 leading-[0.9]">
           Building the
           <br />
           <span className="text-accent">Future</span>
@@ -46,7 +46,7 @@ export function HeroContent() {
             <svg className="h-4 w-4 shrink-0 group-hover:rotate-180 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9 3-9m0 18c-1.657 0-3-4.03 3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
             </svg>
-            <span>Contact Me</span>
+            <span>Let&apos;s Talk</span>
           </Link>
         </div>
       </div>
