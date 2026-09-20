@@ -1,6 +1,5 @@
 import { ExperienceDetailPageContent } from "./experience-detail-content";
 import prisma from "@/lib/prisma";
-import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -22,7 +21,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: ExperienceDetailPageProps): Promise<any> {
+}: ExperienceDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const experience = await prisma.experience.findFirst({
     where: { slug },

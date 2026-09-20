@@ -12,6 +12,11 @@ interface ProjectDetailContentProps {
 }
 
 export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
+  // Destructure with defaults to ensure no undefined access
+  const description = project?.description ?? "";
+  const highlights = project?.highlights ?? [];
+  const tags = project?.tags ?? [];
+
   return (
     <div className="space-y-10">
       <m.div
@@ -27,13 +32,13 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
               {PROJECT_DETAIL.overviewTitle}
             </h2>
             <p className="text-text-secondary leading-relaxed text-base md:text-lg">
-              {project.description}
+              {description}
             </p>
           </CardContent>
         </Card>
       </m.div>
 
-      {project.highlights && project.highlights.length > 0 && (
+      {highlights.length > 0 && (
         <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -47,7 +52,7 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
                 {PROJECT_DETAIL.highlightsTitle}
               </h2>
               <ul className="space-y-6">
-                {project.highlights.map((point, idx) => (
+                {highlights.map((point, idx) => (
                   <m.li
                     key={idx}
                     initial={{ opacity: 0, x: -20 }}
@@ -76,7 +81,7 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
           {PROJECT_DETAIL.stackTitle}
         </h2>
         <div className="flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
+          {tags.map((tag) => (
             <Badge
               key={tag}
               variant="outline"

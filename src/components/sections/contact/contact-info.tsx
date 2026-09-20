@@ -73,7 +73,7 @@ export function ContactInfo() {
                 aria-label={social.label}
                 className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5"
               >
-                <social.icon className="w-4 h-4" />
+                <social.icon className="w-4 h-4" aria-hidden="true" />
                 {social.label}
               </Link>
             ))}

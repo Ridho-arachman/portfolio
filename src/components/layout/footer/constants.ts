@@ -29,7 +29,7 @@ export const SOCIAL_LINKS = [
   {
     href: `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "ridho@example.com"}`,
     icon: SiGmail,
-    label: "Email",
+    label: "Email Ridho",
   },
 ] as const;
 

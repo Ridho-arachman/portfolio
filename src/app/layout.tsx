@@ -1,15 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { Footer } from "@/components/layout/footer/footer";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-  preload: true,
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ridhoarachman.dev"),
@@ -79,20 +71,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} scroll-smooth`}>
+    <html lang="en" className="scroll-smooth">
       <head>
-        <link
-          rel="preload"
-          as="image"
-          href="/avatar-hero.avif"
-          type="image/avif"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/avatar-hero.webp"
-          type="image/webp"
-        />
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />

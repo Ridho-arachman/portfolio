@@ -1,9 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowUpRight, Award } from "lucide-react";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRef } from "react";
 import { CERTIFICATES_VIEWPORT, type CertificateListData } from "./constants";
@@ -57,18 +58,17 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
 
         {/* View All CTA */}
         <div className="text-center animate-fade-in-up delay-400">
-          <Button
-            size="lg"
-            className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group"
+          {/* Link styled as button (no Button wrapping Link -> valid HTML, full-size tap target) */}
+          <Link
+            href="/certificates"
+            className={cn(
+              buttonVariants({ variant: "default", size: "lg" }),
+              "group rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300",
+            )}
           >
-            <Link
-              href="/certificates"
-              className="inline-flex items-center gap-3"
-            >
-              View All Certificates
-              <ArrowUpRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </Link>
-          </Button>
+            View All Certificates
+            <ArrowUpRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </Link>
         </div>
       </div>
     </section>

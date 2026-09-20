@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 export function FooterBrand() {
@@ -17,9 +15,9 @@ export function FooterBrand() {
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         />
-        <h3 className="text-2xl font-bold text-gradient-elegant mb-3">
+        <h2 className="text-2xl font-bold text-gradient-elegant mb-3">
           Ridho.dev
-        </h3>
+        </h2>
       </div>
       <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
         Information Systems student crafting immersive web experiences with

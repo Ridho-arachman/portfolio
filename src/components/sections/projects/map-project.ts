@@ -19,7 +19,6 @@ interface DbProject {
   categoryId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
-  [key: string]: any;
 }
 
 export function mapDbProjectToProject(dbProject: DbProject): Project {

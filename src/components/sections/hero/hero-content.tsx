@@ -1,54 +1,51 @@
-"use client";
-
-import { Badge } from "@/components/ui/badge";
-import { MagneticButton } from "@/components/ui/magnetic-button";
-import { ArrowRight, Globe } from "lucide-react";
 import Link from "next/link";
-import { HeroContentProps } from "./constants";
 
-export function HeroContent({ isMobile }: HeroContentProps) {
+export function HeroContent() {
   return (
     <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
-      <div className="text-center animate-fade-in-up">
-        {/* Badge */}
-        <div className="mb-8 animate-fade-in-up delay-100">
-          <Badge className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/8 backdrop-blur-md shadow-[0_0_20px_rgba(167,139,250,0.05)] text-accent font-semibold tracking-wider uppercase">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+      <div className="text-center">
+        {/* Badge - static, no client JS */}
+        <div className="mb-8">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/8 backdrop-blur-md text-accent font-medium tracking-wider uppercase text-xs">
+            <span className="relative flex h-1 w-1">
+              <span className="relative inline-flex rounded-full h-1 w-1 bg-accent" />
             </span>
             Available for hire
-          </Badge>
+          </span>
         </div>
 
-        {/* Main Heading */}
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter mb-8 leading-[0.9] animate-fade-in-up delay-200">
+        {/* Main Heading - static, no client JS */}
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-8 leading-[0.9] font-[system-ui]">
           Building the
           <br />
-          <span className="text-gradient-elegant inline-block relative">
-            Future
-            <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
-          </span>
+          <span className="text-accent">Future</span>
         </h1>
 
         {/* Subheading */}
-        <p className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in-up delay-300">
+        <p className="text-sm md:text-lg text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed">
           Information Systems student crafting immersive, high-performance web
           experiences with modern tech stacks.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up delay-400">
-          <MagneticButton className="px-8 py-4 text-base sm:px-10 sm:py-5 sm:text-lg h-auto rounded-full">
-            View Projects{" "}
-            <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
-          </MagneticButton>
+        {/* CTA Buttons - pure HTML links, no client JS */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <Link
+            href="/projects"
+            className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base h-auto rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300"
+          >
+            View Projects
+            <svg className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
 
           <Link
             href="/contact"
-            className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/8 px-10 py-5 text-lg font-medium text-text-primary transition-all hover:bg-white/5 hover:border-accent/50 hover:text-accent"
+            className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/8 px-8 py-4 text-base font-medium text-text-primary transition-all hover:bg-white/5 hover:border-accent/50 hover:text-accent"
           >
-            <Globe className="h-5 w-5 shrink-0 group-hover:rotate-180 transition-transform duration-700" />
+            <svg className="h-4 w-4 shrink-0 group-hover:rotate-180 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
             <span>Contact Me</span>
           </Link>
         </div>

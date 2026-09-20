@@ -41,9 +41,10 @@ export function MobileNav() {
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         className="md:hidden p-2 text-text-secondary hover:text-accent transition-colors rounded-lg hover:bg-accent-muted"
-        aria-label="Toggle menu"
+        aria-label="Toggle mobile menu"
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-menu"
+        data-testid="mobile-nav-toggle"
       >
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>

@@ -101,6 +101,7 @@ function renderIcon(tech: { name: string; iconName?: string | null }, dynamicIte
         return (
           <ResolvedIcon
             size={32}
+            aria-hidden="true"
             className="text-text-secondary group-hover:text-accent transition-colors duration-300"
           />
         );
@@ -118,7 +119,7 @@ function renderIcon(tech: { name: string; iconName?: string | null }, dynamicIte
     );
   } else {
     const FallbackIcon = fallbackIconByName.get(tech.name) ?? SiReact;
-    return <FallbackIcon size={32} className="text-text-secondary group-hover:text-accent transition-colors duration-300" />;
+    return <FallbackIcon size={32} aria-hidden="true" className="text-text-secondary group-hover:text-accent transition-colors duration-300" />;
   }
 }
 
@@ -133,7 +134,7 @@ export function TechMarquee({ items }: { items?: MarqueeItem[] }) {
 
       <div className="flex gap-8 md:gap-12 w-max animate-marquee">
         {duplicatedStack.map((tech, index) => (
-          <div key={`${tech.name}-${index}`} className="flex flex-col items-center gap-3 min-w-25 md:min-w-30 group animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+          <div key={`${tech.name}-${index}`} className="flex flex-col items-center gap-3 min-w-25 md:min-w-30 group">
             <div className="relative p-4 rounded-2xl bg-glass-bg border border-glass-border group-hover:border-accent/50 group-hover:bg-accent-muted transition-all duration-300">
               {renderIcon(tech, dynamicItems)}
               <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_20px_rgba(167,139,250,0.2)] pointer-events-none" />

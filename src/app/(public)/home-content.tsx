@@ -1,19 +1,16 @@
 "use client";
 
-import { Providers } from "@/lib/providers";
 import dynamic from "next/dynamic";
-import { HeroSection } from "@/components/sections/hero";
-import { AboutSection } from "@/components/sections/about";
+import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LazySection } from "@/components/ui/lazy-section";
+import { PublicProviders } from "@/lib/public-providers";
 import type { Project } from "@/components/sections/projects/constants";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
 
-// Lazy-load below-fold sections with skeleton loading
-const ProjectsSection = dynamic(
-  () => import("@/components/sections/projects").then((mod) => mod.ProjectsSection),
-  {
-    ssr: false,
-    loading: () => (
+function BelowFoldSkeleton() {
+  return (
+    <>
       <section className="relative overflow-hidden pb-14">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 md:mb-24">
@@ -33,15 +30,6 @@ const ProjectsSection = dynamic(
           </div>
         </div>
       </section>
-    ),
-  }
-);
-
-const CertificatesSection = dynamic(
-  () => import("@/components/sections/certificates").then((mod) => mod.CertificatesSection),
-  {
-    ssr: false,
-    loading: () => (
       <section className="relative overflow-hidden pb-14">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 md:mb-24">
@@ -61,15 +49,6 @@ const CertificatesSection = dynamic(
           </div>
         </div>
       </section>
-    ),
-  }
-);
-
-const ContactSection = dynamic(
-  () => import("@/components/sections/contact").then((mod) => mod.ContactSection),
-  {
-    ssr: false,
-    loading: () => (
       <section className="relative py-20 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -87,23 +66,36 @@ const ContactSection = dynamic(
           </div>
         </div>
       </section>
-    ),
-  }
+    </>
+  );
+}
+
+// One lazy bundle for everything below the fold: react-query + nuqs providers
+// + projects/certificates/contact sections (incl. zod, turnstile) are
+// code-split here so they never load or execute on the home page's critical
+// path. LazySection gates mounting until the section approaches the viewport.
+const BelowFoldSections = dynamic(
+  () => import("./below-fold-sections").then((m) => m.BelowFoldSections),
+  { ssr: false, loading: BelowFoldSkeleton }
 );
 
 interface HomePageContentProps {
+  children: ReactNode;
   projects: Project[];
   certificates: CertificateListData[];
 }
 
-export function HomePageContent({ projects, certificates }: HomePageContentProps) {
+export function HomePageContent({
+  children,
+  projects,
+  certificates,
+}: HomePageContentProps) {
   return (
-    <Providers>
-      <HeroSection />
-      <AboutSection />
-      <ProjectsSection projects={projects} />
-      <CertificatesSection certificates={certificates} />
-      <ContactSection />
-    </Providers>
+    <PublicProviders>
+      {children}
+      <LazySection placeholder={<BelowFoldSkeleton />} rootMargin="40px 0px">
+        <BelowFoldSections projects={projects} certificates={certificates} />
+      </LazySection>
+    </PublicProviders>
   );
 }

@@ -1,13 +1,15 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { hash } from "@node-rs/argon2";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({
     connectionString:
       process.env.DATABASE_URL ||
       "postgresql://postgres:postgres@localhost:5432/portfolio_test",
-  }),
+  })
 });
 
 const SERVER_ORIGIN =
@@ -29,7 +31,7 @@ function randomIp() {
   return `127.0.0.${Math.floor(Math.random() * 250) + 1}`;
 }
 
-// Pastikan user admin ada (sign-up via API bila perlu) dan role-nya ADMIN.
+// Pastikan user admin ada (langsung create di DB, bypass CAPTCHA)
 export async function ensureAdminUser(request: APIRequestContext) {
   const existing = await prisma.user.findUnique({
     where: { email: E2E_ADMIN.email },
@@ -41,32 +43,46 @@ export async function ensureAdminUser(request: APIRequestContext) {
         data: { role: "ADMIN" },
       });
     }
+    // Ensure account exists with password
+    const existingAccount = await prisma.account.findUnique({
+      where: { providerId_accountId: { providerId: "credential", accountId: E2E_ADMIN.email } },
+    });
+    if (!existingAccount) {
+      const hashedPassword = await hash(E2E_ADMIN.password);
+      await prisma.account.create({
+        data: {
+          id: randomUUID(),
+          accountId: E2E_ADMIN.email,
+          providerId: "credential",
+          userId: existing.id,
+          password: hashedPassword,
+        },
+      });
+    }
     return;
   }
 
-  const res = await request.post("/api/auth/sign-up/email", {
-    headers: {
-      "x-forwarded-for": randomIp(),
-      Origin: SERVER_ORIGIN,
-    },
+  // Create user directly in DB (bypass CAPTCHA) - hash password with argon2
+  const hashedPassword = await hash(E2E_ADMIN.password);
+
+  const user = await prisma.user.create({
     data: {
       email: E2E_ADMIN.email,
-      password: E2E_ADMIN.password,
       name: E2E_ADMIN.name,
+      role: "ADMIN",
+      emailVerified: true,
     },
   });
-  if (!res.ok()) {
-    throw new Error(`Sign-up admin gagal: ${res.status()} ${await res.text()}`);
-  }
 
-  const user = await prisma.user.findUnique({
-    where: { email: E2E_ADMIN.email },
-  });
-  if (!user) throw new Error("User admin tidak ditemukan setelah sign-up");
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { role: "ADMIN" },
+  // Create account with password for credentials provider
+  await prisma.account.create({
+    data: {
+      id: randomUUID(),
+      accountId: E2E_ADMIN.email,
+      providerId: "credential",
+      userId: user.id,
+      password: await hash(E2E_ADMIN.password),
+    },
   });
 }
 
@@ -75,22 +91,46 @@ export async function ensureRegularUser(request: APIRequestContext) {
   const existing = await prisma.user.findUnique({
     where: { email: E2E_USER.email },
   });
-  if (existing) return;
+  if (existing) {
+    // Ensure account exists
+    const existingAccount = await prisma.account.findUnique({
+      where: { providerId_accountId: { providerId: "credential", accountId: E2E_USER.email } },
+    });
+    if (!existingAccount) {
+      await prisma.account.create({
+        data: {
+          id: randomUUID(),
+          accountId: E2E_USER.email,
+          providerId: "credential",
+          userId: existing.id,
+          password: await hash(E2E_USER.password),
+        },
+      });
+    }
+    return;
+  }
 
-  const res = await request.post("/api/auth/sign-up/email", {
-    headers: {
-      "x-forwarded-for": randomIp(),
-      Origin: SERVER_ORIGIN,
-    },
+  const hashedPassword = await hash(E2E_USER.password);
+
+  const user = await prisma.user.create({
     data: {
       email: E2E_USER.email,
-      password: E2E_USER.password,
       name: E2E_USER.name,
+      role: "USER",
+      emailVerified: true,
     },
   });
-  if (!res.ok()) {
-    throw new Error(`Sign-up user gagal: ${res.status()} ${await res.text()}`);
-  }
+
+  // Create account with password for credentials provider
+  await prisma.account.create({
+    data: {
+      id: randomUUID(),
+      accountId: E2E_USER.email,
+      providerId: "credential",
+      userId: user.id,
+      password: await hash(E2E_USER.password),
+    },
+  });
 }
 
 // Login via browser form — cookie session otomatis ter-set di browser context.
@@ -101,7 +141,8 @@ export async function loginAsEmail(page: Page, email: string) {
     email === E2E_ADMIN.email ? E2E_ADMIN.password : E2E_USER.password;
 
   await page.goto("/admin/login");
-  await page.getByLabel("Email").fill(email);
+  // Use more specific selector for the email input in the login form
+  await page.locator('input[id="email"], input[name="email"]').first().fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign In" }).click();
   // Tunggu form submit selesai: URL berubah dari /admin/login,
@@ -156,3 +197,4 @@ export async function cleanupVisits() {
     where: { sessionId: { in: SEED_VISITS.map((v) => v.sessionId) } },
   });
 }
+

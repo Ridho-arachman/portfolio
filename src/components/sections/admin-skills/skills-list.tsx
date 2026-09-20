@@ -137,6 +137,7 @@ export function SkillsList() {
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-glass-border bg-bg-primary/60 p-1.5">
                             <ResolvedIcon
                               size={28}
+                              aria-hidden="true"
                               className="text-text-secondary"
                             />
                           </div>

@@ -1,13 +1,11 @@
 import { CertificateDetailPageContent } from "./certificate-detail-content";
-import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
-import { mapCertificateToData } from "@/components/sections/certificates/constants";
+import {
+  mapCertificateToData,
+  type CertificateListData,
+} from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-interface PageProps {
-  params: Promise<{ slug: string }>;
-}
 
 // Helper functions defined FIRST to avoid hoisting issues
 async function getCertificate(slug: string) {
@@ -26,9 +24,9 @@ async function getAllSlugs() {
 }
 
 function getAdjacent(
-  list: { slug: string; title: string; issuer: string }[],
+  list: CertificateListData[],
   slug: string,
-): { prev: { slug: string; title: string; issuer: string } | null; next: { slug: string; title: string; issuer: string } | null } {
+): { prev: CertificateListData | null; next: CertificateListData | null } {
   const index = list.findIndex((c) => c.slug === slug);
   return {
     prev: index > 0 ? list[index - 1] : null,
@@ -47,7 +45,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: { params: Promise<{ slug: string }> }): Promise<any> {
+}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const cert = await getCertificate(slug);
   if (!cert) return { title: "Not Found" };

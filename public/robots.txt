@@ -1,0 +1,17 @@
+# Robots.txt for Ridho Arachman Portfolio
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ridhoarachman.dev/sitemap.xml
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /_vercel/
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# Crawl-delay for polite crawling
+Crawl-delay: 10

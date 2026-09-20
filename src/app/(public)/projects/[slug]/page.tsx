@@ -1,8 +1,9 @@
 import { ProjectDetailPageContent } from "./project-detail-content";
 import prisma from "@/lib/prisma";
-import { buildMetadata, buildNotFoundMetadata } from "@/lib/seo";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import type { Project } from "@/components/sections/projects/constants";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 async function fetchProject(slug: string) {
   return prisma.project.findFirst({
@@ -18,9 +19,9 @@ async function fetchAllPublishedProjects() {
 }
 
 function getAdjacentProjects(
-  projects: { slug: string; title: string }[],
+  projects: Project[],
   slug: string,
-): { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null } {
+): { prev: Project | null; next: Project | null } {
   const index = projects.findIndex((p) => p.slug === slug);
   return {
     prev: index > 0 ? projects[index - 1] : null,
@@ -42,7 +43,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: { params: Promise<{ slug: string }> }): Promise<any> {
+}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = await fetchProject(slug);
 

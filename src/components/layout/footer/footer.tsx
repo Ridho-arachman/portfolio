@@ -1,5 +1,3 @@
-"use client";
-
 import { FooterBottom } from "./footer-bottom";
 import { FooterBrand } from "./footer-brand";
 import { FooterLinks } from "./footer-links";

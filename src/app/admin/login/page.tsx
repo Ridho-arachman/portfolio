@@ -1,19 +1,9 @@
-import type { Metadata } from "next";
-import { AdminLogin } from "@/components/sections/admin-login";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Admin Login",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+import { AdminLoginForm } from "@/components/sections/admin-login";
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
-  const { error } = await searchParams;
-  return <AdminLogin error={error} />;
+export const dynamic = "force-dynamic";
+
+export default function AdminLoginPage() {
+  return <AdminLoginForm />;
 }

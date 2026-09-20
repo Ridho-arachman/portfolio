@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Home, ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-
-export const dynamic = "force-dynamic";
+import { NotFoundButton } from "@/components/ui/not-found-button";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
@@ -50,13 +49,7 @@ export default function NotFound() {
             Back to Home
           </Link>
 
-          <button
-            onClick={() => window.history.back()}
-            className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-glass-border bg-glass-bg backdrop-blur-xl text-text-primary font-semibold hover:border-accent/50 hover:bg-accent-muted transition-all duration-300"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            Go Back
-          </button>
+          <NotFoundButton />
         </div>
       </div>
 
