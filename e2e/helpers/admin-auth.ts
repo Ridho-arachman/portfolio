@@ -63,7 +63,7 @@ const hashedPassword = await hash(E2E_ADMIN.password, 10);
   }
 
   // Create user directly in DB (bypass CAPTCHA) - hash password with bcrypt
-  const hashedPassword = await hash(E2E_ADMIN.password, 12);
+  const hashedPassword = await hash(E2E_ADMIN.password, 10);
 
   const user = await prisma.user.create({
     data: {
