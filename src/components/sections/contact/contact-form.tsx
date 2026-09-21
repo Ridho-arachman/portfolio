@@ -83,6 +83,7 @@ export function ContactForm() {
 
       {isSuccess ? (
         <div className="relative z-10 flex flex-col items-center justify-center text-center py-16 animate-scale-in">
+          <h2 className="sr-only">Contact Form</h2>
           <div className="mb-6 text-accent animate-bounce-in">
             <CheckCircle2 className="w-16 h-16" />
           </div>
@@ -156,7 +157,7 @@ export function ContactForm() {
               type="submit"
               disabled={isSubmitting}
               size="lg"
-              className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group"
+              className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group min-h-[48px] min-w-[48px]"
             >
               {isSubmitting ? (
                 <>

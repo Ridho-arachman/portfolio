@@ -122,7 +122,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                     {/* Action Button (Shadcn UI) */}
                     <Button
                       variant="ghost"
-                      className={`w-full rounded-full font-medium text-sm transition-all duration-300 ${isLeft ? "md:flex-row-reverse" : ""}`}
+                      className={`w-full rounded-full font-medium text-sm transition-all duration-300 ${isLeft ? "md:flex-row-reverse" : ""} min-h-[48px] min-w-[48px]`}
                     >
                       <Link
                         href={`/experience/${exp.slug}`}

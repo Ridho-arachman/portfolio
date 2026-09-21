@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import type { Project } from "./constants";
 import { PROJECT_DETAIL } from "./constants";
@@ -20,12 +21,14 @@ export function ProjectDetailGallery({
     return null;
   }
 
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 30 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.2 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.6, delay: 0.2 }}
     >
       <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6 flex items-center gap-3">
         <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-accent" />
@@ -35,13 +38,15 @@ export function ProjectDetailGallery({
         {project.gallery.map((img, idx) => (
           <m.div
             key={idx}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
+            whileInView={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: idx * 0.1 }}
-            whileHover={{ scale: 1.05 }}
+            transition={prefersReducedMotion ? undefined : { duration: 0.4, delay: idx * 0.1 }}
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
             onClick={() => onSelect(img)}
-            className="cursor-pointer"
+            tabIndex={0}
+            role="button"
+            className="cursor-pointer focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             <Card className="relative aspect-square overflow-hidden border border-glass-border bg-transparent shadow-none group">
               <CardContent className="p-0 h-full w-full">

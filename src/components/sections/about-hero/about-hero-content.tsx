@@ -17,7 +17,7 @@ export function AboutHeroContent({ scrollYProgress }: AboutHeroContentProps) {
       <div className="mb-6 animate-fade-in-up delay-100">
         <Badge
           variant="outline"
-          className="px-4 py-2 rounded-full border-accent/30 bg-accent-muted/50 text-accent text-xs font-semibold tracking-wider uppercase"
+          className="px-3 py-1 rounded-full border-accent/30 bg-accent-muted/50 text-accent text-xs font-semibold tracking-wider uppercase"
         >
           Get to know me
         </Badge>

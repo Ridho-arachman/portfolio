@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
 import {
   CONTACT_EMAIL,
@@ -71,7 +72,7 @@ export const ADMIN_SETTINGS = {
   dangerSubtitle: "Destructive actions that reset mockup data.",
   saveLabel: "Save Changes",
   savingLabel: "Saving...",
-  savedLabel: "Saved ✓",
+  savedLabel: "Saved <Check className='w-4 h-4 inline' />",
   fieldFullName: "Full Name",
   fieldTitle: "Title / Role",
   fieldEmail: "Email",

@@ -49,6 +49,7 @@ export function ExperienceDetail({ exp, prev, next }: ExperienceDetailProps) {
         <ExperienceDetailLightbox
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
+          experience={exp}
         />
       )}
     </>

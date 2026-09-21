@@ -10,7 +10,7 @@ import {
   Tooltip,
   useMap,
 } from "react-leaflet";
-import { Minus, Plus, RotateCcw } from "lucide-react";
+import { Globe, Minus, Plus, RotateCcw } from "lucide-react";
 import type { VisitorCountry } from "./constants";
 import "./visitor-map-leaflet.css";
 
@@ -211,9 +211,9 @@ export function VisitorMapLeaflet({
                   className="visitor-tooltip"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-base leading-none">
-                      {country.flag ?? "🌐"}
-                    </span>
+<span className="text-base leading-none">
+                        {country.flag ?? <Globe className="w-4 h-4" />}
+                      </span>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-semibold text-text-primary">
                         {city.name}

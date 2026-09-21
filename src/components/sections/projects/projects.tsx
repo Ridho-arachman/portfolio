@@ -59,7 +59,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
             href="/projects"
             className={cn(
               buttonVariants({ variant: "default", size: "lg" }),
-              "group rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300",
+              "group rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
             )}
           >
             View Projects

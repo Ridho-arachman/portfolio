@@ -3,6 +3,7 @@
 import { Card, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { ExperienceListData } from "./constants";
 import { EXPERIENCE_DETAIL } from "./constants";
@@ -26,7 +27,7 @@ function NavCard({ exp, direction, label }: NavCardProps) {
         direction === "next" ? "text-right" : ""
       }`}
     >
-      <Card className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
+      <Card className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
         <CardContent className="p-0">
           <div
             className={`flex items-center gap-2 text-xs text-text-muted mb-2 ${
@@ -57,12 +58,13 @@ export function ExperienceDetailNavigation({
   prev,
   next,
 }: ExperienceDetailNavigationProps) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 30 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.4 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.6, delay: 0.4 }}
       className="mt-24 pt-12 border-t border-glass-border"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

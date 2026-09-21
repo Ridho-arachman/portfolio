@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { useMotionValue, useSpring } from "framer-motion";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
+import { useMagneticParticle } from "./use-admin-login-bg-animations";
 
 function MagneticParticle({
   strength,
@@ -13,23 +14,7 @@ function MagneticParticle({
   className?: string;
   children: ReactNode;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 150, damping: 15 });
-  const springY = useSpring(y, { stiffness: 150, damping: 15 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const el = ref.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      x.set((e.clientX - (rect.left + rect.width / 2)) * strength);
-      y.set((e.clientY - (rect.top + rect.height / 2)) * strength);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [strength, x, y]);
+  const { ref, springX, springY } = useMagneticParticle(strength);
 
   return (
     <m.div
@@ -43,6 +28,7 @@ function MagneticParticle({
 }
 
 export function AdminLoginBackground() {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <>
       {/* Aurora Orbs - magnetic follow + gentle float */}
@@ -51,8 +37,8 @@ export function AdminLoginBackground() {
         className="absolute top-[-10%] left-[-10%] w-100 h-100 md:w-150 md:h-150 pointer-events-none"
       >
         <m.div
-          animate={{ y: [0, -24, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          animate={prefersReducedMotion ? undefined : { y: [0, -24, 0], scale: [1, 1.05, 1] }}
+          transition={prefersReducedMotion ? undefined : { duration: 14, repeat: Infinity, ease: "easeInOut" }}
           className="w-full h-full bg-accent/10 rounded-full blur-[130px]"
         />
       </MagneticParticle>
@@ -61,8 +47,8 @@ export function AdminLoginBackground() {
         className="absolute bottom-[-12%] right-[-8%] w-125 h-125 md:w-175 md:h-175 pointer-events-none"
       >
         <m.div
-          animate={{ y: [0, 20, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          animate={prefersReducedMotion ? undefined : { y: [0, 20, 0], scale: [1, 1.08, 1] }}
+          transition={prefersReducedMotion ? undefined : { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
           className="w-full h-full bg-white/5 rounded-full blur-[130px]"
         />
       </MagneticParticle>
@@ -90,8 +76,8 @@ export function AdminLoginBackground() {
         className="absolute top-[28%] right-[14%] w-4 h-4 pointer-events-none"
       >
         <m.div
-          animate={{ y: [0, 12, 0], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          animate={prefersReducedMotion ? undefined : { y: [0, 12, 0], opacity: [0.6, 1, 0.6] }}
+          transition={prefersReducedMotion ? undefined : { duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="w-full h-full border-2 border-accent/30 rounded-full"
         />
       </MagneticParticle>
@@ -100,14 +86,14 @@ export function AdminLoginBackground() {
         className="absolute bottom-[24%] left-[18%] w-2 h-2 pointer-events-none"
       >
         <m.div
-          animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          animate={prefersReducedMotion ? undefined : { y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
+          transition={prefersReducedMotion ? undefined : { duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="w-full h-full bg-accent/50 rounded-full shadow-[0_0_12px_rgba(167,139,250,0.6)]"
         />
       </MagneticParticle>
       <m.div
-        animate={{ y: [0, 14, 0], rotate: [-12, 0, -12], opacity: [0.5, 0.9, 0.5] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        animate={prefersReducedMotion ? undefined : { y: [0, 14, 0], rotate: [-12, 0, -12], opacity: [0.5, 0.9, 0.5] }}
+        transition={prefersReducedMotion ? undefined : { duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
         className="absolute bottom-[30%] right-[10%] w-3 h-3 bg-accent/40 rounded-lg rotate-12 shadow-[0_0_14px_rgba(167,139,250,0.5)] pointer-events-none"
       />
       <MagneticParticle
@@ -115,8 +101,8 @@ export function AdminLoginBackground() {
         className="absolute top-[12%] left-[45%] w-1.5 h-1.5 pointer-events-none"
       >
         <m.div
-          animate={{ y: [0, -12, 0], x: [0, 8, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 1.7 }}
+          animate={prefersReducedMotion ? undefined : { y: [0, -12, 0], x: [0, 8, 0], opacity: [0.4, 0.8, 0.4] }}
+          transition={prefersReducedMotion ? undefined : { duration: 13, repeat: Infinity, ease: "easeInOut", delay: 1.7 }}
           className="w-full h-full bg-accent/60 rounded-full"
         />
       </MagneticParticle>

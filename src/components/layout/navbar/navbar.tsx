@@ -30,6 +30,7 @@ const isActiveContact =
 
   return (
     <header
+      role="banner"
       className={cn(
         "fixed top-0 left-0 right-0 z-50 isolate transition-colors duration-300 animate-fade-in-down bg-bg-secondary",
         isScrolled && "border-b border-glass-border shadow-sm",
@@ -41,7 +42,9 @@ const isActiveContact =
           <NavbarLogo />
 
           {/* 2. Desktop Navigation */}
-          <DesktopNav />
+          <nav role="navigation" aria-label="Main navigation">
+            <DesktopNav />
+          </nav>
 
           {/* 3. Desktop CTA Button */}
           <div className="hidden md:block animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
@@ -59,7 +62,9 @@ const isActiveContact =
           </div>
 
           {/* 4. Mobile Menu (Client Component) */}
-          <MobileNavClient />
+          <nav role="navigation" aria-label="Mobile navigation">
+            <MobileNavClient />
+          </nav>
         </div>
       </div>
     </header>

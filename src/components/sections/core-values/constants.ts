@@ -42,6 +42,6 @@ export const CORE_VALUES: CoreValue[] = [
 ];
 
 export const REPLAY_VIEWPORT = {
-  once: false,
+  once: true,
   amount: 0.2,
 } as const;

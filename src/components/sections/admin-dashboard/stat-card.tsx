@@ -1,5 +1,6 @@
 import { TrendingUp } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { cn } from "@/lib/utils";
 import type { DashboardStat } from "./constants";
@@ -17,11 +18,12 @@ const toneClasses = {
 export function StatCard({ stat }: { stat: DashboardStat }) {
   const Icon = stat.icon;
   const tone = stat.tone ?? "neutral";
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <m.div
       variants={STAT_CARD_ITEM}
-      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
       className={cn(
         "group relative overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl p-5 transition-all duration-300 hover:border-accent/30 hover:shadow-[0_0_30px_rgba(167,139,250,0.12)]",
         stat.accent && "border-accent/40 bg-accent/10 shadow-[0_0_40px_rgba(167,139,250,0.15)]",

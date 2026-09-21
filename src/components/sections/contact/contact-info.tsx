@@ -71,7 +71,7 @@ export function ContactInfo() {
                 target={social.href.startsWith("mailto:") ? undefined : "_blank"}
                 rel={social.href.startsWith("mailto:") ? undefined : "noreferrer"}
                 aria-label={social.label}
-                className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
                 <social.icon className="w-4 h-4" aria-hidden="true" />
                 {social.label}

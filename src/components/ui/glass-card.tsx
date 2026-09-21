@@ -1,6 +1,6 @@
 // _components/ui/glass-card.tsx
 import { cn } from "@/lib/utils";
-import { type HTMLMotionProps } from "motion/react";
+import { type HTMLMotionProps, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 import * as React from "react";
 
@@ -11,13 +11,14 @@ interface GlassCardProps extends Omit<HTMLMotionProps<"div">, "children"> {
 
 const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
   ({ className, variant = "default", children, ...props }, ref) => {
+    const prefersReducedMotion = useReducedMotion();
     return (
       <m.div
         ref={ref}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
+        whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5 }}
+        transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
         className={cn(
           // Base glassmorphism styles (theme-aware via --color-glass-* tokens)
           "relative rounded-xl border border-glass-border",

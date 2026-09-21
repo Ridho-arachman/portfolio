@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { AlertCircle, Eye, EyeOff, Info, Loader2, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useCallback, useState } from "react";
@@ -15,7 +15,7 @@ import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@/lib/zod-resolver";
 import { loginFormSchema, type LoginFormValues } from "@/schema/login";
 import { ADMIN_LOGIN } from "./constants";
-import type { Variants } from "framer-motion";
+import type { Variants } from "motion/react";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -82,11 +82,11 @@ export function AdminLoginForm({ error }: { error?: string }) {
       return;
     }
 
-    const payload: Parameters<typeof authClient.signIn.email>[0] = {
+    const payload = {
       email: values.email,
       password: values.password,
+      ...(captchaToken && { captchaToken }),
     };
-    if (captchaToken) payload.captchaToken = captchaToken;
 
     const { error } = await authClient.signIn.email(payload);
 
@@ -110,19 +110,21 @@ export function AdminLoginForm({ error }: { error?: string }) {
     }
   };
 
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <motion.form
       variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial={prefersReducedMotion ? undefined : "hidden"}
+      animate={prefersReducedMotion ? undefined : "visible"}
       onSubmit={onSubmit}
       className="space-y-6"
       noValidate
     >
       {displayedError && (
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
           className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive"
         >
           <AlertCircle className="w-4 h-4 shrink-0" />
@@ -130,7 +132,7 @@ export function AdminLoginForm({ error }: { error?: string }) {
         </motion.div>
       )}
 
-      <motion.div variants={itemVariants} className="space-y-3">
+      <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <Button
             type="button"
@@ -168,7 +170,7 @@ export function AdminLoginForm({ error }: { error?: string }) {
         </div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="space-y-2 rounded-lg transition-shadow focus-within:shadow-[0_0_24px_rgba(167,139,250,0.12)]">
+      <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="space-y-2 rounded-lg transition-shadow focus-within:shadow-[0_0_24px_rgba(167,139,250,0.12)]">
         <Label htmlFor="email">{ADMIN_LOGIN.emailLabel}</Label>
         <Input
           id="email"
@@ -183,7 +185,7 @@ export function AdminLoginForm({ error }: { error?: string }) {
         )}
       </motion.div>
 
-      <motion.div variants={itemVariants} className="space-y-2 rounded-lg transition-shadow focus-within:shadow-[0_0_24px_rgba(167,139,250,0.12)]">
+      <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="space-y-2 rounded-lg transition-shadow focus-within:shadow-[0_0_24px_rgba(167,139,250,0.12)]">
         <Label htmlFor="password">{ADMIN_LOGIN.passwordLabel}</Label>
         <div className="relative">
           <Input
@@ -216,13 +218,15 @@ export function AdminLoginForm({ error }: { error?: string }) {
       </motion.div>
 
       {hasTurnstile && (
-        <motion.div variants={itemVariants} className="space-y-2">
+        <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="space-y-2">
           <TurnstileWidget onToken={handleCaptchaToken} />
         </motion.div>
       )}
 
       <motion.div
         variants={itemVariants}
+        initial={prefersReducedMotion ? undefined : "hidden"}
+        animate={prefersReducedMotion ? undefined : "visible"}
         className="flex items-center justify-between gap-4"
       >
         <button
@@ -236,9 +240,9 @@ export function AdminLoginForm({ error }: { error?: string }) {
 
       {showForgotNote && (
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={prefersReducedMotion ? undefined : { duration: 0.3 }}
           className="flex items-start gap-2 rounded-xl border border-accent/20 bg-accent-muted/50 px-4 py-3 text-xs text-text-secondary"
         >
           <Info className="w-4 h-4 shrink-0 text-accent" />
@@ -246,7 +250,7 @@ export function AdminLoginForm({ error }: { error?: string }) {
         </motion.div>
       )}
 
-      <motion.div variants={itemVariants} className="group">
+      <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="group">
         <MagneticButton
           type="submit"
           disabled={isSubmitting || socialLoading !== null}

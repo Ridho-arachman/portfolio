@@ -89,7 +89,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           {/* Action Link using Shadcn Button */}
           <Button
             variant="ghost"
-            className="h-auto p-0 mt-2 text-text-primary hover:text-accent hover:bg-transparent justify-start group/btn"
+            className="h-auto p-0 mt-2 text-text-primary hover:text-accent hover:bg-transparent justify-start group/btn min-h-[48px] min-w-[48px]"
           >
             <Link
               href={project.link}

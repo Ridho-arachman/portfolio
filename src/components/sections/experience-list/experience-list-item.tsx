@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Award, Briefcase, Calendar, MapPin } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { type ExperienceListItemProps } from "./constants";
@@ -12,25 +13,26 @@ export function ExperienceListItem({
   exp,
   index = 0,
 }: ExperienceListItemProps) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     // 1. Outer Wrapper: Animasi Scroll Reveal (Fade In + Slide Up)
     <m.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }} // Bisa di-replay saat scroll
-      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 40 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
       className="h-full"
     >
       <Link href={`/experience/${exp.slug}`} className="group block h-full">
         {/* 2. Inner Wrapper: Animasi Hover Lift (Naik sedikit saat di-hover) */}
         <m.div
-          whileHover={{ y: -4 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+          transition={prefersReducedMotion ? undefined : { type: "spring", stiffness: 300, damping: 20 }}
           className="h-full"
         >
           {/* Shadcn UI Card */}
           <Card
-            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
+            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden backdrop-blur-xl hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
             style={{ borderWidth: 0, boxShadow: "none" }}
           >
             {/* 1. Thumbnail Image */}

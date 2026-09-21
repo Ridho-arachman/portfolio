@@ -2,6 +2,7 @@
 
 import { Eye, TrendingUp } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
@@ -25,12 +26,13 @@ interface VisitsChartProps {
 }
 
 export function VisitsChart({ visitsOverview, totalVisits, deltaLabel }: VisitsChartProps) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <m.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
       className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl"
     >
       <header className="flex flex-col gap-4 border-b border-glass-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">

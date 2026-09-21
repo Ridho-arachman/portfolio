@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { RecentItem } from "./constants";
 
@@ -17,13 +18,14 @@ export function PanelCard({
   emptyNote?: string;
   children?: ReactNode;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <m.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -2 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
+      whileHover={prefersReducedMotion ? undefined : { y: -2 }}
       className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl"
     >
       <header className="flex items-center gap-2.5 border-b border-glass-border px-5 py-4">
@@ -53,7 +55,7 @@ export function PanelCard({
             return (
               <li key={item.title}>
                 {item.href ? (
-                  <m.div whileHover={{ x: 3 }} transition={{ duration: 0.15 }}>
+                  <m.div whileHover={prefersReducedMotion ? undefined : { x: 3 }} transition={prefersReducedMotion ? undefined : { duration: 0.15 }}>
                     <Link
                       href={item.href}
                       className="flex items-center justify-between gap-3 px-5 py-3.5 transition-colors hover:bg-white/5"
@@ -63,8 +65,8 @@ export function PanelCard({
                   </m.div>
                 ) : (
                   <m.div
-                    whileHover={{ x: 3 }}
-                    transition={{ duration: 0.15 }}
+                    whileHover={prefersReducedMotion ? undefined : { x: 3 }}
+                    transition={prefersReducedMotion ? undefined : { duration: 0.15 }}
                     className="flex items-center justify-between gap-3 px-5 py-3.5"
                   >
                     {content}

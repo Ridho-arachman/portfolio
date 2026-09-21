@@ -7,11 +7,13 @@ import Image from "next/image";
 
 interface ExperienceDetailLightboxProps {
   image: string;
+  experience: { role: string };
   onClose: () => void;
 }
 
 export function ExperienceDetailLightbox({
   image,
+  experience,
   onClose,
 }: ExperienceDetailLightboxProps) {
   return (
@@ -35,7 +37,7 @@ export function ExperienceDetailLightbox({
         className="relative max-w-5xl w-full aspect-video"
         onClick={(e) => e.stopPropagation()}
       >
-        <Image src={image} alt="Full view" fill className="object-contain" />
+        <Image src={image} alt={`${experience.role} full view`} fill className="object-contain" />
       </m.div>
     </m.div>
   );

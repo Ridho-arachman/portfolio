@@ -39,7 +39,8 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
           iconSet="projects"
         />
 
-        <section className="container mx-auto px-4 max-w-5xl pb-20">
+        <section className="container mx-auto px-4 max-w-5xl py-20 md:py-32">
+          <h2 className="sr-only">Projects</h2>
           {projects.length === 0 ? (
             <EmptyState
               icon={FolderKanban}

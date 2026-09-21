@@ -67,7 +67,7 @@ export function CertificateDetailContent({
       {/* Verify Credential */}
       {cert.credentialUrl && cert.credentialId && (
         <div className="animate-fade-in-up delay-300">
-          <Card className="rounded-2xl border border-glass-border bg-glass-bg overflow-hidden">
+          <Card className="rounded-2xl border border-glass-border bg-glass-bg overflow-hidden backdrop-blur-xl">
             <CardContent className="p-8">
               <div className="flex items-start gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
@@ -92,17 +92,17 @@ export function CertificateDetailContent({
                     {cert.credentialId}
                   </p>
                 </div>
-                <Button
-                  nativeButton={false}
-                  render={
-                    <a
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    />
-                  }
-                  className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover transition-all duration-300 group/btn"
-                >
+<Button
+                    nativeButton={false}
+                    render={
+                      <a
+                        href={cert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                    className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover transition-all duration-300 group/btn min-h-[48px] min-w-[48px]"
+                  >
                   {CERTIFICATE_DETAIL.verifyLabel}
                   <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                 </Button>

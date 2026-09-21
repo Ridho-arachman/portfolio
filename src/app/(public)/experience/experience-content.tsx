@@ -31,7 +31,8 @@ export function ExperiencePageContent({ experiences }: ExperiencePageContentProp
           iconSet="experience"
         />
 
-        <section className="container mx-auto px-4 max-w-5xl pb-20">
+        <section className="container mx-auto px-4 max-w-5xl py-20 md:py-32">
+          <h2 className="sr-only">Experiences</h2>
           {experiences.length === 0 ? (
             <EmptyState
               icon={Briefcase}

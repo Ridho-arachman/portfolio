@@ -11,7 +11,7 @@ import {
   MapPin,
   type LucideIcon,
 } from "lucide-react";
-import type { MotionValue } from "framer-motion";
+import type { MotionValue } from "motion/react";
 import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";

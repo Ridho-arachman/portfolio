@@ -3,16 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import * as m from "motion/react-m";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 
 interface ProjectDetailLightboxProps {
   image: string;
+  project: { title: string };
   onClose: () => void;
 }
 
 export function ProjectDetailLightbox({
   image,
+  project,
   onClose,
 }: ProjectDetailLightboxProps) {
   return (
@@ -41,7 +43,7 @@ export function ProjectDetailLightbox({
           className="relative max-w-5xl w-full aspect-video"
           onClick={(e) => e.stopPropagation()}
         >
-          <Image src={image} alt="Full view" fill className="object-contain" />
+          <Image src={image} alt={`${project.title} full view`} fill className="object-contain" />
         </m.div>
       </m.div>
     </AnimatePresence>

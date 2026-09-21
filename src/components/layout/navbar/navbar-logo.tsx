@@ -12,7 +12,7 @@ export function NavbarLogo() {
             >
               <Image
                 src="/logo-optimized.webp"
-                alt=""
+                alt="Ridho Arachman logo"
                 width={48}
                 height={48}
                 className="w-12 h-12 rounded-sm object-cover shadow-sm"

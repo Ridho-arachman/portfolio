@@ -11,7 +11,7 @@ const devWebServer = {
   command: `npm run dev -- -p ${PORT}`,
   url: BASE_URL,
   reuseExistingServer: false,
-  timeout: 120_000,
+  timeout: 300_000,
   env: (() => {
     const env: Record<string, string> = { ...process.env } as Record<string, string>;
     env.NEXT_PUBLIC_BETTER_AUTH_URL = `http://localhost:${PORT}`;

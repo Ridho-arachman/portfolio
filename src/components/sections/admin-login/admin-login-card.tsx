@@ -1,55 +1,16 @@
 "use client";
 
-import { useMotionValue, useSpring, useTransform, useReducedMotion, type Variants } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import { AdminLoginForm } from "./admin-login-form";
 import { ADMIN_LOGIN } from "./constants";
-
-const springConfig = { damping: 25, stiffness: 180, mass: 0.6 };
-
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
+import { useAdminLoginAnimations } from "./use-admin-login-animations";
 
 export function AdminLoginCard({ error }: { error?: string }) {
+  const { rotateX, rotateY, handleMouseMove, handleMouseLeave, containerVariants, itemVariants } =
+    useAdminLoginAnimations();
   const prefersReducedMotion = useReducedMotion();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useSpring(
-    useTransform(mouseY, [-1, 1], prefersReducedMotion ? [0, 0] : [6, -6]),
-    springConfig,
-  );
-  const rotateY = useSpring(
-    useTransform(mouseX, [-1, 1], prefersReducedMotion ? [0, 0] : [-6, 6]),
-    springConfig,
-  );
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
 
   return (
     <m.div
@@ -60,8 +21,8 @@ export function AdminLoginCard({ error }: { error?: string }) {
     >
       <m.div
         variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={prefersReducedMotion ? undefined : "hidden"}
+        animate={prefersReducedMotion ? undefined : "visible"}
         style={{ transformStyle: "preserve-3d" }}
         className="rounded-3xl p-[1px] bg-gradient-to-br from-accent/50 via-white/15 to-white/5"
       >
@@ -73,6 +34,8 @@ export function AdminLoginCard({ error }: { error?: string }) {
             {/* Header */}
             <m.div
               variants={itemVariants}
+              initial={prefersReducedMotion ? undefined : "hidden"}
+              animate={prefersReducedMotion ? undefined : "visible"}
               style={{ transform: "translateZ(40px)" }}
               className="flex flex-col items-center text-center space-y-5 mb-10"
             >
@@ -84,7 +47,7 @@ export function AdminLoginCard({ error }: { error?: string }) {
               </div>
 
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/8 backdrop-blur-md shadow-[0_0_20px_rgba(167,139,250,0.05)] text-accent text-xs font-semibold tracking-widest uppercase">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-glass-bg border-glass-border backdrop-blur-md shadow-[0_0_20px_rgba(124,58,237,0.05)] text-accent text-xs font-semibold tracking-widest uppercase">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />

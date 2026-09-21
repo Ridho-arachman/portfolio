@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
@@ -146,6 +147,7 @@ export function AdminDashboard() {
     month: "long",
     year: "numeric",
   });
+  const prefersReducedMotion = useReducedMotion();
 
   const { data: analytics, isLoading: analyticsLoading } =
     useQuery<AnalyticsData>({
@@ -213,8 +215,8 @@ export function AdminDashboard() {
 
         <m.section
           variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
+          initial={prefersReducedMotion ? undefined : "hidden"}
+          whileInView={prefersReducedMotion ? undefined : "visible"}
           viewport={{ once: true, amount: 0.3 }}
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
         >

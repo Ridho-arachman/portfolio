@@ -5,7 +5,7 @@ import { FooterSocial } from "./footer-social";
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-glass-border bg-bg-secondary">
+    <footer role="contentinfo" className="relative border-t border-glass-border bg-bg-secondary">
       {/* Top Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-accent to-transparent" />
 

@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import type { ExperienceListData } from "./constants";
 import { EXPERIENCE_DETAIL } from "./constants";
 
@@ -11,12 +12,13 @@ interface ExperienceDetailContentProps {
 }
 
 export function ExperienceDetailContent({ exp }: ExperienceDetailContentProps) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 30 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.6 }}
     >
       <Card className="border-none bg-transparent shadow-none">
         <CardContent className="p-0">
@@ -28,10 +30,10 @@ export function ExperienceDetailContent({ exp }: ExperienceDetailContentProps) {
             {exp.description.map((point, idx) => (
               <m.li
                 key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
+                whileInView={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                transition={prefersReducedMotion ? undefined : { duration: 0.5, delay: idx * 0.1 }}
                 className="flex items-start gap-4 text-text-secondary leading-relaxed text-base md:text-lg"
               >
                 <span className="mt-2.5 w-2 h-2 rounded-full bg-accent shrink-0 shadow-[0_0_10px_rgba(167,139,250,0.5)]" />

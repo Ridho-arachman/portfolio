@@ -2,18 +2,20 @@
 
 import { CalendarDays, ExternalLink, Menu, X } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useAdminSidebar } from "./admin-sidebar-context";
 import { ADMIN_DASHBOARD } from "./constants";
 
 export function AdminTopbar({ today }: { today: string }) {
   const { isOpen, toggleSidebar } = useAdminSidebar();
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <m.header
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.3 }}
       className="sticky top-0 z-40 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl"
     >
       {/* Mobile hamburger button - diberi gutter agar sejajar konten */}

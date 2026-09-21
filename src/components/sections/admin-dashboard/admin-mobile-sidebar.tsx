@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut, ShieldCheck, X } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

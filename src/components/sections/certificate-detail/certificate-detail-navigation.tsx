@@ -23,7 +23,7 @@ function NavCard({ cert, direction, label }: NavCardProps) {
       href={`/certificates/${cert.slug}`}
       className={`group block h-full ${direction === "next" ? "text-right" : ""}`}
     >
-      <Card className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
+      <Card className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
         <CardContent className="p-0">
           <div
             className={`flex items-center gap-2 text-xs text-text-muted mb-2 ${

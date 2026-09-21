@@ -16,6 +16,7 @@ playwright-report/
 test-results/
 /playwright/.cache/
 .playwright-mcp/
+/lighthouse-results
 
 # next.js
 /.next/

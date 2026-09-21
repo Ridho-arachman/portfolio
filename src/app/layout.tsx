@@ -73,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
@@ -83,13 +83,13 @@ export default function RootLayout({
       <body className="bg-bg-primary text-text-primary antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >
           <NuqsAdapterLoader>
             <Navbar />
-            <main id="main-content" className="min-h-screen">
+            <main id="main-content" role="main" className="min-h-screen">
               {children}
             </main>
             <Footer />

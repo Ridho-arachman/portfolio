@@ -46,6 +46,7 @@ export function ProjectDetail({ project, prev, next }: ProjectDetailProps) {
         <ProjectDetailLightbox
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
+          project={project}
         />
       )}
     </div>

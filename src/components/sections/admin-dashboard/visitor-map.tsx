@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { VisitorCountry } from "./constants";
@@ -33,6 +34,7 @@ interface VisitorMapProps {
 export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions }: VisitorMapProps) {
   const [activeRegion, setActiveRegion] = useState(REGION_ALL);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const byCode = useMemo(
     () => new Map(visitorLocations.map((country) => [country.code, country])),
@@ -68,10 +70,10 @@ export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions 
 
   return (
     <m.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
+      transition={prefersReducedMotion ? undefined : { duration: 0.5, delay: 0.1 }}
       className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl"
     >
       <header className="flex flex-col gap-4 border-b border-glass-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -154,7 +156,7 @@ export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions 
             </button>
 
             <div className="flex items-center gap-3 px-5 py-4">
-              <span className="text-2xl">{selected.flag ?? "🌐"}</span>
+              <span className="text-2xl">{selected.flag ?? <Globe className="w-4 h-4" />}</span>
               <div className="min-w-0">
                 <p className="font-semibold">{selected.country}</p>
                 <p className="text-xs text-text-muted">{selected.region}</p>
@@ -212,9 +214,9 @@ export function VisitorMap({ visitorLocations, totalVisits, deltaLabel, regions 
                     onClick={() => selectCountry(country.code)}
                     className="group flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-white/5"
                   >
-                    <span className="w-8 shrink-0 text-center text-xl">
-                      {country.flag ?? "🌐"}
-                    </span>
+<span className="w-8 shrink-0 text-center text-xl">
+                        {country.flag ?? <Globe className="w-4 h-4" />}
+                      </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-3">
                         <p className="truncate text-sm font-medium">
