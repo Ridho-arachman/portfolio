@@ -1,11 +1,11 @@
 "use client";
 
-import "nuqs/adapters/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export function NuqsAdapterProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <NuqsAdapter>{children}</NuqsAdapter>;
 }
