@@ -82,11 +82,13 @@ export function AdminLoginForm({ error }: { error?: string }) {
       return;
     }
 
-    const { error } = await authClient.signIn.email({
+    const payload: Parameters<typeof authClient.signIn.email>[0] = {
       email: values.email,
       password: values.password,
-      captchaToken: captchaToken || undefined,
-    } as unknown as Parameters<typeof authClient.signIn.email>[0]);
+    };
+    if (captchaToken) payload.captchaToken = captchaToken;
+
+    const { error } = await authClient.signIn.email(payload);
 
     if (error) {
       setAuthError(translateAuthError(error.message));

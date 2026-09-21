@@ -13,7 +13,9 @@ export function useDashboardStats() {
   return useQuery<DashboardStats>({
     queryKey: ["admin-dashboard-stats"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/dashboard-stats");
+      const res = await fetch("/api/admin/dashboard-stats", {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to fetch dashboard stats");
       const json = await res.json();
       return json.data;

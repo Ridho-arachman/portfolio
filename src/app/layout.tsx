@@ -3,6 +3,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { Footer } from "@/components/layout/footer/footer";
 import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ridhoarachman.dev"),
@@ -80,13 +81,20 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
-        <NuqsAdapterLoader>
-          <Navbar />
-          <main id="main-content" className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </NuqsAdapterLoader>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <NuqsAdapterLoader>
+            <Navbar />
+            <main id="main-content" className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </NuqsAdapterLoader>
+        </ThemeProvider>
       </body>
     </html>
   );
