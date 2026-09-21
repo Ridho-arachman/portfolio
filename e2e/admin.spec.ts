@@ -97,7 +97,9 @@ test("admin projects page manages seed data", async ({ page }) => {
   await page.goto("/admin/projects");
 
   // Wait for the Projects heading to be visible (handles loading states)
-  await expect(page.locator("h1").first()).toContainText("Projects", { timeout: 30_000 });
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toContainText("Projects", { timeout: 30_000 });
   await expect(page.getByRole("link", { name: "Add Project" })).toBeVisible();
 });
 
