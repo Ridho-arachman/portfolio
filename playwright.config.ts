@@ -10,13 +10,17 @@ const BASE_URL = `http://localhost:${PORT}`;
 const devWebServer = {
   command: `npm run dev -- -p ${PORT}`,
   url: BASE_URL,
-  reuseExistingServer: true,
+  reuseExistingServer: false,
   timeout: 120_000,
-  env: {
-    ...process.env,
-    NEXT_PUBLIC_BETTER_AUTH_URL: `http://localhost:${PORT}`,
-    BETTER_AUTH_URL: `http://localhost:${PORT}`,
-  },
+  env: (() => {
+    const env: Record<string, string> = { ...process.env } as Record<string, string>;
+    env.NEXT_PUBLIC_BETTER_AUTH_URL = `http://localhost:${PORT}`;
+    env.BETTER_AUTH_URL = `http://localhost:${PORT}`;
+    env.DISABLE_RATE_LIMIT = "true";
+    env.NEXT_PUBLIC_TURNSTILE_SITE_KEY = "";
+    env.TURNSTILE_SECRET_KEY = "";
+    return env;
+  })(),
 };
 
 export default defineConfig({

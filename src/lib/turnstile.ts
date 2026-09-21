@@ -5,7 +5,13 @@
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
+const isTestEnv = process.env.DISABLE_RATE_LIMIT === "true" || process.env.NODE_ENV === "test";
+
 export async function verifyTurnstile(token?: string): Promise<boolean> {
+  if (isTestEnv) {
+    return true;
+  }
+
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
   if (!secret) {
