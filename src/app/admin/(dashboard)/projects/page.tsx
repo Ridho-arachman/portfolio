@@ -1,4 +1,5 @@
-import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
+import { Suspense } from "react";
+import type { Metadata } from "next";
 import { AdminProjectsPageClient } from "./page-client";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
 
 export default function AdminProjectsPage() {
   return (
-    <NuqsAdapterLoader>
+    <Suspense fallback={null}>
       <AdminProjectsPageClient />
-    </NuqsAdapterLoader>
+    </Suspense>
   );
 }
