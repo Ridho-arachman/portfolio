@@ -80,12 +80,13 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
-        <NuqsAdapterLoader />
-        <Navbar />
-        <main id="main-content" className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <NuqsAdapterLoader>
+          <Navbar />
+          <main id="main-content" className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </NuqsAdapterLoader>
       </body>
     </html>
   );
