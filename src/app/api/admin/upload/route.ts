@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/session";
+import { applyRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/utils/client-ip";
 import {
   uploadImage,
   deleteImage,
@@ -12,6 +14,15 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   try {
     await requireAdminSession();
+
+    const ip = getClientIp(new Headers(request.headers));
+    const rate = await applyRateLimit("upload", ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "RATE_LIMITED" },
+        { status: 429, headers: rate.headers },
+      );
+    }
 
     const formData = await request.formData();
     const file = formData.get("file") as File;

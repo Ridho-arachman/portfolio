@@ -4,13 +4,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyTurnstile } from "@/lib/turnstile";
-import { consumeRateLimit } from "@/lib/rate-limit";
+import { applyRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/utils/client-ip";
 import { handleApiError } from "@/lib/prisma-errors";
 import { contactApiSchema } from "@/schema/contact";
-
-const CONTACT_RATE_LIMIT_MAX = 3;
-const CONTACT_RATE_LIMIT_WINDOW_SECONDS = 60;
 
 // Mencegah CSRF: request dari browser harus origin-nya sama dengan host.
 function isAllowedOrigin(request: NextRequest): boolean {
@@ -31,17 +28,13 @@ export async function POST(request: NextRequest) {
   }
 
   const ip = getClientIp(request.headers);
-  const rate = await consumeRateLimit(
-    `contact:${ip}`,
-    CONTACT_RATE_LIMIT_MAX,
-    CONTACT_RATE_LIMIT_WINDOW_SECONDS,
-  );
+  const rate = await applyRateLimit("contact", ip);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "RATE_LIMITED" },
       {
         status: 429,
-        headers: { "X-Retry-After": String(rate.retryAfter ?? 60) },
+        headers: rate.headers,
       },
     );
   }

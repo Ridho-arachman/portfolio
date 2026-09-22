@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { applyRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/utils/client-ip";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +63,15 @@ function resolveLocation(timezone?: string): { country: string; code: string; re
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(new Headers(request.headers));
+    const rate = await applyRateLimit("api", ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "RATE_LIMITED" },
+        { status: 429, headers: rate.headers },
+      );
+    }
+
     const body: VisitPayload = await request.json();
     const { path, timezone, sessionId } = body;
 
