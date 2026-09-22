@@ -10,6 +10,10 @@
  * 2. CSS VARIABLES (Light & Dark Mode)
  * ============================================ */
 :root {
+  /* --- FONT VARIABLES (Phase 1: Typography) --- */
+  --font-geist-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-geist-mono: var(--font-geist-mono), monospace;
+
   /* --- LIGHT MODE (Default) --- */
   /* Backgrounds */
   --color-bg-primary: #fafafa;
@@ -26,10 +30,11 @@
   --color-text-secondary: #52525b;
   --color-text-muted: #71717a;
 
-  /* Glass Effects (Light Mode) */
+  /* Glass Effects (Light Mode) - Enhanced for modern glassmorphism */
   --color-glass-bg: rgba(255, 255, 255, 0.7);
   --color-glass-border: rgba(0, 0, 0, 0.08);
   --color-glass-hover: rgba(255, 255, 255, 0.9);
+  --color-glass-highlight: rgba(255, 255, 255, 0.4);
 
   /* Decorative Glow Colors (sama di kedua mode) */
   --color-neon-purple: #c084fc;
@@ -37,6 +42,18 @@
 
   /* Grid Line Color */
   --color-grid-line: rgba(139, 92, 246, 0.08);
+
+  /* Parallax / Scroll-driven Animation Tokens (Phase 2) */
+  --parallax-speed-slow: 0.15;
+  --parallax-speed-medium: 0.3;
+  --parallax-speed-fast: 0.5;
+
+  /* Glassmorphism Tokens (Enhanced) */
+  --glass-blur: 24px;
+  --glass-saturate: 180%;
+  --glass-contrast: 1.05;
+  --glass-border-opacity: 0.08;
+  --glass-highlight-opacity: 0.4;
 
   /* shadcn/ui semantic tokens */
   --popover: #ffffff;
@@ -72,10 +89,11 @@
   --color-text-secondary: #a3a3a3;
   --color-text-muted: #8e8e93; /* Kontras AA 6.25:1 di atas #050505 */
 
-  /* Glass Effects (Dark Mode) */
+  /* Glass Effects (Dark Mode) - Enhanced */
   --color-glass-bg: rgba(255, 255, 255, 0.03);
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-hover: rgba(255, 255, 255, 0.05);
+  --color-glass-highlight: rgba(255, 255, 255, 0.1);
 
   /* Decorative Glow Colors (sama di kedua mode) */
   --color-neon-purple: #c084fc;
@@ -83,6 +101,18 @@
 
   /* Grid Line Color */
   --color-grid-line: rgba(167, 139, 250, 0.05);
+
+  /* Parallax / Scroll-driven Animation Tokens (Phase 2) */
+  --parallax-speed-slow: 0.15;
+  --parallax-speed-medium: 0.3;
+  --parallax-speed-fast: 0.5;
+
+  /* Glassmorphism Tokens (Enhanced) */
+  --glass-blur: 24px;
+  --glass-saturate: 180%;
+  --glass-contrast: 1.05;
+  --glass-border-opacity: 0.08;
+  --glass-highlight-opacity: 0.1;
 
   /* shadcn/ui semantic tokens (dark) */
   --popover: #0a0a0a;
@@ -121,6 +151,7 @@
   --color-glass-bg: var(--color-glass-bg);
   --color-glass-border: var(--color-glass-border);
   --color-glass-hover: var(--color-glass-hover);
+  --color-glass-highlight: var(--color-glass-highlight);
 
   --color-neon-purple: var(--color-neon-purple);
   --color-neon-cyan: var(--color-neon-cyan);
@@ -146,9 +177,9 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* Typography */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  /* Typography - Geist font family (Phase 1) */
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 
   /* Border Radius */
   --radius-sm: 0.375rem;
@@ -156,6 +187,18 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-full: 9999px;
+
+  /* Parallax speeds (Phase 2) */
+  --parallax-slow: var(--parallax-speed-slow);
+  --parallax-medium: var(--parallax-speed-medium);
+  --parallax-fast: var(--parallax-speed-fast);
+
+  /* Glassmorphism (Phase 2) */
+  --glass-blur: var(--glass-blur);
+  --glass-saturate: var(--glass-saturate);
+  --glass-contrast: var(--glass-contrast);
+  --glass-border-opacity: var(--glass-border-opacity);
+  --glass-highlight-opacity: var(--glass-highlight-opacity);
 }
 
 /* ============================================
@@ -252,6 +295,135 @@
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
+
+  /* Phase 2: Glassmorphism Utilities */
+  .glass {
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) contrast(var(--glass-contrast));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) contrast(var(--glass-contrast));
+  }
+
+  .glass-hover:hover {
+    background: var(--color-glass-hover);
+    border-color: var(--color-glass-highlight);
+  }
+
+  .glass-strong {
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(calc(var(--glass-blur) * 1.5)) saturate(var(--glass-saturate)) contrast(var(--glass-contrast));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5)) saturate(var(--glass-saturate)) contrast(var(--glass-contrast));
+    box-shadow:
+      inset 0 1px 0 var(--color-glass-highlight),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 24px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Phase 2: Parallax / Scroll-driven Animation Utilities */
+  .parallax-slow {
+    transform: translateY(calc(var(--parallax-slow) * 100px));
+    will-change: transform;
+  }
+
+  .parallax-medium {
+    transform: translateY(calc(var(--parallax-medium) * 100px));
+    will-change: transform;
+  }
+
+  .parallax-fast {
+    transform: translateY(calc(var(--parallax-fast) * 100px));
+    will-change: transform;
+  }
+
+  /* Scroll-driven animations (CSS-native, zero-JS, performant) */
+  @supports (animation-timeline: view()) {
+    .scroll-reveal-up {
+      animation: scroll-reveal-up linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    .scroll-reveal-down {
+      animation: scroll-reveal-down linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    .scroll-fade-in {
+      animation: scroll-fade-in linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+
+    .scroll-scale-in {
+      animation: scroll-scale-in linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+
+    .parallax-bg {
+      animation: parallax-bg linear;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+
+  /* Fallback for browsers without scroll-driven animations */
+  @supports not (animation-timeline: view()) {
+    .scroll-reveal-up,
+    .scroll-reveal-down,
+    .scroll-fade-in,
+    .scroll-scale-in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Magnetic button effect (CSS-only approximation) */
+  .magnetic {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .magnetic:hover {
+    transform: translate(var(--mouse-x, 0), var(--mouse-y, 0));
+  }
+
+  /* Text gradient utilities */
+  .text-gradient-accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Perspective utilities */
+  .perspective-500 { perspective: 500px; }
+  .perspective-1000 { perspective: 1000px; }
+  .perspective-2000 { perspective: 2000px; }
+
+  /* Transform style 3D */
+  .transform-3d { transform-style: preserve-3d; }
+
+  /* Animation delays */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-1000 { animation-delay: 1000ms; }
 }
 
 /* ============================================
@@ -284,6 +456,58 @@
   animation: marquee 35s linear infinite;
 }
 
+/* Phase 2: Scroll-driven Animation Keyframes */
+@keyframes scroll-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-reveal-down {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scroll-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes parallax-bg {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-30%);
+  }
+}
+
 /* ============================================
  * 8. REDUCED MOTION (Aksesibilitas WAJIB)
  * ============================================ */
@@ -296,5 +520,25 @@
     animation-delay: 0s !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Disable parallax transforms */
+  .parallax-slow,
+  .parallax-medium,
+  .parallax-fast {
+    transform: none !important;
+  }
+
+  /* Disable scroll-driven animations */
+  @supports (animation-timeline: view()) {
+    .scroll-reveal-up,
+    .scroll-reveal-down,
+    .scroll-fade-in,
+    .scroll-scale-in,
+    .parallax-bg {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 }

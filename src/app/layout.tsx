@@ -1,9 +1,26 @@
 import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { Footer } from "@/components/layout/footer/footer";
 import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 import { ThemeProvider } from "@/providers/theme-provider";
+
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "optional",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "optional",
+  preload: true,
+  fallback: ["JetBrains Mono", "Fira Code", "monospace"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ridhoarachman.dev"),
@@ -73,14 +90,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
-      <body className="bg-bg-primary text-text-primary antialiased">
+      <body className="bg-bg-primary text-text-primary antialiased font-sans">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
