@@ -15,11 +15,22 @@ export interface RateLimitConfig {
   windowSeconds: number;
 }
 
+/**
+ * Check if rate limiting is globally disabled via env var.
+ * Used in test environment and for emergency disable.
+ */
+function isRateLimitDisabled(): boolean {
+  return process.env.DISABLE_RATE_LIMIT === "true";
+}
+
 export async function consumeRateLimit(
   key: string,
   max: number,
   windowSeconds: number,
 ): Promise<RateLimitResult> {
+  if (isRateLimitDisabled()) {
+    return { allowed: true };
+  }
   const now = Date.now();
   const windowMs = windowSeconds * 1000;
 

@@ -20,7 +20,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
 
       <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
+        <div className="text-center mb-16 md:mb-24 animate-fade-in-up scroll-reveal-up" style={{ animationRange: "entry 0% cover 30%" }}>
           <Badge
             variant="outline"
             className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
@@ -36,16 +36,16 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
           </p>
         </div>
 
-        {/* Projects Grid */}
-        {projects.length === 0 ? (
+        {/* Bento Grid - Asymmetric Layout */}
+{projects.length === 0 ? (
           <EmptyState
             icon={FolderKanban}
             title="No projects available"
             description="Projects will appear here once published."
-            className="mb-16 animate-fade-in-up delay-200"
+            className="mb-16 animate-fade-in-up delay-200 scroll-reveal-up delay-200"
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div className="bento-grid mb-16">
             {projects.map((project, index) => (
               <ProjectCard key={project.slug} project={project} index={index} />
             ))}
@@ -53,8 +53,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
         )}
 
         {/* View All CTA */}
-        <div className="text-center animate-fade-in-up delay-400">
-          {/* Link styled as button (no Button wrapping Link -> valid HTML, full-size tap target) */}
+        <div className="text-center animate-fade-in-up delay-400 scroll-reveal-up delay-400" style={{ animationRange: "entry 0% cover 30%" }}>
           <Link
             href="/projects"
             className={cn(

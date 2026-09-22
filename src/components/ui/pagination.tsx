@@ -28,7 +28,7 @@ export function Pagination({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 glass glass-hover"
         onClick={() => onPageChange(1)}
         disabled={page === 1}
       >
@@ -37,7 +37,7 @@ export function Pagination({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 glass glass-hover"
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
       >
@@ -46,7 +46,7 @@ export function Pagination({
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+          <span key={`ellipsis-${i}`} className="px-2 text-text-muted">
             ...
           </span>
         ) : (
@@ -54,7 +54,7 @@ export function Pagination({
             key={p}
             variant={p === page ? "default" : "outline"}
             size="icon"
-            className="h-8 w-8"
+            className={`h-8 w-8 ${p === page ? "bg-accent text-bg-primary" : "glass glass-hover"}`}
             onClick={() => onPageChange(p as number)}
           >
             {p}
@@ -65,7 +65,7 @@ export function Pagination({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 glass glass-hover"
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
       >
@@ -74,7 +74,7 @@ export function Pagination({
       <Button
         variant="outline"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 glass glass-hover"
         onClick={() => onPageChange(totalPages)}
         disabled={page === totalPages}
       >

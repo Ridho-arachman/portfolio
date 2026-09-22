@@ -11,17 +11,17 @@ import { ProjectCardProps } from "./constants";
 export function ProjectCard({ project, index }: ProjectCardProps) {
   return (
     <div
-      className="group relative h-full animate-fade-in-up"
-      style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both' }}
+      className="group relative animate-fade-in-up scroll-reveal-up"
+      style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both', animationRange: 'entry 0% cover 30%' }}
     >
       {/* Glow Effect behind card */}
       <div className="absolute -inset-0.5 bg-linear-to-br from-accent/30 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <Card
-        className="relative h-full rounded-3xl bg-glass-bg backdrop-blur-xl transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(167,139,250,0.15)]"
+        className="relative h-full rounded-3xl bg-glass-bg backdrop-blur-xl transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(167,139,250,0.15)] glass"
         style={{ borderWidth: 0, boxShadow: "none" }}
       >
-        {/* Image Container */}
-        <div className="relative h-56 overflow-hidden">
+        {/* Image Container - Asymmetric aspect ratios for bento variation */}
+        <div className="relative aspect-[4/3] overflow-hidden">
           <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none" />
           <Image
             src={project.image}

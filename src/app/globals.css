@@ -416,6 +416,51 @@
   /* Transform style 3D */
   .transform-3d { transform-style: preserve-3d; }
 
+  /* Phase 4: Bento Grid Layout */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .bento-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .bento-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Bento cell size variations for asymmetric layout */
+  .bento-grid > *:nth-child(1) {
+    @media (min-width: 1024px) {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  .bento-grid > *:nth-child(2) {
+    @media (min-width: 1280px) {
+      grid-column: span 2;
+    }
+  }
+
+  .bento-grid > *:nth-child(5) {
+    @media (min-width: 1280px) {
+      grid-row: span 2;
+    }
+  }
+
   /* Animation delays */
   .delay-100 { animation-delay: 100ms; }
   .delay-200 { animation-delay: 200ms; }

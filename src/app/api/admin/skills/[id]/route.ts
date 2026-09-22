@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { skillUpdateSchema } from "@/schema/skill";
 import { requireAdminSession } from "@/lib/session";
+import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +31,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await requireAdminSession();
+    const session = await requireAdminSession();
+    const rate = await applyRateLimit("userAction", session.user.id, "update:skill");
+    if (!rate.allowed) {
+      return errorResponse("RATE_LIMITED", 429, rate.headers);
+    }
+
     const { id } = await params;
     const body = await req.json();
     const parsed = skillUpdateSchema.safeParse(body);
@@ -70,7 +76,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await requireAdminSession();
+    const session = await requireAdminSession();
+    const rate = await applyRateLimit("userAction", session.user.id, "delete:skill");
+    if (!rate.allowed) {
+      return errorResponse("RATE_LIMITED", 429, rate.headers);
+    }
+
     const { id } = await params;
 
     const existing = await prisma.skill.findUnique({ where: { id } });

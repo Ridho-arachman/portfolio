@@ -41,9 +41,9 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  mockedRequire.mockResolvedValue(
-    {} as unknown as Awaited<ReturnType<typeof requireAdminSession>>,
-  );
+  mockedRequire.mockResolvedValue({
+    user: { id: "test-admin-id", role: "ADMIN" },
+  } as unknown as Awaited<ReturnType<typeof requireAdminSession>>);
 });
 
 describe("POST /api/admin/skills", () => {

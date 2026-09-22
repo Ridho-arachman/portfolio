@@ -2,6 +2,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
+import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse,
   errorResponse,
   paginatedResponse,
@@ -45,7 +46,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    await requireAdminSession();
+    const session = await requireAdminSession();
+    const rate = await applyRateLimit("userAction", session.user.id, "create:experience");
+    if (!rate.allowed) {
+      return errorResponse("RATE_LIMITED", 429, rate.headers);
+    }
+
     const json = await req.json();
     const parsed = experienceCreateSchema.safeParse(json);
 
