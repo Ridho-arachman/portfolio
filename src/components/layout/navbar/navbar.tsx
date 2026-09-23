@@ -1,32 +1,34 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NavbarLogo } from "./navbar-logo";
 import { DesktopNav } from "./desktop-nav";
-import { MobileNavClient } from "./mobile-nav-client";
-import { useEffect, useState } from "react";
+import { NavCollapseClient } from "./nav-collapse-client";
+import { LanguageSwitcher } from "./language-switcher";
+import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
+import { useTranslation } from "@/hooks/use-translation";
+import { getLocaleFromPath, removeLocaleFromPath } from "@/lib/i18n";
 
 export function Navbar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-const isActiveContact =
-    pathname === "/contact" || pathname.startsWith("/contact");
+  const pathLocale = getLocaleFromPath(pathname) || 'en';
+  const cleanPath = removeLocaleFromPath(pathname);
+  const isActiveContact = cleanPath === "/contact" || cleanPath.startsWith("/contact");
 
   return (
     <header
@@ -38,18 +40,17 @@ const isActiveContact =
     >
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
-          {/* 1. Logo */}
+          {/* Logo */}
           <NavbarLogo />
 
-          {/* 2. Desktop Navigation */}
-          <nav role="navigation" aria-label="Main navigation">
-            <DesktopNav />
-          </nav>
+          {/* Desktop Navigation (pill menderet + satu nav link collapse) */}
+          <DesktopNav />
 
-          {/* 3. Desktop CTA Button */}
-          <div className="hidden md:block animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
+          {/* Desktop: Language Switcher + CTA */}
+          <div className="hidden lg:flex items-center gap-3 animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
+            <LanguageSwitcher />
             <Link
-              href="/contact"
+              href={`/${pathLocale}/contact`}
               className={cn(
                 "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 min-h-[48px] min-w-[48px]",
                 isActiveContact
@@ -57,16 +58,17 @@ const isActiveContact =
                   : "bg-text-primary text-bg-primary border border-text-primary hover:opacity-85",
               )}
             >
-              Let&apos;s Talk
+              {t.nav.letsTalk}
             </Link>
           </div>
 
-          {/* 4. Mobile Menu (Client Component) */}
-          <nav role="navigation" aria-label="Mobile navigation">
-            <MobileNavClient />
-          </nav>
+          {/* Tablet & HP: hamburger menu */}
+          <NavCollapseClient />
         </div>
       </div>
+
+      {/* Theme toggle: floating FAB, selalu tersedia di semua viewport */}
+      <ThemeToggleFloating />
     </header>
   );
 }
