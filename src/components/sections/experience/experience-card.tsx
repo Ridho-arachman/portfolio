@@ -7,9 +7,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, Briefcase, Calendar, MapPin } from "lucide-react";
 import { ExperienceCardProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
+  const { t } = useTranslation();
   const teaserDescription = exp.description.slice(0, 2);
+  const typeLabel = exp.type === "Organization" ? t.experience.organization : t.experience.company;
 
   return (
     <div
@@ -51,7 +54,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                       ) : (
                         <Briefcase className="w-3.5 h-3.5" />
                       )}
-                      {exp.type}
+                      {typeLabel}
                     </Badge>
                   </div>
 
@@ -105,7 +108,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                           >
                             <Image
                               src={img}
-                              alt={`Preview ${idx + 1}`}
+                              alt={`${t.experience.galleryPreview} ${idx + 1}`}
                               fill
                               className="object-cover grayscale group-hover:grayscale-0 transition-all"
                             />
@@ -113,7 +116,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                         ))}
                         {exp.gallery.length > 3 && (
                           <div className="shrink-0 w-16 h-16 rounded-md bg-accent/10 border border-accent/30 flex items-center justify-center text-xs font-bold text-accent">
-                            +{exp.gallery.length - 3}
+                            +{exp.gallery.length - 3} {t.experience.morePhotos}
                           </div>
                         )}
                       </div>
@@ -128,7 +131,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                         href={`/experience/${exp.slug}`}
                         onClick={() => {}}
                       >
-                        Lihat Detail Lengkap
+                        {t.experience.viewDetail}
                         <ArrowRight className="w-4 h-4 shrink-0 group-hover/btn:translate-x-1 transition-transform" />
                       </Link>
                     </Button>

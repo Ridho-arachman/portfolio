@@ -5,8 +5,14 @@ import { useRef } from "react";
 import { REPLAY_VIEWPORT } from "./constants";
 import { ContactForm } from "./contact-form";
 import { ContactInfo } from "./contact-info";
+import { useTranslation } from "@/hooks/use-translation";
 
-export function ContactSection() {
+interface ContactSectionProps {
+  locale: string;
+}
+
+export function ContactSection({ locale }: ContactSectionProps) {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
 
   return (
@@ -22,23 +28,20 @@ export function ContactSection() {
             variant="outline"
             className="px-3 py-1 rounded-full border-accent/30 text-accent text-xs font-semibold tracking-wider uppercase mb-4 bg-accent-muted/50"
           >
-            Contact
+            {t.contact.title}
           </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Let&apos;s Work{" "}
-            <span className="text-gradient-elegant">Together</span>
+            {t.contact.subtitle}
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            Have a project in mind or just want to say hi? I&apos;m always open
-            to discussing new opportunities, collaborations, and anything
-            tech-related.
+            {t.contact.form.messagePlaceholder}
           </p>
         </div>
 
         {/* Contact Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          <ContactInfo />
-          <ContactForm />
+          <ContactInfo locale={locale} />
+          <ContactForm locale={locale} />
         </div>
       </div>
     </section>

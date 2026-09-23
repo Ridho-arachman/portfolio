@@ -8,7 +8,7 @@ const PORT = 3005;
 const BASE_URL = `http://localhost:${PORT}`;
 
 const devWebServer = {
-  command: `npm run dev -- -p ${PORT}`,
+  command: `npm run dev -- -p ${PORT} --webpack`,
   url: BASE_URL,
   reuseExistingServer: false,
   timeout: 300_000,

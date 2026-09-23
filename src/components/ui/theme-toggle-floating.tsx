@@ -3,11 +3,12 @@
 import { AnimatePresence, useReducedMotion } from "motion/react";
 import { Moon, Sun } from "lucide-react";
 import * as m from "motion/react-m";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/providers/theme-provider";
 import { useEffect, useState } from "react";
 
 export function ThemeToggleFloating() {
   const { theme, setTheme } = useTheme();
+  const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -24,7 +25,6 @@ export function ThemeToggleFloating() {
   }
 
   const isDark = theme === "dark";
-  const prefersReducedMotion = useReducedMotion();
 
   return (
     <m.div

@@ -3,8 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 import { AboutHeroContentProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function AboutHeroContent({ scrollYProgress }: AboutHeroContentProps) {
+  const { t } = useTranslation();
   return (
     <div
       className="relative z-10 container mx-auto px-4 text-center max-w-4xl animate-fade-in-up"
@@ -19,13 +21,13 @@ export function AboutHeroContent({ scrollYProgress }: AboutHeroContentProps) {
           variant="outline"
           className="px-3 py-1 rounded-full border-accent/30 bg-accent-muted/50 text-accent text-xs font-semibold tracking-wider uppercase"
         >
-          Get to know me
+          {t.about.subtitle}
         </Badge>
       </div>
 
       {/* Main Heading */}
       <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9] animate-fade-in-up delay-200">
-        About{" "}
+        {t.about.title}{" "}
         <span className="text-gradient-elegant inline-block relative">
           Me
           <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
@@ -34,8 +36,7 @@ export function AboutHeroContent({ scrollYProgress }: AboutHeroContentProps) {
 
       {/* Subheading */}
       <p className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-300">
-        More than just code. Discover the person, the principles, and the
-        journey behind the portfolio.
+        {t.about.description}
       </p>
 
       {/* Decorative Line */}

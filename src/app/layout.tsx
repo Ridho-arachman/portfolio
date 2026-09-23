@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/navbar/navbar";
-import { Footer } from "@/components/layout/footer/footer";
 import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 import { ThemeProvider } from "@/providers/theme-provider";
 
@@ -84,35 +82,42 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+// Applies the stored theme before first paint. Mirrors the next-themes inline
+// script, but rendered in <head> because React 19 rejects scripts in <body>.
+const themeInitScript = `(function() {
+  var el = document.documentElement;
+  function apply(theme) {
+    el.classList.remove("light", "dark");
+    el.classList.add(theme);
+    el.style.colorScheme = theme;
+  }
+  try {
+    var stored = localStorage.getItem("theme");
+    apply(stored === "dark" || stored === "light" ? stored : "dark");
+  } catch (err) {
+    apply("dark");
+  }
+})();`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}>
+    <>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
-      <body className="bg-bg-primary text-text-primary antialiased font-sans">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <NuqsAdapterLoader>
-            <Navbar />
-            <main id="main-content" role="main" className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
-          </NuqsAdapterLoader>
-        </ThemeProvider>
-      </body>
-    </html>
+      <ThemeProvider disableTransitionOnChange>
+        <NuqsAdapterLoader>
+          {children}
+        </NuqsAdapterLoader>
+      </ThemeProvider>
+    </>
   );
 }

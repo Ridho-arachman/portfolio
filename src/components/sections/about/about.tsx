@@ -4,9 +4,11 @@ import { AboutAvatar } from "./about-avatar";
 import { AboutBackground } from "./about-background";
 import { AboutContent } from "./about-content";
 import { AboutMarquee } from "./about-marquee";
+import { useTranslation } from "@/hooks/use-translation";
 
 
 export function AboutSection() {
+  const { t } = useTranslation();
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
       <AboutBackground />
@@ -15,12 +17,11 @@ export function AboutSection() {
         {/* Header Section */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Bridging Business & <span className="text-gradient-elegant">Technology</span>
+            {t.about.title}{" "}
+            <span className="text-gradient-elegant">Technology</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg animate-fade-in-up delay-100">
-            As an Information Systems graduate specializing in E-Business from
-            Universitas Bina Bangsa, I don&apos;t just write code, I design
-            solutions that deliver real impact.
+            {t.about.description}
           </p>
         </div>
 

@@ -4,8 +4,10 @@ import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
 import { CORE_VALUES, REPLAY_VIEWPORT } from "./constants";
 import { ValueCard } from "./value-card";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function CoreValuesSection() {
+  const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   return (
     <section className="relative py-20 md:py-32">
@@ -18,18 +20,17 @@ export function CoreValuesSection() {
           className="text-center mb-16 md:mb-24"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            My Core <span className="text-gradient-elegant">Philosophy</span>
+            {t.coreValues.title}
           </h2>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">
-            Prinsip yang memandu setiap baris kode dan keputusan desain yang
-            saya buat.
+            {t.coreValues.subtitle}
           </p>
         </m.div>
 
         {/* Grid Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {CORE_VALUES.map((value, index) => (
-            <ValueCard key={value.title} value={value} index={index} />
+            <ValueCard key={value.titleKey} value={value} index={index} />
           ))}
         </div>
       </div>

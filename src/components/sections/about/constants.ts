@@ -5,20 +5,8 @@ export type AboutBackgroundProps = Record<string, never>;
 export type AboutContentProps = Record<string, never>;
 export type AvatarBackgroundProps = Record<string, never>;
 
-export const HIGHLIGHT_POINTS = [
-  {
-    icon: Code2,
-    title: "Clean Code",
-    desc: "Type-safe & Maintainable",
-  },
-  {
-    icon: Globe,
-    title: "Web Performance",
-    desc: "Optimized & Fast",
-  },
-  {
-    icon: Database,
-    title: "Data Driven",
-    desc: "Scalable Architecture",
-  },
+export const HIGHLIGHT_POINTS_KEYS = [
+  { icon: Code2, titleKey: 'cleanCode', descKey: 'cleanCodeDesc' },
+  { icon: Globe, titleKey: 'webPerformance', descKey: 'webPerformanceDesc' },
+  { icon: Database, titleKey: 'dataDriven', descKey: 'dataDrivenDesc' },
 ] as const;

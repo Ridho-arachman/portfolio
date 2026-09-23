@@ -12,6 +12,10 @@ vi.mock("@/lib/session", () => ({
   requireAdminSession: vi.fn(),
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  applyRateLimit: vi.fn(),
+}));
+
 vi.mock("@/lib/prisma", () => ({
   default: {
     project: {
@@ -19,12 +23,18 @@ vi.mock("@/lib/prisma", () => ({
       count: vi.fn(),
       create: vi.fn(),
     },
+    rateLimit: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
   },
 }));
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
+import { applyRateLimit } from "@/lib/rate-limit";
 import { POST } from "./route";
 
 const validBody = {
@@ -51,6 +61,14 @@ describe("POST /api/admin/projects", () => {
     vi.mocked(requireAdminSession).mockResolvedValue({
       user: { id: "admin-1" },
     } as Awaited<ReturnType<typeof requireAdminSession>>);
+    vi.mocked(applyRateLimit).mockResolvedValue({
+      allowed: true,
+      headers: {
+        "X-RateLimit-Limit": "10",
+        "X-RateLimit-Remaining": "9",
+        "X-RateLimit-Reset": String(Math.ceil(Date.now() / 1000) + 60),
+      },
+    } as Awaited<ReturnType<typeof applyRateLimit>>);
   });
 
   it("revalidates /projects and the new detail path on success", async () => {

@@ -11,6 +11,7 @@ import { TurnstileWidget } from "@/components/ui/turnstile";
 import { zodResolver } from "@/lib/zod-resolver";
 import { contactFormSchema, type ContactFormValues } from "@/schema/contact";
 import { CONTACT_FORM_FIELDS } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 function translateSubmitError(code?: string, status?: number): string {
   if (status === 429 || code === "RATE_LIMITED") {
@@ -22,7 +23,12 @@ function translateSubmitError(code?: string, status?: number): string {
   return "Gagal mengirim pesan. Coba lagi.";
 }
 
-export function ContactForm() {
+interface ContactFormProps {
+  locale: string;
+}
+
+export function ContactForm({ locale }: ContactFormProps) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -49,7 +55,7 @@ export function ContactForm() {
     setSubmitError(null);
 
     if (hasTurnstile && !captchaToken) {
-      setSubmitError("Selesaikan verifikasi CAPTCHA terlebih dahulu.");
+      setSubmitError(t.contact.form.error);
       return;
     }
 
@@ -83,11 +89,11 @@ export function ContactForm() {
 
       {isSuccess ? (
         <div className="relative z-10 flex flex-col items-center justify-center text-center py-16 animate-scale-in">
-          <h2 className="sr-only">Contact Form</h2>
+          <h2 className="sr-only">{t.contact.title}</h2>
           <div className="mb-6 text-accent animate-bounce-in">
             <CheckCircle2 className="w-16 h-16" />
           </div>
-          <h3 className="text-2xl font-bold mb-3">Message sent!</h3>
+          <h3 className="text-2xl font-bold mb-3">{t.contact.form.success}</h3>
           <p className="text-text-secondary max-w-sm mb-8">
             Thank you for reaching out. I&apos;ll get back to you as soon as
             possible.
@@ -131,11 +137,11 @@ export function ContactForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Message</Label>
+            <Label htmlFor="content">{t.contact.form.message}</Label>
             <Textarea
               id="content"
               rows={6}
-              placeholder="Tell me about your project or just say hi..."
+              placeholder={t.contact.form.messagePlaceholder}
               aria-invalid={errors.content ? true : undefined}
               {...register("content")}
             />
@@ -162,11 +168,11 @@ export function ContactForm() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Sending...
+                  {t.contact.form.submitting}
                 </>
               ) : (
                 <>
-                  Send Message
+                  {t.contact.form.submit}
                   <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </>
               )}

@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Award } from "lucide-react";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 const PAGE_SIZE = 6;
 
@@ -16,6 +17,7 @@ interface CertificatesPageContentProps {
 }
 
 export function CertificatesPageContent({ data }: CertificatesPageContentProps) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(data.length / PAGE_SIZE);
   const visibleData = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -24,19 +26,19 @@ export function CertificatesPageContent({ data }: CertificatesPageContentProps) 
     <Providers>
       <div className="flex flex-col min-h-screen overflow-x-hidden">
         <PageHero
-          badge="Credentials"
-          title="My"
-          titleAccent="Certificates"
-          description="Professional certifications and credentials validating my expertise in cloud, front-end, data, and UX design."
+          badge={t.certificates.subtitle}
+          title={t.certificates.title}
+          titleAccent=""
+          description={t.certificates.subtitle}
           iconSet="certificates"
         />
 
         <section className="container mx-auto px-4 max-w-5xl py-20 md:py-32">
-          <h2 className="sr-only">Certificates</h2>
+          <h2 className="sr-only">{t.certificates.title}</h2>
           {data.length === 0 ? (
             <EmptyState
               icon={Award}
-              title="No certificates yet"
+              title={t.certificates.noCertificates}
               description="Certificates will appear here once published."
             />
           ) : (

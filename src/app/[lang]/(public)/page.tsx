@@ -2,18 +2,36 @@ import { HomePageContent } from "./home-content";
 import { HeroSection } from "@/components/sections/hero";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import prisma from "@/lib/prisma";
-import { getClientEnv } from "@/lib/env";
-import { buildMetadata } from "@/lib/seo";
+import { getMessages } from "@/lib/translations";
+import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
+import { Metadata } from "next";
 
-const env = getClientEnv();
+interface HomePageProps {
+  params: Promise<{ lang: string }>;
+}
 
-export const metadata = buildMetadata({
-  title: `${env.NEXT_PUBLIC_SITE_NAME} | ${env.NEXT_PUBLIC_SITE_TAGLINE}`,
-  description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
-  path: "/",
-  absolute: true,
-});
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const locale = resolvedParams.lang as Locale;
+  const messages = await getMessages(isValidLocale(locale) ? locale : DEFAULT_LOCALE);
+  const alternates = getAlternatePaths('/');
+
+  return {
+    title: messages.seo.defaultTitle,
+    description: messages.seo.defaultDescription,
+    keywords: messages.seo.keywords,
+    alternates: {
+      languages: alternates,
+    },
+    openGraph: {
+      locale: locale === 'id' ? 'id_ID' : 'en_US',
+      alternateLocale: locale === 'id' ? 'en_US' : 'id_ID',
+    },
+  };
+}
+
+export const dynamic = 'force-dynamic';
 
 export const revalidate = 60;
 
@@ -39,7 +57,10 @@ const getProjects = unstable_cache(
   { revalidate: 60, tags: ["projects"] }
 );
 
-export default async function Home() {
+export default async function Home({ params }: HomePageProps) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.lang as Locale;
+  const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
   const [certificates, projects] = await Promise.all([
     getCertificates(),
     getProjects(),
@@ -62,7 +83,7 @@ export default async function Home() {
         summary: c.summary,
       }))}
     >
-      <HeroSection />
+      <HeroSection locale={validLocale} />
     </HomePageContent>
   );
 }

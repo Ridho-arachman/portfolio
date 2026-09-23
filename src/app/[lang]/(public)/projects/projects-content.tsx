@@ -8,6 +8,7 @@ import { mapDbProjectToProject } from "@/components/sections/projects/map-projec
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FolderKanban } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 const PAGE_SIZE = 6;
 
@@ -24,6 +25,7 @@ interface ProjectsPageContentProps {
 }
 
 export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(projects.length / PAGE_SIZE);
   const visibleProjects = projects.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -32,19 +34,19 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
     <Providers>
       <div className="flex flex-col min-h-screen overflow-x-hidden">
         <PageHero
-          badge="Selected Works"
-          title="Featured"
-          titleAccent="Projects"
-          description="A glimpse into my recent work, showcasing scalable architecture and immersive user experiences."
+          badge={t.projects.subtitle}
+          title={t.projects.filterFeatured}
+          titleAccent={t.projects.title}
+          description={t.projects.subtitle}
           iconSet="projects"
         />
 
         <section className="container mx-auto px-4 max-w-5xl py-20 md:py-32">
-          <h2 className="sr-only">Projects</h2>
+          <h2 className="sr-only">{t.projects.title}</h2>
           {projects.length === 0 ? (
             <EmptyState
               icon={FolderKanban}
-              title="No projects available"
+              title={t.projects.noProjects}
               description="Projects will appear here once published."
             />
           ) : (

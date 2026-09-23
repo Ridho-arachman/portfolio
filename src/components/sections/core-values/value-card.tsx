@@ -4,10 +4,12 @@ import { Card } from "@/components/ui/card";
 import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
 import { cardVariants, REPLAY_VIEWPORT, ValueCardProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function ValueCard({ value, index }: ValueCardProps) {
   const Icon = value.icon;
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation();
 
   return (
     <m.div
@@ -28,11 +30,11 @@ export function ValueCard({ value, index }: ValueCardProps) {
         </div>
 
         <h3 className="text-lg font-bold text-text-primary mb-2 group-hover:text-accent transition-colors">
-          {value.title}
+          {t.coreValues[value.titleKey as keyof typeof t.coreValues]}
         </h3>
 
         <p className="text-sm text-text-secondary leading-relaxed">
-          {value.desc}
+          {t.coreValues[value.descKey as keyof typeof t.coreValues]}
         </p>
       </Card>
     </m.div>

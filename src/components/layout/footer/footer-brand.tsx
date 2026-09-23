@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function FooterBrand() {
+  const { t } = useTranslation();
   return (
     <div className="animate-fade-in-up">
       <div className="flex items-center gap-3 mb-3">
@@ -20,8 +24,7 @@ export function FooterBrand() {
         </h2>
       </div>
       <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
-        Information Systems student crafting immersive web experiences with
-        modern tech stacks.
+        {t.footer.tagline}
       </p>
     </div>
   );

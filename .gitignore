@@ -28,6 +28,9 @@ test-results/
 # misc
 .DS_Store
 *.pem
+# Windows reserved device name - created accidentally by '> nul' redirects in bash
+# or by Turbopack's PostCSS pipeline (next.js#90860); breaks dev server if committed
+nul
 
 skills-lock.json
 AGENTS.md

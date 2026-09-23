@@ -6,6 +6,7 @@ import { CertificatesSection } from "@/components/sections/certificates";
 import { ContactSection } from "@/components/sections/contact";
 import type { Project } from "@/components/sections/projects/constants";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface BelowFoldSectionsProps {
   projects: Project[];
@@ -18,11 +19,12 @@ interface BelowFoldSectionsProps {
  * the contact form and turnstile never touch the initial critical path.
  */
 export function BelowFoldSections({ projects, certificates }: BelowFoldSectionsProps) {
+  const { locale } = useTranslation();
   return (
     <LazyProviders>
       <ProjectsSection projects={projects} />
       <CertificatesSection certificates={certificates} />
-      <ContactSection />
+      <ContactSection locale={locale} />
     </LazyProviders>
   );
 }

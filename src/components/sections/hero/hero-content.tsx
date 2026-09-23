@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion, useReducedMotion, useMotionValue, useTransform, useScroll } from "motion/react";
 import { useRef, useEffect } from "react";
+import { useTranslation } from "@/hooks/use-translation";
+import { Locale } from "@/lib/i18n";
 
 const HERO_CODE_SNIPPET = `const buildFuture = () => {
   const stack = ["React", "Next.js", "TypeScript", "Tailwind"];
@@ -18,7 +20,12 @@ buildFuture().forEach(project =>
   shipWithCraft(project)
 );`;
 
-export function HeroContent() {
+interface HeroContentProps {
+  locale: Locale;
+}
+
+export function HeroContent({ locale }: HeroContentProps) {
+  const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
 
   const mouseX = useMotionValue(0);
@@ -45,23 +52,23 @@ export function HeroContent() {
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent animate-pulse" />
                 </span>
-                Available for hire
+                {t.hero.ctaPrimary}
               </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-[0.9] scroll-reveal-up delay-300" style={{ animationRange: "entry 0% cover 30%" }}>
-              Building the
+              {t.hero.greeting}
               <br />
-              <span className="text-gradient-accent">Future</span>
+              <span className="text-gradient-accent">{t.hero.title}</span>
             </h1>
 
             <p className="text-base md:text-lg text-text-secondary max-w-xl mb-10 leading-relaxed scroll-reveal-up delay-400" style={{ animationRange: "entry 0% cover 30%" }}>
-              Information Systems graduate crafting immersive, high-performance web experiences with React, Next.js, TypeScript & modern tech stacks.
+              {t.hero.description}
             </p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 scroll-reveal-up delay-500" style={{ animationRange: "entry 0% cover 30%" }}>
               <motion.a
-                href="/projects"
+                href={`/${locale}/projects`}
                 className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-sm md:px-10 md:py-5 md:text-base h-auto rounded-full bg-accent text-bg-primary font-semibold transition-all duration-300 min-h-[52px] min-w-[52px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                 onMouseMove={(e: React.MouseEvent<HTMLAnchorElement>) => {
                   if (!prefersReducedMotion) {
@@ -81,14 +88,14 @@ export function HeroContent() {
                 style={{ x: mouseX, y: mouseY }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                View Projects
+                {t.hero.ctaPrimary}
                 <svg className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </motion.a>
 
               <Link
-                href="/contact"
+                href={`/${locale}/contact`}
                 className="group inline-flex items-center justify-center gap-2 rounded-full border border-accent/50 px-8 py-4 text-base font-medium text-accent transition-all hover:border-accent hover:bg-accent-muted/10 min-h-[52px] min-w-[52px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 glass glass-hover"
               >
                 <motion.svg
@@ -102,7 +109,7 @@ export function HeroContent() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4V1L8 5l4 4V6a8 8 0 01-9 9m9-9a9 9 0 00-9-9m9 9V12" />
                 </motion.svg>
-                <span>Let&apos;s Talk</span>
+                <span>{t.hero.ctaSecondary}</span>
               </Link>
             </div>
 
@@ -110,7 +117,7 @@ export function HeroContent() {
               <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              <span className="hidden sm:inline">Scroll to explore</span>
+              <span className="hidden sm:inline">{t.hero.scrollDown}</span>
             </div>
           </div>
 

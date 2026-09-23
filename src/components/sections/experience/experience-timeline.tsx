@@ -5,8 +5,10 @@ import { useRef, useState, useEffect } from "react";
 import { Briefcase } from "lucide-react";
 import { ExperienceCard } from "./experience-card";
 import type { Experience } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function ExperienceTimeline({ experiences }: { experiences: Experience[] }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollYProgress, setScrollYProgress] = useState(0);
 
@@ -31,8 +33,8 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
     return (
       <EmptyState
         icon={Briefcase}
-        title="No experiences yet"
-        description="Work experiences will appear here once added."
+        title={t.experience.noExperiences}
+        description={t.experience.noExperiencesDesc}
       />
     );
   }

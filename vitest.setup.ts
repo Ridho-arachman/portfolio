@@ -20,6 +20,18 @@ class MockIntersectionObserver {
 vi.stubGlobal("ResizeObserver", MockResizeObserver);
 vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
+// Mock matchMedia for GSAP/ScrollTrigger
+vi.stubGlobal("matchMedia", vi.fn().mockImplementation((query) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+})));
+
 afterEach(() => {
   cleanup();
   localStorage.clear();

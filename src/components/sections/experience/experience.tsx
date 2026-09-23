@@ -7,9 +7,11 @@ import Link from "next/link";
 import { REPLAY_VIEWPORT } from "./constants";
 import { ExperienceTimeline } from "./experience-timeline";
 import type { Experience } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useTranslation();
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-32 overflow-hidden">
@@ -17,11 +19,10 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
         {/* Header Section */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Work <span className="text-gradient-elegant">Experience</span>
+            {t.experience.title}
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            A timeline of my professional growth, leadership roles, and
-            real-world impact.
+            {t.experience.subtitle}
           </p>
         </div>
 
@@ -34,7 +35,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
             size="lg"
             className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group min-h-[48px] min-w-[48px]"
           >
-            <Link href="/experience" className="inline-flex items-center gap-2">
+            <Link href={`/${t.nav.experience.toLowerCase()}`} className="inline-flex items-center gap-2">
               View All Experience
               <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
             </Link>

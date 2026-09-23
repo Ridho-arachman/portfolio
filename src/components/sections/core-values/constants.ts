@@ -4,8 +4,8 @@ import { Lightbulb, Shield, Users, Zap } from "lucide-react";
 
 export interface CoreValue {
   icon: LucideIcon;
-  title: string;
-  desc: string;
+  titleKey: string;
+  descKey: string;
 }
 
 export interface ValueCardProps {
@@ -21,23 +21,23 @@ export const cardVariants: Variants = {
 export const CORE_VALUES: CoreValue[] = [
   {
     icon: Zap,
-    title: "Performance First",
-    desc: "Saya percaya website yang cepat adalah hak pengguna, bukan fitur tambahan. Optimasi adalah prioritas.",
+    titleKey: "performanceFirst",
+    descKey: "performanceFirstDesc",
   },
   {
     icon: Shield,
-    title: "Type-Safe & Reliable",
-    desc: "Menggunakan TypeScript dan testing untuk memastikan kode yang scalable dan minim bug di production.",
+    titleKey: "typeSafe",
+    descKey: "typeSafeDesc",
   },
   {
     icon: Users,
-    title: "User-Centric Design",
-    desc: "Teknologi yang hebat tidak ada artinya jika tidak mudah digunakan. UX selalu menjadi panduan utama.",
+    titleKey: "userCentric",
+    descKey: "userCentricDesc",
   },
   {
     icon: Lightbulb,
-    title: "Continuous Learning",
-    desc: "Dunia tech bergerak cepat. Saya selalu meluangkan waktu untuk mempelajari arsitektur dan tools terbaru.",
+    titleKey: "continuousLearning",
+    descKey: "continuousLearningDesc",
   },
 ];
 
