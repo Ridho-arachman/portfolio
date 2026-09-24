@@ -1,6 +1,7 @@
 // lib/session.ts
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import type { UserRole } from "@/types/domain";
 
 export async function getServerSession() {
   try {
@@ -29,4 +30,8 @@ export async function requireAdminSession() {
     throw new Error("Unauthorized");
   }
   return session;
+}
+
+export function isAdmin(role: UserRole): boolean {
+  return role === "ADMIN";
 }

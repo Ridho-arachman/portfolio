@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 import { TechMarquee } from "@/components/ui/tech-marquee";
 import { usePublicSkills } from "@/hooks/use-skills";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function AboutMarquee() {
+  const { t } = useTranslation();
   // Data skill diambil dari BE via /api/public/skills (usePublicSkills).
   // Saat masih loading, gagal, atau kosong, TechMarquee otomatis memakai
   // daftar hardcoded bawaan sehingga section tidak pernah tampak rusak.
@@ -26,7 +28,7 @@ export function AboutMarquee() {
     <div className="mt-12 animate-fade-in-up delay-500">
       <div className="text-center mb-8">
         <p className="text-sm font-semibold text-text-muted uppercase tracking-widest">
-          Technologies I Work With
+          {t.about.marquee}
         </p>
       </div>
       <TechMarquee items={items} />

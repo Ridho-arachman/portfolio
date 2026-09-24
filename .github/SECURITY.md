@@ -12,7 +12,7 @@ If you discover a security vulnerability, please report it responsibly.
 
 **Do NOT open a public GitHub issue.**
 
-Instead, please email: **[ridho.arachman22@gmail.com]**
+Instead, please email: **ridho.arachman22@gmail.com**
 
 Include:
 

@@ -70,11 +70,11 @@ export function MessagesInbox() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const { data, isLoading, isError, refetch } = useAdminMessages<AdminMessage>();
+  const { data, isLoading, isError, refetch } = useAdminMessages();
   const updateStatusMutation = useUpdateMessageStatus();
   const deleteMutation = useDeleteMessage();
 
-  const messages = data?.data ?? [];
+  const messages: AdminMessage[] = data?.data ?? [];
 
   const counts = useMemo(() => {
     const total = messages.length;

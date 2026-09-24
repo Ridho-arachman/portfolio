@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { CERTIFICATE_DETAIL } from "./constants";
 import type { CertificateListData } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 import { ArrowLeft, Award, Calendar, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +12,7 @@ interface CertificateDetailHeroProps {
 }
 
 export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
+  const { t, locale } = useTranslation();
   return (
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
       <div className="absolute inset-0">
@@ -37,11 +38,11 @@ export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
       <div className="absolute top-24 left-0 right-0 z-20">
         <div className="container mx-auto px-4 max-w-5xl">
           <Link
-            href={CERTIFICATE_DETAIL.backHref}
+            href={`/${locale}/certificates`}
             className="group inline-flex items-center gap-2 text-sm text-text-secondary hover:text-accent transition-colors"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {CERTIFICATE_DETAIL.backLabel}
+            {t.certificateDetail.back}
           </Link>
         </div>
       </div>
@@ -55,7 +56,7 @@ export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
                 className="gap-1.5 px-3 py-1.5 rounded-full bg-accent/20 backdrop-blur-md border-accent/30 text-xs font-semibold text-accent"
               >
                 <Award className="w-3.5 h-3.5" />
-                Certificate
+                {t.certificates.badgeCertificate}
               </Badge>
               {cert.credentialId && (
                 <Badge
@@ -63,7 +64,7 @@ export function CertificateDetailHero({ cert }: CertificateDetailHeroProps) {
                   className="gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 backdrop-blur-md border-emerald-500/30 text-xs font-semibold text-emerald-400"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Verified
+                  {t.certificates.badgeVerified}
                 </Badge>
               )}
             </div>

@@ -12,6 +12,8 @@ import { zodResolver } from "@/lib/zod-resolver";
 import {
   categoryFormSchema,
   type CategoryFormValues,
+  type CategoryCreateValues,
+  type CategoryUpdateValues,
 } from "@/schema/category";
 import { ADMIN_CATEGORIES, type AdminCategory } from "./constants";
 import { slugify } from "@/utils/slug";
@@ -25,7 +27,7 @@ export function CategoryForm({
   mode: "create" | "edit";
   initialData?: AdminCategory;
   isLoading: boolean;
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit: (data: CategoryFormValues) => void;
 }) {
   const slugTouched = useRef(mode === "edit");
 
@@ -65,7 +67,7 @@ export function CategoryForm({
     const payload = {
       name: values.name,
       slug: values.slug,
-      description: values.description || null,
+      description: values.description || undefined,
       order: values.order,
     };
 

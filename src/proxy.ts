@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEFAULT_LOCALE, getLocaleFromPath, isValidLocale } from "./lib/i18n";
+import type { UserRole } from "@/types/domain";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -19,6 +20,12 @@ export async function proxy(request: NextRequest) {
     pathname === "/sitemap.xml"
   ) {
     return NextResponse.next();
+  }
+
+  // Admin routes live at /admin, not /[lang]/admin - keep them out of the locale redirect.
+  const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminPath) {
+    return handleAdminAuth(request, NextResponse.next());
   }
 
   // Check if pathname already has a valid locale

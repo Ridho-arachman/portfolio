@@ -7,6 +7,27 @@ import { ADMIN_SKILLS } from "./constants";
 import { SkillForm } from "./skill-form";
 import { useAdminSkill, useCreateSkill, useUpdateSkill } from "@/hooks/use-skills";
 import type { AdminSkill } from "./constants";
+import type { SkillCreateValues, SkillUpdateValues } from "@/schema/skill";
+
+function mapFormToCreate(data: Omit<AdminSkill, "id" | "createdAt" | "updatedAt">): SkillCreateValues {
+  return {
+    name: data.name,
+    iconName: data.iconName ?? undefined,
+    category: data.category,
+    proficiency: data.proficiency,
+    order: data.order,
+  };
+}
+
+function mapFormToUpdate(data: Omit<AdminSkill, "id" | "createdAt" | "updatedAt">): SkillUpdateValues {
+  return {
+    name: data.name,
+    iconName: data.iconName ?? undefined,
+    category: data.category,
+    proficiency: data.proficiency,
+    order: data.order,
+  };
+}
 
 export function SkillFormPage({
   mode,
@@ -75,10 +96,10 @@ export function SkillFormPage({
         mode === "edit" && skill
           ? (data) =>
               updateMutation.mutate(
-                { id: skill.id, data },
+                { id: skill.id, data: mapFormToUpdate(data) },
                 { onSuccess: () => {} },
               )
-          : (data) => createMutation.mutate(data)
+          : (data) => createMutation.mutate(mapFormToCreate(data))
       }
     />
   );

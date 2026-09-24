@@ -7,6 +7,45 @@ import { ADMIN_PROJECTS } from "./constants";
 import { ProjectForm } from "./project-form";
 import { useAdminProject, useCreateProject, useUpdateProject } from "@/hooks/use-projects";
 import type { AdminProject } from "./constants";
+import type { ProjectCreateValues, ProjectUpdateValues } from "@/schema/project";
+
+function mapFormToCreate(data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">): ProjectCreateValues {
+  return {
+    title: data.title,
+    slug: data.slug,
+    description: data.description,
+    thumbnail: data.thumbnail,
+    liveUrl: data.liveUrl ?? undefined,
+    repoUrl: data.repoUrl ?? undefined,
+    technologies: data.technologies,
+    gallery: data.gallery,
+    role: data.role ?? undefined,
+    year: data.year ?? undefined,
+    highlights: data.highlights ?? undefined,
+    isPublished: data.isPublished,
+    order: data.order,
+    categoryId: data.categoryId ?? undefined,
+  };
+}
+
+function mapFormToUpdate(data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">): ProjectUpdateValues {
+  return {
+    title: data.title,
+    slug: data.slug,
+    description: data.description,
+    thumbnail: data.thumbnail,
+    liveUrl: data.liveUrl ?? undefined,
+    repoUrl: data.repoUrl ?? undefined,
+    technologies: data.technologies,
+    gallery: data.gallery,
+    role: data.role ?? undefined,
+    year: data.year ?? undefined,
+    highlights: data.highlights ?? undefined,
+    isPublished: data.isPublished,
+    order: data.order,
+    categoryId: data.categoryId ?? undefined,
+  };
+}
 
 export function ProjectFormPage({
   mode,
@@ -75,10 +114,10 @@ export function ProjectFormPage({
         mode === "edit" && project
           ? (data) =>
               updateMutation.mutate(
-                { id: project.id, data },
+                { id: project.id, data: mapFormToUpdate(data) },
                 { onSuccess: () => {} },
               )
-          : (data) => createMutation.mutate(data)
+          : (data) => createMutation.mutate(mapFormToCreate(data))
       }
     />
   );

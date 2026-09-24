@@ -12,9 +12,13 @@
 
 ## Checklist
 
-- [ ] `npm run lint` passes
+- [ ] `npm run lint` passes (0 errors)
 - [ ] `npx tsc --noEmit` passes
-- [ ] `npm run test` passes (unit + integration)
+- [ ] `npm run build` passes (incl. `[lang]` routes EN/ID)
+- [ ] `npm run test:unit` passes
+- [ ] `npm run test:integration` passes (if API/DB touched)
+- [ ] `npm run test:e2e` passes (if user flow touched)
+- [ ] Commit message follows Conventional Commits (`feat:` / `fix:` / ...)
 - [ ] Self-reviewed the diff
 
 ## Screenshots (if UI change)

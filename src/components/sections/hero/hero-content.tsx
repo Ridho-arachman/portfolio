@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion, useMotionValue, useTransform, useScroll } from "motion/react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { Locale } from "@/lib/i18n";
 
@@ -28,6 +28,37 @@ export function HeroContent({ locale }: HeroContentProps) {
   const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
 
+  const phrases = useMemo(
+    () => (t.hero.typewriter.length > 0 ? t.hero.typewriter : [t.hero.title]),
+    [t],
+  );
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const current = phrases[phraseIndex % phrases.length];
+    const doneTyping = !deleting && charCount === current.length;
+    const doneDeleting = deleting && charCount === 0;
+    const delay = doneTyping ? 1600 : doneDeleting ? 400 : deleting ? 35 : 70;
+    const timer = setTimeout(() => {
+      if (doneTyping) {
+        setDeleting(true);
+      } else if (doneDeleting) {
+        setDeleting(false);
+        setPhraseIndex((i) => (i + 1) % phrases.length);
+      } else {
+        setCharCount((c) => c + (deleting ? -1 : 1));
+      }
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [charCount, deleting, phraseIndex, phrases, prefersReducedMotion]);
+
+  const typedText = prefersReducedMotion
+    ? phrases[0]
+    : phrases[phraseIndex % phrases.length].slice(0, charCount);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -52,14 +83,23 @@ export function HeroContent({ locale }: HeroContentProps) {
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent animate-pulse" />
                 </span>
-                {t.hero.ctaPrimary}
+                {t.hero.available}
               </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-[0.9] scroll-reveal-up delay-300" style={{ animationRange: "entry 0% cover 30%" }}>
               {t.hero.greeting}
               <br />
-              <span className="text-gradient-accent">{t.hero.title}</span>
+              <span className="text-gradient-accent" aria-hidden="true">
+                {typedText}
+              </span>
+              {!prefersReducedMotion && (
+                <span
+                  aria-hidden="true"
+                  className="inline-block w-[3px] h-[0.9em] ml-2 -mb-[0.05em] bg-accent animate-pulse"
+                />
+              )}
+              <span className="sr-only">{t.hero.title}</span>
             </h1>
 
             <p className="text-base md:text-lg text-text-secondary max-w-xl mb-10 leading-relaxed scroll-reveal-up delay-400" style={{ animationRange: "entry 0% cover 30%" }}>
@@ -146,11 +186,11 @@ export function HeroContent({ locale }: HeroContentProps) {
               <div className="absolute -top-4 -right-4 glass px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider text-accent uppercase hidden lg:block parallax-fast">
                 <span className="flex items-center gap-1">
                   <span className="relative h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                  Live Preview
+                  {t.hero.livePreview}
                 </span>
               </div>
               <div className="absolute bottom-4 left-4 glass px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider text-neon-cyan uppercase hidden lg:block parallax-medium">
-                TypeScript Ready
+                {t.hero.typeReady}
               </div>
             </div>
           </div>

@@ -3,12 +3,12 @@ import type { ExperienceListData } from "@/components/sections/experience-list/c
 export type { ExperienceListData };
 
 export const EXPERIENCE_DETAIL = {
-  backLabel: "Kembali ke Pengalaman",
   backHref: "/experience",
-  achievementsTitle: "Pencapaian & Tanggung Jawab",
-  galleryTitle: "Galeri",
-  prevLabel: "Pengalaman Sebelumnya",
-  nextLabel: "Pengalaman Selanjutnya",
+  backKey: "back",
+  achievementsKey: "achievements",
+  galleryKey: "gallery",
+  prevKey: "prev",
+  nextKey: "next",
 } as const;
 
 export type { ExperienceListData as ExperienceDetailData };

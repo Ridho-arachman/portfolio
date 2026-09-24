@@ -8,7 +8,7 @@ import { NavbarLogo } from "./navbar-logo";
 import { DesktopNav } from "./desktop-nav";
 import { NavCollapseClient } from "./nav-collapse-client";
 import { LanguageSwitcher } from "./language-switcher";
-import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
+import { CVDownload } from "./cv-download";
 import { useTranslation } from "@/hooks/use-translation";
 import { getLocaleFromPath, removeLocaleFromPath } from "@/lib/i18n";
 
@@ -46,29 +46,16 @@ export function Navbar() {
           {/* Desktop Navigation (pill menderet + satu nav link collapse) */}
           <DesktopNav />
 
-          {/* Desktop: Language Switcher + CTA */}
+          {/* Desktop: Language Switcher + CV Download */}
           <div className="hidden lg:flex items-center gap-3 animate-fade-in-up delay-200" style={{ animationFillMode: 'both' }}>
             <LanguageSwitcher />
-            <Link
-              href={`/${pathLocale}/contact`}
-              className={cn(
-                "inline-flex items-center justify-center rounded-full font-medium text-sm px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 min-h-[48px] min-w-[48px]",
-                isActiveContact
-                  ? "bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover"
-                  : "bg-text-primary text-bg-primary border border-text-primary hover:opacity-85",
-              )}
-            >
-              {t.nav.letsTalk}
-            </Link>
+            <CVDownload />
           </div>
 
           {/* Tablet & HP: hamburger menu */}
           <NavCollapseClient />
         </div>
       </div>
-
-      {/* Theme toggle: floating FAB, selalu tersedia di semua viewport */}
-      <ThemeToggleFloating />
     </header>
   );
 }

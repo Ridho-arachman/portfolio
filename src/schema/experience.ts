@@ -10,7 +10,7 @@ export const experienceFormSchema = z.object({
       "Slug: lowercase letters, numbers and hyphens only (e.g. my-role)",
     ),
   company: z.string().min(2, "Company must be at least 2 characters"),
-  type: z.enum(["Work", "Organization", "Freelance"]),
+  type: z.enum(["WORK", "ORGANIZATION", "FREELANCE", "EDUCATION", "CERTIFICATION"]),
   period: z.string().min(2, "Period must be at least 2 characters"),
   location: z.string().min(2, "Location must be at least 2 characters"),
   thumbnail: z.url("Enter a valid image URL"),

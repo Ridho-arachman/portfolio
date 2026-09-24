@@ -8,23 +8,16 @@ export function AboutContent({}: AboutContentProps) {
   return (
     <div className="space-y-6 animate-fade-in-up delay-300">
       <h3 className="text-2xl md:text-3xl font-bold text-text-primary">
-        Hi, I&apos;m <span className="text-accent">Ridho Arachman</span>
+        {t.about.greeting}{" "}
+        <span className="text-accent">Ridho Arachman</span>
       </h3>
 
       <p className="text-text-secondary leading-relaxed text-lg">
-        I am a{" "}
-        <span className="text-text-primary font-medium">
-          recent Information Systems graduate
-        </span>{" "}
-        with a deep passion for crafting immersive, high-performance, and
-        user-centric web experiences.
+        {t.about.p1}
       </p>
 
       <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-        As a recent Information Systems graduate specializing in E-Business, I
-        leverage a strong foundation in business problem-solving and modern tech
-        stacks to bridge the gap between complex stakeholder needs and elegant,
-        scalable technical solutions.
+        {t.about.p2}
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">

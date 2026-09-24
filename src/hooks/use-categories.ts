@@ -2,11 +2,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
 import { toast } from "sonner";
-import type { PaginationParams } from "@/types/api";
+import type { PaginatedResponse, PaginationParams } from "@/types/api";
+import type { AdminCategory } from "@/components/sections/admin-categories/constants";
+import { categoryCreateSchema, type CategoryCreateValues, type CategoryUpdateValues } from "@/schema/category";
 
 // Public hooks
 export function usePublicCategories() {
-  return useQuery({
+  return useQuery<AdminCategory[]>({
     queryKey: ["public-categories"],
     queryFn: () => fetchOne("/public/categories"),
     staleTime: 10 * 60 * 1000,
@@ -15,14 +17,14 @@ export function usePublicCategories() {
 
 // Admin hooks
 export function useAdminCategories(params?: Partial<PaginationParams>) {
-  return useQuery({
+  return useQuery<PaginatedResponse<AdminCategory>>({
     queryKey: ["admin-categories", params],
-    queryFn: () => fetchPaginated("/admin/categories", params),
+    queryFn: () => fetchPaginated<AdminCategory>("/admin/categories", params),
   });
 }
 
 export function useAdminCategory(id: string) {
-  return useQuery({
+  return useQuery<AdminCategory>({
     queryKey: ["admin-category", id],
     queryFn: () => fetchOne(`/admin/categories/${id}`),
     enabled: !!id,
@@ -32,7 +34,7 @@ export function useAdminCategory(id: string) {
 export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: unknown) => createOne("/admin/categories", data),
+    mutationFn: (data: CategoryCreateValues) => createOne("/admin/categories", data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-categories"] });
       toast.success("Category created successfully");
@@ -46,7 +48,7 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: unknown }) => updateOne(`/admin/categories/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: CategoryUpdateValues }) => updateOne(`/admin/categories/${id}`, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-categories"] });
       qc.invalidateQueries({ queryKey: ["admin-category"] });

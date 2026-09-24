@@ -72,7 +72,7 @@ export function ServerPagination({
         ) : (
           <Link
             key={p}
-            href={href(p as number)}
+            href={href(p)}
             className={cn(
               buttonVariants({ variant: "outline", size: "icon" }),
               "h-8 w-8",

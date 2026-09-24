@@ -4,7 +4,7 @@ import { Card, CardTitle, CardDescription, CardContent } from "@/components/ui/c
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { CertificateListData } from "./constants";
-import { CERTIFICATE_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface CertificateDetailNavigationProps {
   prev: CertificateListData | null;
@@ -18,9 +18,10 @@ interface NavCardProps {
 }
 
 function NavCard({ cert, direction, label }: NavCardProps) {
+  const { locale } = useTranslation();
   return (
     <Link
-      href={`/certificates/${cert.slug}`}
+      href={`/${locale}/certificates/${cert.slug}`}
       className={`group block h-full ${direction === "next" ? "text-right" : ""}`}
     >
       <Card className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
@@ -54,16 +55,17 @@ export function CertificateDetailNavigation({
   prev,
   next,
 }: CertificateDetailNavigationProps) {
+  const { t } = useTranslation();
   return (
     <div className="mt-24 pt-12 border-t border-glass-border animate-fade-in-up delay-400">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {prev ? (
-          <NavCard cert={prev} direction="prev" label={CERTIFICATE_DETAIL.prevLabel} />
+          <NavCard cert={prev} direction="prev" label={t.certificateDetail.prev} />
         ) : (
           <div />
         )}
         {next ? (
-          <NavCard cert={next} direction="next" label={CERTIFICATE_DETAIL.nextLabel} />
+          <NavCard cert={next} direction="next" label={t.certificateDetail.next} />
         ) : (
           <div />
         )}

@@ -1,13 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function NavbarLogo() {
+  const { t } = useTranslation();
   return (
     <div className="hover:scale-105 active:scale-95 transition-transform duration-200">
 <Link
               href="/"
               className="group flex items-center gap-2 min-h-[48px] min-w-[48px] flex items-center justify-center"
-              aria-label="Ridho.dev - Back to Home"
+              aria-label={t.nav.backHome}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <Image

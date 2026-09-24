@@ -34,3 +34,5 @@ export function getEnv(): Env {
   cachedEnv = parsed.data;
   return cachedEnv;
 }
+
+export const env = getEnv();

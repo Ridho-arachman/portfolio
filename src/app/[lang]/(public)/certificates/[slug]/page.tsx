@@ -4,6 +4,8 @@ import {
   type CertificateListData,
 } from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
+import { getMessages } from "@/lib/translations";
+import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -45,10 +47,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+}: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
+  const { lang, slug } = await params;
+  const validLocale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
+  const messages = await getMessages(validLocale);
   const cert = await getCertificate(slug);
-  if (!cert) return { title: "Not Found" };
+  if (!cert) return { title: messages.certificateDetail.notFound };
   return {
     title: cert.title,
     description: cert.summary.join(" ").slice(0, 155),
@@ -58,8 +62,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function CertificateDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function CertificateDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+  const { lang, slug } = await params;
+  const validLocale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
+  const messages = await getMessages(validLocale);
+  const labels = { issued: messages.certificates.issuedOn, expires: messages.certificates.expiresOn };
   const cert = await getCertificate(slug);
 
   if (!cert) {
@@ -70,8 +77,8 @@ export default async function CertificateDetailPage({ params }: { params: Promis
     where: { isPublished: true },
     orderBy: { order: "asc" },
   });
-  const allMapped = allData.map(mapCertificateToData);
+  const allMapped = allData.map((c) => mapCertificateToData(c, validLocale, labels));
   const { prev, next } = getAdjacent(allMapped, slug);
 
-  return <CertificateDetailPageContent cert={mapCertificateToData(cert)} prev={prev} next={next} />;
+  return <CertificateDetailPageContent cert={mapCertificateToData(cert, validLocale, labels)} prev={prev} next={next} />;
 }

@@ -134,7 +134,7 @@ export function CertificatesList() {
                 <li key={certificate.id}>
                   <div className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/5 sm:px-5">
                     <Image
-                      src={certificate.thumbnail}
+                      src={certificate.thumbnail ?? ""}
                       alt={certificate.title}
                       width={320}
                       height={224}

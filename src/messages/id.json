@@ -34,7 +34,8 @@
     "theme": "Tema",
     "light": "Terang",
     "dark": "Gelap",
-    "system": "Sistem"
+    "system": "Sistem",
+    "preview": "Pratinjau"
   },
   "nav": {
     "home": "Beranda",
@@ -43,17 +44,30 @@
     "experience": "Pengalaman",
     "certificates": "Sertifikat",
     "contact": "Kontak",
-    "letsTalk": "Ngobrol Yuk",
+    "downloadCV": "Unduh CV",
+    "cvEnglish": "Versi Bahasa Inggris",
+    "cvIndonesian": "Versi Bahasa Indonesia",
+    "selectCVLanguage": "Pilih Bahasa CV",
     "toggleMenu": "Buka/Tutup Menu",
-    "menu": "Menu"
+    "menu": "Menu",
+    "backHome": "Kembali ke Beranda"
   },
   "hero": {
     "greeting": "Halo, saya Ridho Arachman",
     "title": "Full Stack Developer",
+    "typewriter": [
+      "Software Engineer",
+      "Fullstack Developer",
+      "Frontend Developer",
+      "Backend Developer"
+    ],
     "description": "Lulusan Sistem Informasi dengan spesialisasi E-Business. Membangun pengalaman web yang imersif dan berperforma tinggi dengan React, Next.js, TypeScript, dan tumpukan teknologi modern.",
     "ctaPrimary": "Lihat Proyek",
     "ctaSecondary": "Hubungi Saya",
-    "scrollDown": "Gulir ke Bawah"
+    "scrollDown": "Gulir ke Bawah",
+    "available": "Tersedia untuk direkrut",
+    "livePreview": "Pratinjau Langsung",
+    "typeReady": "Siap TypeScript"
   },
   "about": {
     "title": "Tentang Saya",
@@ -71,7 +85,16 @@
     "webPerformance": "Performa Web",
     "webPerformanceDesc": "Teroptimasi & Cepat",
     "dataDriven": "Berbasis Data",
-    "dataDrivenDesc": "Arsitektur Scalable"
+    "dataDrivenDesc": "Arsitektur Scalable",
+    "titleAccent": "Teknologi",
+    "greeting": "Halo, saya",
+    "p1": "Saya lulusan Sistem Informasi yang memiliki passion mendalam dalam menciptakan pengalaman web yang imersif, berperforma tinggi, dan berorientasi pengguna.",
+    "p2": "Sebagai lulusan Sistem Informasi dengan spesialisasi E-Business, saya memanfaatkan fondasi kuat dalam pemecahan masalah bisnis dan tech stack modern untuk menjembatani kebutuhan stakeholder yang kompleks dengan solusi teknis yang elegan dan scalable.",
+    "marquee": "Teknologi yang Saya Gunakan",
+    "badgeAvailable": "Tersedia untuk Direkrut",
+    "badgeOpen": "Terbuka untuk Full-time & Freelance",
+    "heroTitleA": "Tentang",
+    "heroTitleAccent": "Saya"
   },
   "coreValues": {
     "title": "Filosofi Inti Saya",
@@ -97,7 +120,22 @@
     "challenges": "Tantangan yang Diselesaikan",
     "noProjects": "Belum ada proyek tersedia",
     "filterAll": "Semua",
-    "filterFeatured": "Unggulan"
+    "filterFeatured": "Unggulan",
+    "noProjectsDesc": "Proyek akan muncul di sini setelah dipublikasikan.",
+    "badge": "Karya Pilihan",
+    "headerDesc": "Sekilas karya terbaru saya, menampilkan arsitektur scalable dan pengalaman pengguna yang imersif.",
+    "viewAll": "Lihat Proyek",
+    "viewCaseStudy": "Lihat Studi Kasus"
+  },
+  "projectDetail": {
+    "back": "Kembali ke Proyek",
+    "overview": "Ringkasan",
+    "highlights": "Sorotan Proyek",
+    "tech": "Teknologi",
+    "gallery": "Galeri",
+    "prev": "Proyek Sebelumnya",
+    "next": "Proyek Selanjutnya",
+    "notFound": "Tidak Ditemukan"
   },
   "experience": {
     "title": "Pengalaman",
@@ -119,7 +157,22 @@
     "noExperiences": "Belum ada pengalaman",
     "noExperiencesDesc": "Pengalaman kerja akan muncul di sini setelah ditambahkan.",
     "galleryPreview": "Pratinjau",
-    "morePhotos": "foto lainnya"
+    "morePhotos": "foto lainnya",
+    "badge": "Perjalananku",
+    "headerTitle": "Semua",
+    "headerAccent": "Pengalaman",
+    "headerDesc": "Gambaran lengkap perjalanan profesional, peran kepemimpinan, dan dampak yang saya buat.",
+    "emptyTitle": "Belum ada pengalaman",
+    "emptyDesc": "Pengalaman akan muncul di sini setelah dipublikasikan.",
+    "viewAll": "Lihat Semua Pengalaman"
+  },
+  "experienceDetail": {
+    "back": "Kembali ke Pengalaman",
+    "achievements": "Pencapaian & Tanggung Jawab",
+    "gallery": "Galeri",
+    "prev": "Pengalaman Sebelumnya",
+    "next": "Pengalaman Selanjutnya",
+    "notFound": "Tidak Ditemukan"
   },
   "certificates": {
     "title": "Sertifikat",
@@ -130,7 +183,23 @@
     "issuedOn": "Diterbitkan pada",
     "expiresOn": "Berakhir pada",
     "credentialId": "ID Kredensial",
-    "noCertificates": "Belum ada sertifikat tersedia"
+    "noCertificates": "Belum ada sertifikat tersedia",
+    "noCertificatesDesc": "Sertifikat akan muncul di sini setelah dipublikasikan.",
+    "headerDesc": "Sertifikasi profesional dan kredensial yang memvalidasi keahlian saya di cloud, front-end, data, dan desain UX.",
+    "viewAll": "Lihat Sertifikat",
+    "badgeVerified": "Terverifikasi",
+    "badgeCertificate": "Sertifikat"
+  },
+  "certificateDetail": {
+    "back": "Kembali ke Sertifikat",
+    "learned": "Apa yang Saya Pelajari",
+    "verifiedSkills": "Keterampilan Terverifikasi",
+    "verifyCred": "Verifikasi Kredensial",
+    "verifyDesc": "Pastikan keaslian sertifikat ini melalui halaman verifikasi resmi dari penyedia kredensial.",
+    "verifyBtn": "Verifikasi Sertifikat",
+    "prev": "Sertifikat Sebelumnya",
+    "next": "Sertifikat Selanjutnya",
+    "notFound": "Tidak Ditemukan"
   },
   "contact": {
     "title": "Hubungi Saya",
@@ -163,11 +232,20 @@
       "availability": "Ketersediaan",
       "responseTime": "Biasanya membalas dalam 24 jam"
     },
-    "social": "Terhubung dengan saya"
+    "social": "Terhubung dengan saya",
+    "description": "Punya proyek atau sekadar ingin menyapa? Saya selalu terbuka untuk diskusi peluang baru, kolaborasi, dan hal terkait teknologi.",
+    "location": "Indonesia (Siap Remote)",
+    "responseTimeValue": "Biasanya membalas dalam 24 jam",
+    "captchaRequired": "Selesaikan verifikasi CAPTCHA terlebih dahulu.",
+    "rateLimited": "Terlalu banyak pesan dalam waktu singkat. Coba lagi beberapa saat.",
+    "captchaFailed": "Verifikasi CAPTCHA gagal. Coba lagi.",
+    "sendError": "Gagal mengirim pesan. Coba lagi.",
+    "successDesc": "Terima kasih telah menghubungi. Saya akan membalas secepat mungkin.",
+    "sendAnother": "Kirim Pesan Lain"
   },
   "footer": {
     "tagline": "Membangun pengalaman web imersif dan berperforma tinggi.",
-    "rights": "Hak cipta dilindungi.",
+    "license": "MIT",
     "privacy": "Kebijakan Privasi",
     "terms": "Syarat Layanan",
     "sitemap": "Peta Situs",
@@ -175,7 +253,9 @@
     "connect": "Terhubung",
     "newsletter": "Buletin",
     "subscribe": "Berlangganan update",
-    "emailPlaceholder": "Masukkan email Anda"
+    "emailPlaceholder": "Masukkan email Anda",
+    "builtWith": "Dibuat dengan",
+    "online": "Sistem Online"
   },
   "admin": {
     "title": "Dasbor Admin",

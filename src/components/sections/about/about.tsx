@@ -18,7 +18,7 @@ export function AboutSection() {
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             {t.about.title}{" "}
-            <span className="text-gradient-elegant">Technology</span>
+            <span className="text-gradient-elegant">{t.about.titleAccent}</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg animate-fade-in-up delay-100">
             {t.about.description}

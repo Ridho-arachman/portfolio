@@ -1,20 +1,10 @@
 import { type Variants } from "framer-motion";
+import { type ExperiencePublic } from "@/types/domain";
 
-export interface Experience {
-  id: number;
-  slug: string;
-  role: string;
-  company: string;
-  type: "Work" | "Organization" | "Freelance";
-  period: string;
-  location: string;
-  thumbnail: string;
-  gallery: string[];
-  description: string[];
-}
+export { type ExperiencePublic as Experience };
 
 export interface ExperienceCardProps {
-  exp: Experience;
+  exp: ExperiencePublic;
   index: number;
   isLeft: boolean;
 }

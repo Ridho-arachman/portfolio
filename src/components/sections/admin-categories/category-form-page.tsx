@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { AlertTriangle, ArrowLeft, FolderTree } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,6 +14,7 @@ import {
   useUpdateCategory,
 } from "@/hooks/use-categories";
 import type { AdminCategory } from "./constants";
+import type { CategoryCreateValues, CategoryUpdateValues } from "@/schema/category";
 
 export function CategoryFormPage({
   mode,
@@ -108,8 +111,8 @@ export function CategoryFormPage({
       isLoading={createMutation.isPending || updateMutation.isPending}
       onSubmit={
         mode === "edit" && categoryData
-          ? (data) => updateMutation.mutate({ id: categoryData.id, data })
-          : (data) => createMutation.mutate(data)
+          ? (data: CategoryUpdateValues) => updateMutation.mutate({ id: categoryData.id, data })
+          : (data: CategoryCreateValues) => createMutation.mutate(data)
       }
     />
   );

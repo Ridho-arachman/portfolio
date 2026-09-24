@@ -12,15 +12,16 @@ import { zodResolver } from "@/lib/zod-resolver";
 import { contactFormSchema, type ContactFormValues } from "@/schema/contact";
 import { CONTACT_FORM_FIELDS } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
+import type { Messages } from "@/lib/translation-types";
 
-function translateSubmitError(code?: string, status?: number): string {
+function translateSubmitError(t: Messages, code?: string, status?: number): string {
   if (status === 429 || code === "RATE_LIMITED") {
-    return "Terlalu banyak pesan dalam waktu singkat. Coba lagi beberapa saat.";
+    return t.contact.rateLimited;
   }
   if (code === "CAPTCHA_VERIFICATION_FAILED") {
-    return "Verifikasi CAPTCHA gagal. Coba lagi.";
+    return t.contact.captchaFailed;
   }
-  return "Gagal mengirim pesan. Coba lagi.";
+  return t.contact.sendError;
 }
 
 interface ContactFormProps {
@@ -55,7 +56,7 @@ export function ContactForm({ locale }: ContactFormProps) {
     setSubmitError(null);
 
     if (hasTurnstile && !captchaToken) {
-      setSubmitError(t.contact.form.error);
+      setSubmitError(t.contact.captchaRequired);
       return;
     }
 
@@ -70,7 +71,7 @@ export function ContactForm({ locale }: ContactFormProps) {
         const data = (await response.json().catch(() => ({}))) as {
           error?: string;
         };
-        setSubmitError(translateSubmitError(data.error, response.status));
+        setSubmitError(translateSubmitError(t, data.error, response.status));
         return;
       }
 
@@ -79,7 +80,7 @@ export function ContactForm({ locale }: ContactFormProps) {
       setCaptchaToken("");
       setWidgetKey((k) => k + 1);
     } catch {
-      setSubmitError(translateSubmitError());
+      setSubmitError(translateSubmitError(t));
     }
   });
 
@@ -95,8 +96,7 @@ export function ContactForm({ locale }: ContactFormProps) {
           </div>
           <h3 className="text-2xl font-bold mb-3">{t.contact.form.success}</h3>
           <p className="text-text-secondary max-w-sm mb-8">
-            Thank you for reaching out. I&apos;ll get back to you as soon as
-            possible.
+            {t.contact.successDesc}
           </p>
           <Button
             type="button"
@@ -104,7 +104,7 @@ export function ContactForm({ locale }: ContactFormProps) {
             onClick={() => setIsSuccess(false)}
             className="rounded-full border-accent/40 text-accent hover:bg-accent/10 hover:border-accent"
           >
-            Send Another Message
+            {t.contact.sendAnother}
           </Button>
         </div>
       ) : (
@@ -119,11 +119,11 @@ export function ContactForm({ locale }: ContactFormProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {CONTACT_FORM_FIELDS.map((field) => (
               <div key={field.name} className="space-y-2">
-                <Label htmlFor={field.name}>{field.label}</Label>
+                <Label htmlFor={field.name}>{t.contact.form[field.labelKey]}</Label>
                 <Input
                   id={field.name}
                   type={field.name === "email" ? "email" : "text"}
-                  placeholder={field.placeholder}
+                  placeholder={t.contact.form[field.placeholderKey]}
                   aria-invalid={errors[field.name] ? true : undefined}
                   {...register(field.name)}
                 />

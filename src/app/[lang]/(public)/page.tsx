@@ -61,6 +61,8 @@ export default async function Home({ params }: HomePageProps) {
   const resolvedParams = await params;
   const locale = resolvedParams.lang as Locale;
   const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
+  const messages = await getMessages(validLocale);
+  const monthYear = new Intl.DateTimeFormat(validLocale, { month: "short", year: "numeric" });
   const [certificates, projects] = await Promise.all([
     getCertificates(),
     getProjects(),
@@ -76,7 +78,7 @@ export default async function Home({ params }: HomePageProps) {
         issuer: c.issuer,
         credentialId: c.credentialId ?? undefined,
         issueDate: c.issueDate.toISOString(),
-        period: (() => { const d = new Date(c.issueDate); const issued = `Issued ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()}`; const expires = c.expiryDate ? ` · Expires ${new Date(c.expiryDate).toLocaleString("default", { month: "short" })} ${new Date(c.expiryDate).getFullYear()}` : " · No Expiration"; return issued + expires; })(),
+        period: (() => { const issued = `${messages.certificates.issuedOn} ${monthYear.format(new Date(c.issueDate))}`; if (!c.expiryDate) return issued; return `${issued} · ${messages.certificates.expiresOn} ${monthYear.format(new Date(c.expiryDate))}`; })(),
         thumbnail: c.thumbnail ?? "",
         gallery: c.gallery,
         skills: c.skills,

@@ -7,6 +7,7 @@ import { useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { ExperienceListData } from "./constants";
 import { EXPERIENCE_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ExperienceDetailNavigationProps {
   prev: ExperienceListData | null;
@@ -20,9 +21,10 @@ interface NavCardProps {
 }
 
 function NavCard({ exp, direction, label }: NavCardProps) {
+  const { locale } = useTranslation();
   return (
     <Link
-      href={`/experience/${exp.slug}`}
+      href={`/${locale}/experience/${exp.slug}`}
       className={`group block h-full ${
         direction === "next" ? "text-right" : ""
       }`}
@@ -59,6 +61,7 @@ export function ExperienceDetailNavigation({
   next,
 }: ExperienceDetailNavigationProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation();
   return (
     <m.div
       initial={prefersReducedMotion ? undefined : { opacity: 0, y: 30 }}
@@ -69,12 +72,12 @@ export function ExperienceDetailNavigation({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {prev ? (
-          <NavCard exp={prev} direction="prev" label={EXPERIENCE_DETAIL.prevLabel} />
+          <NavCard exp={prev} direction="prev" label={t.experienceDetail[EXPERIENCE_DETAIL.prevKey]} />
         ) : (
           <div />
         )}
         {next ? (
-          <NavCard exp={next} direction="next" label={EXPERIENCE_DETAIL.nextLabel} />
+          <NavCard exp={next} direction="next" label={t.experienceDetail[EXPERIENCE_DETAIL.nextKey]} />
         ) : (
           <div />
         )}

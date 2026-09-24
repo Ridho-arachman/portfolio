@@ -2,23 +2,24 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, updateOne, deleteOne } from "@/lib/api-client";
 import { toast } from "sonner";
-import type { PaginationParams } from "@/types/api";
+import type { PaginatedResponse, PaginationParams } from "@/types/api";
+import type { AdminMessage, MessageStatus } from "@/components/sections/admin-messages/constants";
 
 interface MessageFilters extends Partial<PaginationParams> {
-  status?: string;
+  status?: MessageStatus;
 }
 
 // Admin hooks
-export function useAdminMessages<T = unknown>(params?: MessageFilters) {
+export function useAdminMessages(params?: MessageFilters) {
   const url = params?.status ? `/admin/messages?status=${params.status}` : "/admin/messages";
-  return useQuery({
+  return useQuery<PaginatedResponse<AdminMessage>>({
     queryKey: ["admin-messages", params],
-    queryFn: () => fetchPaginated<T>(url, params),
+    queryFn: () => fetchPaginated<AdminMessage>(url, params),
   });
 }
 
 export function useAdminMessage(id: string) {
-  return useQuery({
+  return useQuery<AdminMessage>({
     queryKey: ["admin-message", id],
     queryFn: () => fetchOne(`/admin/messages/${id}`),
     enabled: !!id,
@@ -28,7 +29,7 @@ export function useAdminMessage(id: string) {
 export function useUpdateMessageStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
+    mutationFn: ({ id, status }: { id: string; status: MessageStatus }) =>
       updateOne(`/admin/messages/${id}`, { status }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-messages"] });
@@ -47,6 +48,7 @@ export function useDeleteMessage() {
     mutationFn: (id: string) => deleteOne(`/admin/messages/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      qc.invalidateQueries({ queryKey: ["admin-message"] });
       toast.success("Message deleted successfully");
     },
     onError: (error: Error) => {

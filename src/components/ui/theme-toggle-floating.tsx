@@ -1,59 +1,59 @@
 "use client";
 
-import { AnimatePresence, useReducedMotion } from "motion/react";
+import { AnimatePresence, useReducedMotion, motion } from "motion/react";
 import { Moon, Sun } from "lucide-react";
-import * as m from "motion/react-m";
 import { useTheme } from "@/providers/theme-provider";
 import { useEffect, useState } from "react";
 
 export function ThemeToggleFloating() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, toggleTheme, resolvedTheme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [toggling, setToggling] = useState(false);
 
   useEffect(() => {
-    // Mencegah hydration mismatch dengan menunda render sampai client-side
-    const frame = requestAnimationFrame(() => {
-      setMounted(true);
-    });
+    const frame = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Placeholder untuk mencegah layout shift saat pertama kali load
   if (!mounted) {
     return <div className="fixed right-6 bottom-6 z-50 w-14 h-20" />;
   }
 
-  const isDark = theme === "dark";
+  const isDark = resolvedTheme === "dark";
+
+  const handleToggle = () => {
+    if (toggling) return;
+    setToggling(true);
+    toggleTheme();
+    setTimeout(() => setToggling(false), 200);
+  };
 
   return (
-    <m.div
-      initial={prefersReducedMotion ? undefined : { opacity: 0, x: 100 }}
-      animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
-      transition={prefersReducedMotion ? undefined : { delay: 1.5, duration: 0.6, ease: "easeOut" }}
-      className="fixed right-6 bottom-6 z-50"
-    >
-      <m.button
-        onClick={() => setTheme(isDark ? "light" : "dark")}
+    <motion.div className="fixed right-6 bottom-6 z-50">
+      <motion.button
+        onClick={handleToggle}
+        disabled={toggling}
         whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
         whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
         className="relative group"
         aria-label="Toggle theme"
+        aria-busy={toggling}
       >
         {/* 1. Outer Glow Ring (Electric Violet) */}
-        <m.div
+        <motion.div
           animate={prefersReducedMotion ? undefined : { rotate: isDark ? 360 : 0 }}
           transition={prefersReducedMotion ? undefined : { duration: 20, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 rounded-full bg-accent/20 blur-md group-hover:bg-accent/30 group-hover:blur-lg transition-all duration-500"
         />
 
         {/* 2. Main Button Container (Glassmorphism Pill) */}
-        <m.div
+        <motion.div
           layout
           className="relative flex flex-col items-center justify-center w-14 h-20 rounded-full bg-bg-secondary/80 backdrop-blur-md border border-white/10 group-hover:border-accent/50 transition-all duration-300 overflow-hidden shadow-2xl"
         >
           {/* 3. Sliding Background Indicator */}
-          <m.div
+          <motion.div
             layoutId="theme-indicator"
             className="absolute w-10 h-10 rounded-full bg-accent/10"
             animate={prefersReducedMotion ? undefined : { y: isDark ? -12 : 12 }}
@@ -61,41 +61,40 @@ export function ThemeToggleFloating() {
           />
 
           {/* 4. Sun Icon (Top) */}
-          <m.div
+          <motion.div
             animate={prefersReducedMotion ? undefined : { opacity: isDark ? 0.4 : 1, scale: isDark ? 0.8 : 1 }}
             transition={prefersReducedMotion ? undefined : { duration: 0.3 }}
             className="relative z-10 mb-1"
           >
             <Sun className="w-5 h-5 text-accent" />
-          </m.div>
+          </motion.div>
 
           {/* 5. Divider Line */}
           <div className="w-6 h-px bg-white/10 my-1" />
 
           {/* 6. Moon Icon (Bottom) */}
-          <m.div
+          <motion.div
             animate={prefersReducedMotion ? undefined : { opacity: isDark ? 1 : 0.4, scale: isDark ? 1 : 0.8 }}
             transition={prefersReducedMotion ? undefined : { duration: 0.3 }}
             className="relative z-10"
           >
             <Moon className="w-5 h-5 text-accent" />
-          </m.div>
-        </m.div>
+          </motion.div>
+        </motion.div>
 
         {/* 7. Tooltip on Hover */}
         <AnimatePresence>
-          <m.div
+          <motion.div
             initial={prefersReducedMotion ? undefined : { opacity: 0, x: -10, scale: 0.95 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
             exit={prefersReducedMotion ? undefined : { opacity: 0, x: -10, scale: 0.95 }}
             transition={prefersReducedMotion ? undefined : { duration: 0.2 }}
-            // Menggunakan group-hover dari parent button untuk trigger
             className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-bg-tertiary border border-white/10 text-xs text-text-secondary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-xl"
           >
             {isDark ? "Switch to Light" : "Switch to Dark"}
-          </m.div>
+          </motion.div>
         </AnimatePresence>
-      </m.button>
-    </m.div>
+      </motion.button>
+    </motion.div>
   );
 }

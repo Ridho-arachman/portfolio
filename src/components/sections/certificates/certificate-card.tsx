@@ -6,11 +6,13 @@ import { ArrowRight, Award, Calendar, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type CertificateCardProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function CertificateCard({
   cert,
   index = 0,
 }: CertificateCardProps) {
+  const { t, locale } = useTranslation();
   return (
     // 1. Outer Wrapper: Animasi Scroll Reveal (Fade In + Slide Up)
     <div
@@ -20,7 +22,7 @@ export function CertificateCard({
         animationFillMode: 'both',
       }}
     >
-      <Link href={`/certificates/${cert.slug}`} className="group block h-full">
+      <Link href={`/${locale}/certificates/${cert.slug}`} className="group block h-full">
         {/* 2. Inner Wrapper: Animasi Hover Lift (Naik sedikit saat di-hover) */}
         <div
           className="h-full transition-transform duration-300 hover:-translate-y-1"
@@ -56,7 +58,7 @@ export function CertificateCard({
                 className="absolute top-4 left-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 backdrop-blur-md border-glass-border text-xs font-semibold text-accent"
               >
                 <Award className="w-3.5 h-3.5" />
-                Certificate
+                {t.certificates.badgeCertificate}
               </Badge>
 
               {/* Verified Badge (jika ada kredensial) */}
@@ -66,7 +68,7 @@ export function CertificateCard({
                   className="absolute top-4 right-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 backdrop-blur-md border-emerald-500/30 text-xs font-semibold text-emerald-400"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Verified
+                  {t.certificates.badgeVerified}
                 </Badge>
               )}
             </div>
@@ -114,7 +116,7 @@ export function CertificateCard({
                     >
                       <Image
                         src={img}
-                        alt={`Preview ${idx + 1}`}
+                        alt={`${t.common.preview} ${idx + 1}`}
                         fill
                         className="object-cover grayscale group-hover:grayscale-0 transition-all"
                       />

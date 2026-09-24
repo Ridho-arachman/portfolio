@@ -39,6 +39,15 @@ body:
       required: true
 
   - type: input
+    id: route
+    attributes:
+      label: Affected Route
+      description: Which route shows the bug? Include the locale prefix.
+      placeholder: e.g. /en/projects, /id/about, /admin/login
+    validations:
+      required: false
+
+  - type: input
     id: os
     attributes:
       label: Operating System

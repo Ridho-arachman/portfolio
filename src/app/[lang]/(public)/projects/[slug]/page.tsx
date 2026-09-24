@@ -4,6 +4,8 @@ import { mapDbProjectToProject } from "@/components/sections/projects/map-projec
 import type { Project } from "@/components/sections/projects/constants";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getMessages } from "@/lib/translations";
+import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 
 async function fetchProject(slug: string) {
   return prisma.project.findFirst({
@@ -43,12 +45,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+}: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
+  const { lang, slug } = await params;
+  const locale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
+  const messages = await getMessages(locale);
   const project = await fetchProject(slug);
 
   if (!project) {
-    return { title: "Not Found" };
+    return { title: messages.projectDetail.notFound };
   }
 
   return {
@@ -62,7 +66,7 @@ export async function generateMetadata({
 
 export default async function ProjectDetailPage({
   params,
-}: { params: Promise<{ slug: string }> }) {
+}: { params: Promise<{ lang: string; slug: string }> }) {
   const { slug } = await params;
 
   const [dbProject, allDbProjects] = await Promise.all([

@@ -3,7 +3,6 @@
 import { Providers } from "@/lib/providers";
 import { AboutHeroSection } from "@/components/sections/about-hero";
 import { AboutSection } from "@/components/sections/about";
-import { CoreValuesSection } from "@/components/sections/core-values";
 import { ExperienceSection } from "@/components/sections/experience";
 import type { MappedExperience } from "@/lib/utils/experience-mapper";
 
@@ -17,7 +16,6 @@ export function AboutPageContent({ experiences }: AboutPageContentProps) {
       <div className="flex flex-col min-h-screen overflow-x-hidden">
         <AboutHeroSection />
         <AboutSection />
-        <CoreValuesSection />
         <ExperienceSection experiences={experiences} />
       </div>
     </Providers>

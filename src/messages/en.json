@@ -34,7 +34,8 @@
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "preview": "Preview"
   },
   "nav": {
     "home": "Home",
@@ -43,17 +44,30 @@
     "experience": "Experience",
     "certificates": "Certificates",
     "contact": "Contact",
-    "letsTalk": "Let's Talk",
+    "downloadCV": "Download CV",
+    "cvEnglish": "English Version",
+    "cvIndonesian": "Indonesian Version",
+    "selectCVLanguage": "Select CV Language",
     "toggleMenu": "Toggle menu",
-    "menu": "Menu"
+    "menu": "Menu",
+    "backHome": "Back to Home"
   },
   "hero": {
     "greeting": "Hi, I'm Ridho Arachman",
     "title": "Full Stack Developer",
+    "typewriter": [
+      "Software Engineer",
+      "Fullstack Developer",
+      "Frontend Developer",
+      "Backend Developer"
+    ],
     "description": "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
     "ctaPrimary": "View Projects",
     "ctaSecondary": "Get In Touch",
-    "scrollDown": "Scroll down"
+    "scrollDown": "Scroll down",
+    "available": "Available for hire",
+    "livePreview": "Live Preview",
+    "typeReady": "TypeScript Ready"
   },
   "about": {
     "title": "About Me",
@@ -71,7 +85,16 @@
     "webPerformance": "Web Performance",
     "webPerformanceDesc": "Optimized & Fast",
     "dataDriven": "Data Driven",
-    "dataDrivenDesc": "Scalable Architecture"
+    "dataDrivenDesc": "Scalable Architecture",
+    "titleAccent": "Technology",
+    "greeting": "Hi, I'm",
+    "p1": "I am a recent Information Systems graduate with a deep passion for crafting immersive, high-performance, and user-centric web experiences.",
+    "p2": "As a recent Information Systems graduate specializing in E-Business, I leverage a strong foundation in business problem-solving and modern tech stacks to bridge the gap between complex stakeholder needs and elegant, scalable technical solutions.",
+    "marquee": "Technologies I Work With",
+    "badgeAvailable": "Available for Hire",
+    "badgeOpen": "Open to Full-time & Freelance",
+    "heroTitleA": "About",
+    "heroTitleAccent": "Me"
   },
   "coreValues": {
     "title": "My Core Philosophy",
@@ -97,7 +120,22 @@
     "challenges": "Challenges Solved",
     "noProjects": "No projects available yet",
     "filterAll": "All",
-    "filterFeatured": "Featured"
+    "filterFeatured": "Featured",
+    "noProjectsDesc": "Projects will appear here once published.",
+    "badge": "Selected Works",
+    "headerDesc": "A glimpse into my recent work, showcasing scalable architecture and immersive user experiences.",
+    "viewAll": "View Projects",
+    "viewCaseStudy": "View Case Study"
+  },
+  "projectDetail": {
+    "back": "Back to Projects",
+    "overview": "Overview",
+    "highlights": "Project Highlights",
+    "tech": "Technologies",
+    "gallery": "Gallery",
+    "prev": "Previous Project",
+    "next": "Next Project",
+    "notFound": "Not Found"
   },
   "experience": {
     "title": "Experience",
@@ -119,7 +157,22 @@
     "noExperiences": "No experiences yet",
     "noExperiencesDesc": "Work experiences will appear here once added.",
     "galleryPreview": "Preview",
-    "morePhotos": "more photos"
+    "morePhotos": "more photos",
+    "badge": "My Journey",
+    "headerTitle": "All",
+    "headerAccent": "Experiences",
+    "headerDesc": "A comprehensive look at my professional journey, leadership roles, and the impact I've made.",
+    "emptyTitle": "No experiences yet",
+    "emptyDesc": "Experiences will appear here once published.",
+    "viewAll": "View All Experience"
+  },
+  "experienceDetail": {
+    "back": "Back to Experience",
+    "achievements": "Achievements & Responsibilities",
+    "gallery": "Gallery",
+    "prev": "Previous Experience",
+    "next": "Next Experience",
+    "notFound": "Not Found"
   },
   "certificates": {
     "title": "Certificates",
@@ -130,7 +183,23 @@
     "issuedOn": "Issued on",
     "expiresOn": "Expires on",
     "credentialId": "Credential ID",
-    "noCertificates": "No certificates available yet"
+    "noCertificates": "No certificates available yet",
+    "noCertificatesDesc": "Certificates will appear here once published.",
+    "headerDesc": "Professional certifications and credentials validating my expertise in cloud, front-end, data, and UX design.",
+    "viewAll": "View Certificates",
+    "badgeVerified": "Verified",
+    "badgeCertificate": "Certificate"
+  },
+  "certificateDetail": {
+    "back": "Back to Certificates",
+    "learned": "What I Learned",
+    "verifiedSkills": "Verified Skills",
+    "verifyCred": "Verify Credential",
+    "verifyDesc": "Verify the authenticity of this certificate through the official verification page of the credential provider.",
+    "verifyBtn": "Verify Certificate",
+    "prev": "Previous Certificate",
+    "next": "Next Certificate",
+    "notFound": "Not Found"
   },
   "contact": {
     "title": "Get In Touch",
@@ -163,11 +232,20 @@
       "availability": "Availability",
       "responseTime": "Usually responds within 24 hours"
     },
-    "social": "Connect with me"
+    "social": "Connect with me",
+    "description": "Have a project in mind or just want to say hi? I'm always open to discussing new opportunities, collaborations, and anything tech-related.",
+    "location": "Indonesia (Remote-ready)",
+    "responseTimeValue": "Usually replies within 24 hours",
+    "captchaRequired": "Please complete the CAPTCHA verification first.",
+    "rateLimited": "Too many messages in a short time. Try again in a moment.",
+    "captchaFailed": "CAPTCHA verification failed. Try again.",
+    "sendError": "Failed to send message. Try again.",
+    "successDesc": "Thank you for reaching out. I'll get back to you as soon as possible.",
+    "sendAnother": "Send Another Message"
   },
   "footer": {
     "tagline": "Building immersive, high-performance web experiences.",
-    "rights": "All rights reserved.",
+    "license": "MIT",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "sitemap": "Sitemap",
@@ -175,7 +253,9 @@
     "connect": "Connect",
     "newsletter": "Newsletter",
     "subscribe": "Subscribe to updates",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "builtWith": "Built with",
+    "online": "System Online"
   },
   "admin": {
     "title": "Admin Dashboard",

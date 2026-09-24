@@ -16,6 +16,7 @@ import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
   certificateFormSchema,
   type CertificateFormValues,
+  type CertificateCreateValues,
 } from "@/schema/certificate";
 import { ADMIN_CERTIFICATES, type AdminCertificate } from "./constants";
 import { slugify } from "@/utils/slug";
@@ -33,7 +34,7 @@ export function CertificateForm({
   mode: "create" | "edit";
   initialData?: AdminCertificate;
   isLoading: boolean;
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit: (data: CertificateCreateValues) => void;
 }) {
   const router = useRouter();
   const slugTouched = useRef(mode === "edit");
@@ -55,11 +56,11 @@ export function CertificateForm({
           slug: initialData.slug,
           issuer: initialData.issuer,
           issueDate: initialData.issueDate,
-          period: initialData.period,
+          period: initialData.period ?? "",
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
-          thumbnail: initialData.thumbnail,
-          logoUrl: initialData.logoUrl,
+          thumbnail: initialData.thumbnail ?? "",
+          logoUrl: initialData.logoUrl ?? "",
           gallery: initialData.gallery ?? [],
           skills: initialData.skills.join(", "),
           summary: initialData.summary.join("\n"),

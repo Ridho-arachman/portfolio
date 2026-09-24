@@ -1,22 +1,4 @@
-export interface AdminCertificate {
-  id: string;
-  slug: string;
-  title: string;
-  issuer: string;
-  credentialId?: string;
-  credentialUrl?: string;
-  issueDate: string;
-  period: string;
-  thumbnail: string;
-  logoUrl: string;
-  gallery: string[];
-  skills: string[];
-  summary: string[];
-  isPublished: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
+export { type AdminCertificate } from "@/types/domain";
 
 export const ADMIN_CERTIFICATES = {
   title: "Certificates",

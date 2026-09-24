@@ -1,8 +1,9 @@
+import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
+import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
+import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
-import { ThemeProvider } from "@/providers/theme-provider";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -82,42 +83,43 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-// Applies the stored theme before first paint. Mirrors the next-themes inline
-// script, but rendered in <head> because React 19 rejects scripts in <body>.
-const themeInitScript = `(function() {
-  var el = document.documentElement;
-  function apply(theme) {
-    el.classList.remove("light", "dark");
-    el.classList.add(theme);
-    el.style.colorScheme = theme;
-  }
-  try {
-    var stored = localStorage.getItem("theme");
-    apply(stored === "dark" || stored === "light" ? stored : "dark");
-  } catch (err) {
-    apply("dark");
-  }
-})();`;
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params?: Promise<{ lang?: string }>;
 }) {
+  const resolvedParams = params ? await params : undefined;
+  const lang = resolvedParams?.lang;
+  const locale = lang === "id" || lang === "en" ? lang : "en";
+
   return (
-    <>
+    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://picsum.photos" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://images.unsplash.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://picsum.photos"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://challenges.cloudflare.com"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
-      <ThemeProvider disableTransitionOnChange>
-        <NuqsAdapterLoader>
-          {children}
-        </NuqsAdapterLoader>
-      </ThemeProvider>
-    </>
+      <body className="bg-bg-primary text-text-primary antialiased">
+        <ThemeProvider disableTransitionOnChange>
+          <NuqsAdapterLoader>{children}</NuqsAdapterLoader>
+          <ThemeToggleFloating />
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

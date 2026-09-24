@@ -1,11 +1,12 @@
-import type { Experience as PrismaExperience } from "@/generated/prisma/client";
+import { type Experience as PrismaExperience } from "@/generated/prisma/client";
+import { type ExperienceType } from "@/types/domain";
 
-type ExperienceTypeLabel = "Work" | "Organization" | "Freelance";
-
-const TYPE_MAP: Record<string, ExperienceTypeLabel> = {
-  WORK: "Work",
-  ORGANIZATION: "Organization",
-  FREELANCE: "Freelance",
+const TYPE_MAP: Record<string, ExperienceType> = {
+  WORK: "WORK",
+  ORGANIZATION: "ORGANIZATION",
+  FREELANCE: "FREELANCE",
+  EDUCATION: "EDUCATION",
+  CERTIFICATION: "CERTIFICATION",
 };
 
 const MONTHS = [
@@ -28,16 +29,19 @@ function formatDate(d: Date): string {
 }
 
 export interface MappedExperience {
-  id: number;
+  id: string;
   slug: string;
+  title: string;
   role: string;
   company: string;
-  type: ExperienceTypeLabel;
+  type: ExperienceType;
   period: string;
   location: string;
-  thumbnail: string;
+  thumbnail: string | null;
   gallery: string[];
   description: string[];
+  isPublished: boolean;
+  order: number;
 }
 
 export function mapExperience(
@@ -51,16 +55,19 @@ export function mapExperience(
   const periodEnd = exp.isCurrent ? "Present" : endDate ? formatDate(endDate) : "Present";
 
   return {
-    id: index + 1,
+    id: exp.id,
     slug: exp.slug,
+    title: exp.title,
     role: exp.title,
     company: exp.company,
-    type: TYPE_MAP[exp.type] ?? "Work",
+    type: TYPE_MAP[exp.type] ?? "WORK",
     period: `${periodStart} - ${periodEnd}`,
     location: exp.location,
-    thumbnail: exp.thumbnail ?? "",
+    thumbnail: exp.thumbnail,
     gallery: exp.gallery,
     description: exp.description,
+    isPublished: exp.isPublished,
+    order: exp.order,
   };
 }
 

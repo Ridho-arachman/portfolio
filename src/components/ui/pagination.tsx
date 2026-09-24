@@ -55,7 +55,7 @@ export function Pagination({
             variant={p === page ? "default" : "outline"}
             size="icon"
             className={`h-8 w-8 ${p === page ? "bg-accent text-bg-primary" : "glass glass-hover"}`}
-            onClick={() => onPageChange(p as number)}
+            onClick={() => onPageChange(p)}
           >
             {p}
           </Button>

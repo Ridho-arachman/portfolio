@@ -48,8 +48,10 @@ export default async function CertificatesListPage({ params }: CertificatesPageP
   const resolvedParams = await params;
   const locale = resolvedParams.lang as Locale;
   const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
+  const messages = await getMessages(validLocale);
   const certificates = await getCertificates();
-  const data = certificates.map(mapCertificateToData);
+  const labels = { issued: messages.certificates.issuedOn, expires: messages.certificates.expiresOn };
+  const data = certificates.map((c) => mapCertificateToData(c, validLocale, labels));
 
   return <CertificatesPageContent data={data} />;
 }

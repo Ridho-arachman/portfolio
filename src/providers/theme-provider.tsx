@@ -8,6 +8,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { useThemeStore } from "@/stores/theme-store";
 
 const STORAGE_KEY = "theme";
@@ -71,6 +72,15 @@ export function ThemeProvider({
     setStoreTheme(initial);
     setStoreResolvedTheme(initial);
   }, [setStoreTheme, setStoreResolvedTheme]);
+
+  // Re-apply the stored theme whenever the route changes. The <html>/<body>
+  // elements are rendered by the [lang] layout, so switching locale
+  // re-renders the document subtree and can drop the imperatively applied
+  // theme class - without this the page falls back to light mode.
+  const pathname = usePathname();
+  useEffect(() => {
+    applyTheme(readStoredTheme());
+  }, [pathname]);
 
   const setTheme = useCallback(
     (next: Theme) => {

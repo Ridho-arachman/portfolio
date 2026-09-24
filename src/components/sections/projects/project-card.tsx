@@ -7,8 +7,10 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ProjectCardProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  const { t, locale } = useTranslation();
   return (
     <div
       className="group relative animate-fade-in-up scroll-reveal-up"
@@ -68,7 +70,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 >
                   <Image
                     src={img}
-                    alt={`Preview ${idx + 1}`}
+                    alt={`${t.common.preview} ${idx + 1}`}
                     width={48}
                     height={48}
                     className="object-cover grayscale group-hover:grayscale-0 transition-all"
@@ -92,10 +94,10 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             className="h-auto p-0 mt-2 text-text-primary hover:text-accent hover:bg-transparent justify-start group/btn min-h-[48px] min-w-[48px]"
           >
             <Link
-              href={project.link}
+              href={`/${locale}/projects/${project.slug}`}
               className="inline-flex items-center gap-2 text-sm font-semibold"
             >
-              View Case Study
+              {t.projects.viewCaseStudy}
               <ArrowUpRight className="w-4 h-4 shrink-0 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
             </Link>
           </Button>

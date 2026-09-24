@@ -41,11 +41,5 @@ export default async function LangLayout({ children, params }: LangLayoutProps) 
     notFound();
   }
 
-  return (
-    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
-      <body className="bg-bg-primary text-text-primary antialiased">
-        {children}
-      </body>
-    </html>
-  );
+  return <>{children}</>;
 }

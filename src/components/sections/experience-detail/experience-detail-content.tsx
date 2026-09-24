@@ -6,12 +6,14 @@ import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
 import type { ExperienceListData } from "./constants";
 import { EXPERIENCE_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ExperienceDetailContentProps {
   exp: ExperienceListData;
 }
 
 export function ExperienceDetailContent({ exp }: ExperienceDetailContentProps) {
+  const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   return (
     <m.div
@@ -24,7 +26,7 @@ export function ExperienceDetailContent({ exp }: ExperienceDetailContentProps) {
         <CardContent className="p-0">
           <h2 className="text-2xl md:text-3xl font-bold text-text-primary flex items-center gap-3 mb-6">
             <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-            {EXPERIENCE_DETAIL.achievementsTitle}
+            {t.experienceDetail[EXPERIENCE_DETAIL.achievementsKey]}
           </h2>
           <ul className="space-y-6">
             {exp.description.map((point, idx) => (

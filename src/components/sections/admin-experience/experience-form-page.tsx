@@ -9,9 +9,53 @@ import {
   useCreateExperience,
   useUpdateExperience,
 } from "@/hooks/use-experience";
-import type { ExperienceFormValues } from "@/schema/experience";
+import type { ExperienceFormValues, ExperienceCreateValues, ExperienceUpdateValues } from "@/schema/experience";
 import { ADMIN_EXPERIENCE } from "./constants";
 import { ExperienceForm } from "./experience-form";
+
+function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
+  const [startDate, endDate] = values.period.split(" - ").map(s => s.trim());
+  const isCurrent = endDate.toLowerCase() === "present";
+  
+  return {
+    title: values.role,
+    slug: values.slug,
+    company: values.company,
+    type: values.type,
+    location: values.location,
+    thumbnail: values.thumbnail,
+    logoUrl: values.logoUrl || undefined,
+    gallery: values.gallery,
+    startDate: isCurrent ? new Date().toISOString().split("T")[0] : startDate,
+    endDate: isCurrent ? undefined : endDate,
+    isCurrent,
+    description: values.description.split("\n").filter(Boolean),
+    isPublished: values.isPublished,
+    order: values.order,
+  };
+}
+
+function mapFormToUpdate(values: ExperienceFormValues): ExperienceUpdateValues {
+  const [startDate, endDate] = values.period.split(" - ").map(s => s.trim());
+  const isCurrent = endDate.toLowerCase() === "present";
+  
+  return {
+    title: values.role,
+    slug: values.slug,
+    company: values.company,
+    type: values.type,
+    location: values.location,
+    thumbnail: values.thumbnail,
+    logoUrl: values.logoUrl || undefined,
+    gallery: values.gallery,
+    startDate: isCurrent ? new Date().toISOString().split("T")[0] : startDate,
+    endDate: isCurrent ? undefined : endDate,
+    isCurrent,
+    description: values.description.split("\n").filter(Boolean),
+    isPublished: values.isPublished,
+    order: values.order,
+  };
+}
 
 export function ExperienceFormPage({
   mode,
@@ -66,7 +110,7 @@ export function ExperienceFormPage({
   }
 
   const handleCreate = (values: ExperienceFormValues) => {
-    createMutation.mutate(values, {
+    createMutation.mutate(mapFormToCreate(values), {
       onSuccess: () => {
         router.push("/admin/experience");
       },
@@ -76,7 +120,7 @@ export function ExperienceFormPage({
   const handleUpdate = (values: ExperienceFormValues) => {
     if (!experienceId) return;
     updateMutation.mutate(
-      { id: experienceId, data: values },
+      { id: experienceId, data: mapFormToUpdate(values) },
       {
         onSuccess: () => {
           router.push("/admin/experience");

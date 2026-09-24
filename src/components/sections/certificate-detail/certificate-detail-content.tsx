@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, ExternalLink, GraduationCap, ShieldCheck } from "lucide-react";
 import type { CertificateListData } from "./constants";
-import { CERTIFICATE_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface CertificateDetailContentProps {
   cert: CertificateListData;
@@ -14,6 +14,7 @@ interface CertificateDetailContentProps {
 export function CertificateDetailContent({
   cert,
 }: CertificateDetailContentProps) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-10">
       {/* Summary */}
@@ -22,7 +23,7 @@ export function CertificateDetailContent({
           <CardContent className="p-0">
             <h2 className="text-2xl md:text-3xl font-bold text-text-primary flex items-center gap-3 mb-6">
               <GraduationCap className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-              {CERTIFICATE_DETAIL.summaryTitle}
+              {t.certificateDetail.learned}
             </h2>
             <ul className="space-y-6">
               {cert.summary.map((point, idx) => (
@@ -44,7 +45,7 @@ export function CertificateDetailContent({
       <div className="animate-fade-in-up delay-200">
         <h2 className="text-2xl md:text-3xl font-bold text-text-primary flex items-center gap-3 mb-6">
           <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-          {CERTIFICATE_DETAIL.skillsTitle}
+          {t.certificateDetail.verifiedSkills}
         </h2>
         <div className="flex flex-wrap gap-3">
           {cert.skills.map((skill, idx) => (
@@ -75,10 +76,10 @@ export function CertificateDetailContent({
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-text-primary mb-1">
-                    {CERTIFICATE_DETAIL.verificationTitle}
+                    {t.certificateDetail.verifyCred}
                   </h2>
                   <p className="text-sm text-text-secondary">
-                    {CERTIFICATE_DETAIL.verificationDescription}
+                    {t.certificateDetail.verifyDesc}
                   </p>
                 </div>
               </div>
@@ -86,7 +87,7 @@ export function CertificateDetailContent({
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-glass-border bg-bg-primary/50 px-4 py-3">
                 <div>
                   <p className="text-xs text-text-muted uppercase tracking-wider">
-                    Credential ID
+                      {t.certificates.credentialId}
                   </p>
                   <p className="text-sm font-semibold text-text-primary font-mono">
                     {cert.credentialId}
@@ -103,7 +104,7 @@ export function CertificateDetailContent({
                     }
                     className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover transition-all duration-300 group/btn min-h-[48px] min-w-[48px]"
                   >
-                  {CERTIFICATE_DETAIL.verifyLabel}
+                  {t.certificateDetail.verifyBtn}
                   <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                 </Button>
               </div>

@@ -12,7 +12,8 @@ import { useTranslation } from "@/hooks/use-translation";
 export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
   const { t } = useTranslation();
   const teaserDescription = exp.description.slice(0, 2);
-  const typeLabel = exp.type === "Organization" ? t.experience.organization : t.experience.company;
+  const isOrg = exp.type === "ORGANIZATION";
+  const typeLabel = isOrg ? t.experience.organization : t.experience.company;
 
   return (
     <div
@@ -38,7 +39,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                   <div className="relative h-48 w-full overflow-hidden">
                     <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none" />
                     <Image
-                      src={exp.thumbnail}
+                      src={exp.thumbnail ?? ""}
                       alt={exp.role}
                       fill
                       className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
@@ -49,7 +50,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                       variant="outline"
                       className={`absolute top-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 backdrop-blur-md border-glass-border text-xs font-semibold text-accent ${isLeft ? "right-4" : "left-4"}`}
                     >
-                      {exp.type === "Organization" ? (
+                      {isOrg ? (
                         <Award className="w-3.5 h-3.5" />
                       ) : (
                         <Briefcase className="w-3.5 h-3.5" />

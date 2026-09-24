@@ -1,12 +1,14 @@
+import { type ExperienceType } from "@/types/domain";
+
 export interface ExperienceListData {
-  id: number;
+  id: string;
   slug: string;
   role: string;
   company: string;
-  type: "Work" | "Organization" | "Freelance";
+  type: ExperienceType;
   period: string;
   location: string;
-  thumbnail: string;
+  thumbnail: string | null;
   gallery?: string[];
   description: string[];
 }

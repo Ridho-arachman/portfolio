@@ -10,6 +10,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Project } from "./constants";
 import { PROJECT_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,16 +23,15 @@ export function ProjectDetailGallery({
   project,
   onSelect,
 }: ProjectDetailGalleryProps) {
-  if (!project.gallery || project.gallery.length === 0) {
-    return null;
-  }
-
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation();
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const gallery = project.gallery ?? [];
+  const hasGallery = gallery.length > 0;
 
   useEffect(() => {
-    if (prefersReducedMotion || !wrapRef.current || !trackRef.current) return;
+    if (!hasGallery || prefersReducedMotion || !wrapRef.current || !trackRef.current) return;
     const ctx = gsap.context(() => {
       const distance = trackRef.current!.scrollWidth - window.innerWidth;
       gsap.to(trackRef.current, {
@@ -48,7 +48,11 @@ export function ProjectDetailGallery({
       });
     }, wrapRef);
     return () => ctx.revert();
-  }, [prefersReducedMotion]);
+  }, [hasGallery, prefersReducedMotion]);
+
+  if (!hasGallery) {
+    return null;
+  }
 
   return (
     <section ref={wrapRef} className="relative overflow-hidden">
@@ -60,10 +64,10 @@ export function ProjectDetailGallery({
       >
         <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6 flex items-center gap-3">
           <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-          {PROJECT_DETAIL.galleryTitle}
+          {t.projectDetail[PROJECT_DETAIL.galleryTitleKey]}
         </h2>
         <div ref={trackRef} className="flex h-[100dvh] items-center gap-4">
-          {project.gallery.map((img, idx) => (
+          {gallery.map((img, idx) => (
             <m.div
               key={idx}
               initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}

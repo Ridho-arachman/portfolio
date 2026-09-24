@@ -21,12 +21,25 @@ export interface WorldCountry {
   code?: string;
 }
 
-const topo = worldTopo as never;
-const objects = (worldTopo as unknown as {
-  objects: { countries: { type: "GeometryCollection"; geometries: unknown[] } };
-}).objects;
+const topo = worldTopo as unknown as {
+  type: "Topology";
+  arcs: number[][][];
+  transform: { scale: [number, number]; translate: [number, number] };
+  objects: {
+    countries: {
+      type: "GeometryCollection";
+      geometries: Array<{
+        type: string;
+        id: string;
+        properties: { name: string };
+        arcs: number[][];
+      }>;
+    };
+  };
+};
 
-const countries = feature(topo, objects.countries as never) as unknown as {
+// @ts-expect-error - topojson-client types don't perfectly match world-atlas JSON structure but runtime works
+const countries = feature(topo, topo.objects.countries) as {
   type: "FeatureCollection";
   features: Array<{
     type: "Feature";

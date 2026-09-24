@@ -15,6 +15,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Project } from "./constants";
 import { PROJECT_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,6 +32,7 @@ interface NavCardProps {
 
 function NavCard({ project, direction, label }: NavCardProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { locale } = useTranslation();
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ function NavCard({ project, direction, label }: NavCardProps) {
       transition={prefersReducedMotion ? undefined : { duration: 0.6, delay: direction === "prev" ? 0 : 0.15 }}
     >
       <Link
-        href={project.link}
+        href={`/${locale}/projects/${project.slug}`}
         className={`group block h-full ${direction === "next" ? "text-right" : ""}`}
       >
         <Card ref={cardRef} className="h-full rounded-2xl border border-glass-border bg-glass-bg p-6 backdrop-blur-xl hover:border-accent/40 hover:bg-accent-muted/10 transition-all duration-300">
@@ -102,16 +104,17 @@ export function ProjectDetailNavigation({
   prev,
   next,
 }: ProjectDetailNavigationProps) {
+  const { t } = useTranslation();
   return (
     <div className="mt-24 pt-12 border-t border-glass-border" data-nav-stack-end>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {prev ? (
-          <NavCard project={prev} direction="prev" label={PROJECT_DETAIL.prevLabel} />
+          <NavCard project={prev} direction="prev" label={t.projectDetail[PROJECT_DETAIL.prevLabelKey]} />
         ) : (
           <div />
         )}
         {next ? (
-          <NavCard project={next} direction="next" label={PROJECT_DETAIL.nextLabel} />
+          <NavCard project={next} direction="next" label={t.projectDetail[PROJECT_DETAIL.nextLabelKey]} />
         ) : (
           <div />
         )}

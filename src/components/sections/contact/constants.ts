@@ -1,6 +1,17 @@
+import type { Messages } from "@/lib/translation-types";
+
 export const CONTACT_EMAIL = "ridho@example.com";
-export const CONTACT_LOCATION = "Indonesia (Remote-ready)";
-export const CONTACT_RESPONSE_TIME = "Usually replies within 24 hours";
+
+export const CONTACT_LOCATION_KEY = "location" as const;
+export const CONTACT_RESPONSE_TIME_KEY = "responseTimeValue" as const;
+
+export function getContactLocation(t: Messages): string {
+  return t.contact.location;
+}
+
+export function getContactResponseTime(t: Messages): string {
+  return t.contact.responseTimeValue;
+}
 
 export const REPLAY_VIEWPORT = {
   once: false,
@@ -8,7 +19,7 @@ export const REPLAY_VIEWPORT = {
 } as const;
 
 export const CONTACT_FORM_FIELDS = [
-  { name: "name", label: "Name", placeholder: "Your name" },
-  { name: "email", label: "Email", placeholder: "you@example.com" },
-  { name: "subject", label: "Subject", placeholder: "What is this about?" },
+  { name: "name", labelKey: "name", placeholderKey: "namePlaceholder" },
+  { name: "email", labelKey: "email", placeholderKey: "emailPlaceholder" },
+  { name: "subject", labelKey: "subject", placeholderKey: "subjectPlaceholder" },
 ] as const;

@@ -10,7 +10,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <HeroBackground />
-      <HeroContent locale={locale} />
+      <HeroContent key={locale} locale={locale} />
     </section>
   );
 }

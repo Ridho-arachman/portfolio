@@ -34,7 +34,9 @@ import {
   EXPERIENCE_TYPES,
 } from "./constants";
 
-function typeBadgeClass(type: string) {
+import { type ExperienceType } from "@/types/domain";
+
+function typeBadgeClass(type: ExperienceType) {
   return (
     EXPERIENCE_TYPES.find((item) => item.value === type)?.badgeClass ??
     "bg-accent-muted text-accent"
@@ -142,7 +144,7 @@ export function ExperiencesList() {
                 <li key={experience.id}>
                   <div className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/5 sm:px-5">
                     <Image
-                      src={experience.thumbnail}
+                      src={experience.thumbnail ?? ""}
                       alt={experience.role}
                       width={320}
                       height={224}

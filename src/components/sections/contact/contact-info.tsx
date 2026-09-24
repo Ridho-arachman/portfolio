@@ -6,8 +6,8 @@ import { Clock, Mail, MapPin, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import {
   CONTACT_EMAIL,
-  CONTACT_LOCATION,
-  CONTACT_RESPONSE_TIME,
+  getContactLocation,
+  getContactResponseTime,
 } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -18,23 +18,26 @@ interface InfoItem {
   href?: string;
 }
 
-const INFO_ITEMS: InfoItem[] = [
-  {
-    icon: Mail,
-    labelKey: "email",
-    value: CONTACT_EMAIL,
-    href: `mailto:${CONTACT_EMAIL}`,
-  },
-  { icon: MapPin, labelKey: "location", value: CONTACT_LOCATION },
-  { icon: Clock, labelKey: "responseTime", value: CONTACT_RESPONSE_TIME },
-];
-
 interface ContactInfoProps {
   locale: string;
 }
 
 export function ContactInfo({ locale }: ContactInfoProps) {
   const { t } = useTranslation();
+  const INFO_ITEMS: InfoItem[] = [
+    {
+      icon: Mail,
+      labelKey: "email",
+      value: CONTACT_EMAIL,
+      href: `mailto:${CONTACT_EMAIL}`,
+    },
+    { icon: MapPin, labelKey: "location", value: getContactLocation(t) },
+    {
+      icon: Clock,
+      labelKey: "responseTime",
+      value: getContactResponseTime(t),
+    },
+  ];
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in-up delay-100">
       {INFO_ITEMS.map((item) => (

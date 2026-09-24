@@ -43,7 +43,7 @@ export function ProjectDetailLightbox({
           className="relative max-w-5xl w-full aspect-video"
           onClick={(e) => e.stopPropagation()}
         >
-          <Image src={image} alt={`${project.title} full view`} fill className="object-contain" />
+          <Image src={image} alt={project.title} fill className="object-contain" />
         </m.div>
       </m.div>
     </AnimatePresence>

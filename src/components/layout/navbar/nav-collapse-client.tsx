@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { getLocaleFromPath, removeLocaleFromPath } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
+import { CVDownload } from "./cv-download";
 
 const NAV_LINK_KEYS = ['home', 'about', 'projects', 'experience', 'certificates', 'contact'] as const;
 type NavLinkKey = (typeof NAV_LINK_KEYS)[number];
@@ -104,18 +105,7 @@ export function NavCollapseClient() {
             })}
 
             <li className="pt-4 mt-2 border-t border-glass-border animate-fade-in-up delay-400">
-              <Link
-                href={buildHref('/contact')}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "inline-flex w-full items-center justify-center py-4 px-4 rounded-full font-medium text-sm transition-all duration-300 min-h-[48px] min-w-[48px]",
-                  isActive("/contact")
-                    ? "bg-accent text-bg-primary border-accent"
-                    : "bg-text-primary text-bg-primary border-text-primary hover:opacity-85",
-                )}
-              >
-                {t.nav.letsTalk}
-              </Link>
+              <CVDownload />
             </li>
 
             {/* Language Switcher in Mobile Menu */}

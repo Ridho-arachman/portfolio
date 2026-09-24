@@ -1,4 +1,5 @@
 import type { Certificate } from "@/generated/prisma/client";
+import type { Locale } from "@/lib/i18n";
 
 export interface CertificateListData {
   id: number;
@@ -28,47 +29,31 @@ export const CERTIFICATES_VIEWPORT = {
   margin: "0px 0px -100px 0px",
 } as const;
 
-const MONTH_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-const MONTH_FULL = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-function formatIssueDate(d: Date): string {
-  return `${MONTH_FULL[d.getMonth()]} ${d.getFullYear()}`;
+export interface CertificatePeriodLabels {
+  issued: string;
+  expires: string;
 }
 
-function formatPeriod(issueDate: Date, expiryDate: Date | null): string {
-  const issued = `Issued ${MONTH_SHORT[issueDate.getMonth()]} ${issueDate.getFullYear()}`;
-  if (!expiryDate) return `${issued} · No Expiration`;
-  return `${issued} · Expires ${MONTH_SHORT[expiryDate.getMonth()]} ${expiryDate.getFullYear()}`;
+export function formatMonthYear(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric" }).format(date);
 }
 
-export function mapCertificateToData(cert: Certificate): CertificateListData {
+function formatPeriod(
+  issueDate: Date,
+  expiryDate: Date | null,
+  locale: Locale,
+  labels: CertificatePeriodLabels,
+): string {
+  const issued = `${labels.issued} ${formatMonthYear(issueDate, locale)}`;
+  if (!expiryDate) return issued;
+  return `${issued} · ${labels.expires} ${formatMonthYear(expiryDate, locale)}`;
+}
+
+export function mapCertificateToData(
+  cert: Certificate,
+  locale: Locale,
+  labels: CertificatePeriodLabels,
+): CertificateListData {
   return {
     id: Number(cert.id) || 0,
     slug: cert.slug,
@@ -76,8 +61,8 @@ export function mapCertificateToData(cert: Certificate): CertificateListData {
     issuer: cert.issuer,
     credentialId: cert.credentialId ?? undefined,
     credentialUrl: cert.credentialUrl ?? undefined,
-    issueDate: formatIssueDate(cert.issueDate),
-    period: formatPeriod(cert.issueDate, cert.expiryDate),
+    issueDate: formatMonthYear(cert.issueDate, locale),
+    period: formatPeriod(cert.issueDate, cert.expiryDate, locale, labels),
     thumbnail: cert.thumbnail ?? "",
     gallery: cert.gallery,
     skills: cert.skills,

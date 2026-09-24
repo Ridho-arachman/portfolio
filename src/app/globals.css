@@ -490,6 +490,22 @@
   opacity: 0;
 }
 
+/* Slow ambient float (transform + opacity only, GPU-friendly) */
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -28px, 0) scale(1.04); }
+}
+
+.animate-float-slow {
+  animation: float-slow 16s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow {
+    animation: none;
+  }
+}
 
 /* Marquee Animation */
 @keyframes marquee {

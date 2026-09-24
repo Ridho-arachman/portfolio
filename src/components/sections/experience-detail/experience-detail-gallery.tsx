@@ -7,6 +7,7 @@ import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import type { ExperienceListData } from "./constants";
 import { EXPERIENCE_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ExperienceDetailGalleryProps {
   exp: ExperienceListData;
@@ -17,11 +18,12 @@ export function ExperienceDetailGallery({
   exp,
   onSelect,
 }: ExperienceDetailGalleryProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation();
+
   if (!exp.gallery || exp.gallery.length === 0) {
     return null;
   }
-
-  const prefersReducedMotion = useReducedMotion();
 
   return (
     <m.div
@@ -33,7 +35,7 @@ export function ExperienceDetailGallery({
     >
       <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6 flex items-center gap-3">
         <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-        {EXPERIENCE_DETAIL.galleryTitle}
+        {t.experienceDetail[EXPERIENCE_DETAIL.galleryKey]}
       </h2>
       <div className="grid grid-cols-2 gap-3 md:gap-4">
         {exp.gallery.map((img, idx) => (

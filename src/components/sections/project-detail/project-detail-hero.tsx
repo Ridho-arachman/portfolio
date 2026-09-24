@@ -6,12 +6,14 @@ import type { Project } from "./constants";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ProjectDetailHeroProps {
   project: Project;
 }
 
 export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
+  const { t, locale } = useTranslation();
   return (
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
       <div className="absolute inset-0">
@@ -30,11 +32,11 @@ export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
       <div className="absolute top-24 left-0 right-0 z-20">
         <div className="container mx-auto px-4 max-w-5xl">
           <Link
-            href={PROJECT_DETAIL.backHref}
+            href={`/${locale}${PROJECT_DETAIL.backHref}`}
             className="group inline-flex items-center gap-2 text-sm text-text-secondary hover:text-accent transition-colors"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {PROJECT_DETAIL.backLabel}
+            {t.projectDetail[PROJECT_DETAIL.backLabelKey]}
           </Link>
         </div>
       </div>

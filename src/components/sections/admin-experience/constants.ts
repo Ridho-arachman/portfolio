@@ -1,36 +1,35 @@
+import {
+  type AdminExperience,
+  type ExperienceType,
+  EXPERIENCE_TYPES as BASE_EXPERIENCE_TYPES,
+} from "@/types/domain";
+
+// UI-specific experience types with display labels
 export const EXPERIENCE_TYPES = [
-  { value: "Work", label: "Work", badgeClass: "bg-accent-muted text-accent" },
+  { value: "WORK", label: "Work", badgeClass: "bg-accent-muted text-accent" },
   {
-    value: "Organization",
+    value: "ORGANIZATION",
     label: "Organization",
     badgeClass: "bg-sky-500/10 text-sky-400",
   },
   {
-    value: "Freelance",
+    value: "FREELANCE",
     label: "Freelance",
     badgeClass: "bg-amber-500/10 text-amber-400",
   },
+  {
+    value: "EDUCATION",
+    label: "Education",
+    badgeClass: "bg-emerald-500/10 text-emerald-400",
+  },
+  {
+    value: "CERTIFICATION",
+    label: "Certification",
+    badgeClass: "bg-violet-500/10 text-violet-400",
+  },
 ] as const;
 
-export type ExperienceType = (typeof EXPERIENCE_TYPES)[number]["value"];
-
-export interface AdminExperience {
-  id: string;
-  slug: string;
-  role: string;
-  company: string;
-  type: ExperienceType;
-  period: string;
-  location: string;
-  thumbnail: string;
-  logoUrl: string;
-  gallery: string[];
-  description: string[];
-  isPublished: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
+export { type AdminExperience, type ExperienceType };
 
 export const ADMIN_EXPERIENCE = {
   // List page

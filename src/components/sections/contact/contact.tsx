@@ -34,7 +34,7 @@ export function ContactSection({ locale }: ContactSectionProps) {
             {t.contact.subtitle}
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto text-lg">
-            {t.contact.form.messagePlaceholder}
+            {t.contact.description}
           </p>
         </div>
 

@@ -15,6 +15,7 @@ import type { MotionValue } from "motion/react";
 import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ExperienceDetailHeroProps {
   exp: ExperienceListData;
@@ -29,7 +30,9 @@ export function ExperienceDetailHero({
   headerScale,
   headerOpacity,
 }: ExperienceDetailHeroProps) {
-  const TypeIcon: LucideIcon = exp.type === "Organization" ? Award : Briefcase;
+  const { t, locale } = useTranslation();
+  const isOrg = exp.type === "ORGANIZATION";
+  const TypeIcon: LucideIcon = isOrg ? Award : Briefcase;
 
   return (
     <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
@@ -38,7 +41,7 @@ export function ExperienceDetailHero({
         className="absolute inset-0"
       >
         <Image
-          src={exp.thumbnail}
+          src={exp.thumbnail ?? ""}
           alt={exp.role}
           fill
           className="object-cover"
@@ -52,11 +55,11 @@ export function ExperienceDetailHero({
       <div className="absolute top-24 left-0 right-0 z-20">
         <div className="container mx-auto px-4 max-w-5xl">
           <Link
-            href={EXPERIENCE_DETAIL.backHref}
+            href={`/${locale}${EXPERIENCE_DETAIL.backHref}`}
             className="group inline-flex items-center gap-2 text-sm text-text-secondary hover:text-accent transition-colors"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {EXPERIENCE_DETAIL.backLabel}
+            {t.experienceDetail[EXPERIENCE_DETAIL.backKey]}
           </Link>
         </div>
       </div>

@@ -3,9 +3,11 @@ import prisma from "@/lib/prisma";
 import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getMessages } from "@/lib/translations";
+import { isValidLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 
 interface ExperienceDetailPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lang: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -22,21 +24,28 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: ExperienceDetailPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
+  const locale: Locale = isValidLocale(lang) ? lang : DEFAULT_LOCALE;
+  const messages = await getMessages(locale);
   const experience = await prisma.experience.findFirst({
     where: { slug },
     select: { title: true, company: true },
   });
 
   if (!experience) {
-    return { title: "Not Found" };
+    return { title: messages.experienceDetail.notFound };
   }
 
   return {
     title: `${experience.title} — ${experience.company}`,
-    description: `Detail pengalaman ${experience.title} di ${experience.company}.`,
+    description:
+      locale === "id"
+        ? `Detail pengalaman ${experience.title} di ${experience.company}.`
+        : `Details of the ${experience.title} experience at ${experience.company}.`,
   };
 }
+
+export const dynamic = 'force-dynamic';
 
 export default async function ExperienceDetailPage({
   params,

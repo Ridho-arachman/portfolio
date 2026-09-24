@@ -105,20 +105,30 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
-      // Cache static assets aggressively
-      {
-        source: "/_next/static/(.*)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
-      // Cache public assets (images, fonts)
-      {
-        source: "/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ico)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
+      // Immutable caching is production-only: in dev it serves stale
+      // Turbopack chunks and breaks the client module graph.
+      ...(process.env.NODE_ENV === "production"
+        ? [
+            {
+              source: "/_next/static/(.*)",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "public, max-age=31536000, immutable",
+                },
+              ],
+            },
+            {
+              source: "/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ico)",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "public, max-age=31536000, immutable",
+                },
+              ],
+            },
+          ]
+        : []),
       // Add preconnect hints via headers for critical origins
       {
         source: "/",

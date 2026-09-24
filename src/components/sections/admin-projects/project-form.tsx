@@ -98,14 +98,18 @@ export function ProjectForm({
       description: values.description,
       thumbnail: values.thumbnail,
       gallery: gallery,
-      liveUrl: values.liveUrl || undefined,
-      repoUrl: values.repoUrl || undefined,
+      liveUrl: values.liveUrl || null,
+      repoUrl: values.repoUrl || null,
       technologies: values.technologies
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean),
       isPublished: values.isPublished,
       order: values.order,
+      role: null,
+      year: null,
+      highlights: [],
+      categoryId: null,
     };
 
     onSubmit(payload);

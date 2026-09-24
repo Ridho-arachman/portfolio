@@ -47,7 +47,7 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
             <EmptyState
               icon={FolderKanban}
               title={t.projects.noProjects}
-              description="Projects will appear here once published."
+              description={t.projects.noProjectsDesc}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">

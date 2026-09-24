@@ -1,20 +1,26 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useTranslation } from "@/hooks/use-translation";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { REPLAY_VIEWPORT } from "./constants";
-import { ExperienceTimeline } from "./experience-timeline";
+import { useRef } from "react";
 import type { Experience } from "./constants";
-import { useTranslation } from "@/hooks/use-translation";
+import { ExperienceTimeline } from "./experience-timeline";
 
-export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
+export function ExperienceSection({
+  experiences,
+}: {
+  experiences: Experience[];
+}) {
   const sectionRef = useRef<HTMLElement>(null);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-32 overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative pt-0 pb-20 md:pb-32 overflow-hidden"
+    >
       <div className="container relative z-10 mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16 md:mb-24 animate-fade-in-up">
@@ -35,8 +41,11 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
             size="lg"
             className="rounded-full bg-accent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)] transition-all duration-300 group min-h-[48px] min-w-[48px]"
           >
-            <Link href={`/${t.nav.experience.toLowerCase()}`} className="inline-flex items-center gap-2">
-              View All Experience
+            <Link
+              href={`/${locale}/experience`}
+              className="inline-flex items-center gap-2"
+            >
+              {t.experience.viewAll}
               <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

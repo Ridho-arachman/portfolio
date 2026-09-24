@@ -2,7 +2,6 @@ import { Check } from "lucide-react";
 import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
 import {
   CONTACT_EMAIL,
-  CONTACT_LOCATION,
 } from "@/components/sections/contact/constants";
 
 export interface AdminProfile {
@@ -42,7 +41,7 @@ export const SEED_SETTINGS: AdminSettings = {
     fullName: "Ridho Arachman",
     title: "Web Developer",
     email: SEED_EMAIL,
-    location: CONTACT_LOCATION,
+    location: "Indonesia (Remote-ready)",
     bio: "Recent Information Systems graduate with a deep passion for crafting immersive, high-performance, and user-centric web experiences.",
   },
   socials: {

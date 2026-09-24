@@ -109,12 +109,13 @@ export const rateLimitPresets = {
   }),
 } as const;
 
-export async function applyRateLimit(
-  preset: keyof typeof rateLimitPresets,
-  arg1: string,
-  arg2?: string
-) {
-  const config = rateLimitPresets[preset](arg1, arg2 as any);
+type PresetParams =
+  | [preset: "contact" | "upload" | "search" | "api", ip: string]
+  | [preset: "userAction", userId: string, action: string];
+
+export async function applyRateLimit(...args: PresetParams) {
+  const [preset, arg1, arg2] = args;
+  const config = rateLimitPresets[preset](arg1, arg2 as string);
   const result = await consumeRateLimit(config.key, config.max, config.windowSeconds);
   return {
     ...result,

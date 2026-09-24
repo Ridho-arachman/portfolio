@@ -1,18 +1,4 @@
-export interface AdminProject {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  gallery: string[];
-  liveUrl?: string;
-  repoUrl?: string;
-  technologies: string[];
-  isPublished: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
+export { type AdminProject } from "@/types/domain";
 
 export const ADMIN_PROJECTS = {
   title: "Projects",

@@ -2,19 +2,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib/api-client";
 import { toast } from "sonner";
-import type { PaginationParams } from "@/types/api";
+import type { PaginatedResponse, PaginationParams } from "@/types/api";
+import type { AdminCertificate } from "@/components/sections/admin-certificates/constants";
+import { certificateCreateSchema, type CertificateCreateValues, type CertificateUpdateValues } from "@/schema/certificate";
 
 // Public hooks
 export function usePublicCertificates(params?: Partial<PaginationParams>) {
-  return useQuery({
+  return useQuery<PaginatedResponse<AdminCertificate>>({
     queryKey: ["public-certificates", params],
-    queryFn: () => fetchPaginated("/public/certificates", params),
+    queryFn: () => fetchPaginated<AdminCertificate>("/public/certificates", params),
     staleTime: 10 * 60 * 1000,
   });
 }
 
 export function usePublicCertificate(slug: string) {
-  return useQuery({
+  return useQuery<AdminCertificate>({
     queryKey: ["public-certificate", slug],
     queryFn: () => fetchOne(`/public/certificates/${slug}`),
     staleTime: 10 * 60 * 1000,
@@ -24,14 +26,14 @@ export function usePublicCertificate(slug: string) {
 
 // Admin hooks
 export function useAdminCertificates(params?: Partial<PaginationParams>) {
-  return useQuery({
+  return useQuery<PaginatedResponse<AdminCertificate>>({
     queryKey: ["admin-certificates", params],
-    queryFn: () => fetchPaginated("/admin/certificates", params),
+    queryFn: () => fetchPaginated<AdminCertificate>("/admin/certificates", params),
   });
 }
 
 export function useAdminCertificate(id: string) {
-  return useQuery({
+  return useQuery<AdminCertificate>({
     queryKey: ["admin-certificate", id],
     queryFn: () => fetchOne(`/admin/certificates/${id}`),
     enabled: !!id,
@@ -41,7 +43,7 @@ export function useAdminCertificate(id: string) {
 export function useCreateCertificate() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: unknown) => createOne("/admin/certificates", data),
+    mutationFn: (data: CertificateCreateValues) => createOne("/admin/certificates", data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-certificates"] });
       toast.success("Certificate created successfully");
@@ -55,7 +57,7 @@ export function useCreateCertificate() {
 export function useUpdateCertificate() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: unknown }) => updateOne(`/admin/certificates/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: CertificateUpdateValues }) => updateOne(`/admin/certificates/${id}`, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-certificates"] });
       qc.invalidateQueries({ queryKey: ["admin-certificate"] });

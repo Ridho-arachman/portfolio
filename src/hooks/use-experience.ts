@@ -4,12 +4,13 @@ import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib
 import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminExperience } from "@/components/sections/admin-experience/constants";
+import { experienceCreateSchema, type ExperienceCreateValues, type ExperienceUpdateValues } from "@/schema/experience";
 
 // Public hooks
 export function usePublicExperiences(params?: Partial<PaginationParams>) {
   return useQuery<PaginatedResponse<AdminExperience>>({
     queryKey: ["public-experiences", params],
-    queryFn: () => fetchPaginated("/public/experience", params),
+    queryFn: () => fetchPaginated<AdminExperience>("/public/experience", params),
     staleTime: 10 * 60 * 1000,
   });
 }
@@ -27,7 +28,7 @@ export function usePublicExperience(slug: string) {
 export function useAdminExperiences(params?: Partial<PaginationParams>) {
   return useQuery<PaginatedResponse<AdminExperience>>({
     queryKey: ["admin-experiences", params],
-    queryFn: () => fetchPaginated("/admin/experience", params),
+    queryFn: () => fetchPaginated<AdminExperience>("/admin/experience", params),
   });
 }
 
@@ -42,7 +43,7 @@ export function useAdminExperience(id: string) {
 export function useCreateExperience() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: unknown) => createOne("/admin/experience", data),
+    mutationFn: (data: ExperienceCreateValues) => createOne("/admin/experience", data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-experiences"] });
       toast.success("Experience created successfully");
@@ -56,7 +57,7 @@ export function useCreateExperience() {
 export function useUpdateExperience() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: unknown }) => updateOne(`/admin/experience/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: ExperienceUpdateValues }) => updateOne(`/admin/experience/${id}`, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-experiences"] });
       qc.invalidateQueries({ queryKey: ["admin-experience"] });

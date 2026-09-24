@@ -20,6 +20,9 @@ import { PanelCard } from "./panel-card";
 import { StatCard } from "./stat-card";
 import { ADMIN_DASHBOARD } from "./constants";
 import type { RecentItem, VisitPoint, VisitorCountry } from "./constants";
+import type { AdminProject } from "@/components/sections/admin-projects/constants";
+import type { AdminCertificate } from "@/components/sections/admin-certificates/constants";
+import type { AdminExperience } from "@/components/sections/admin-experience/constants";
 
 // Lazy-load heavy admin components (recharts, leaflet) - admin only
 const VisitsChart = dynamic(() => import("./visits-chart").then((mod) => mod.VisitsChart), {
@@ -101,29 +104,26 @@ const QUICK_ACTION_LINKS: RecentItem[] = [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapProjects(items: any[]): RecentItem[] {
+function mapProjects(items: AdminProject[]): RecentItem[] {
   return items.map((p) => ({
-    title: (p.title as string) ?? "Untitled",
+    title: p.title ?? "Untitled",
     subtitle: [p.year, p.role].filter(Boolean).join(" · ") || "—",
     badge: (Array.isArray(p.technologies) ? p.technologies[0] : null) ?? "Project",
   }));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapCertificates(items: any[]): RecentItem[] {
+function mapCertificates(items: AdminCertificate[]): RecentItem[] {
   return items.map((c) => ({
-    title: (c.title as string) ?? "Untitled",
-    subtitle: (c.issuer as string) ?? "—",
+    title: c.title ?? "Untitled",
+    subtitle: c.issuer ?? "—",
     badge: (Array.isArray(c.skills) ? c.skills[0] : null) ?? "Certificate",
   }));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapExperience(items: any[]): RecentItem[] {
+function mapExperience(items: AdminExperience[]): RecentItem[] {
   return items.map((e) => {
-    const start = e.startDate ? new Date(e.startDate as string) : null;
-    const end = e.endDate ? new Date(e.endDate as string) : null;
+    const start = e.startDate ? new Date(e.startDate) : null;
+    const end = e.endDate ? new Date(e.endDate) : null;
     const fmt = (d: Date) =>
       d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
     const period =
@@ -133,9 +133,9 @@ function mapExperience(items: any[]): RecentItem[] {
           ? `${fmt(start)} - Present`
           : "—";
     return {
-      title: (e.title as string) ?? "Untitled",
+      title: e.title ?? "Untitled",
       subtitle: `${e.company ?? "—"} · ${period}`,
-      badge: (e.type as string) ?? "Experience",
+      badge: e.type ?? "Experience",
     };
   });
 }

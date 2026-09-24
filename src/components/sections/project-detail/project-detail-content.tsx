@@ -7,12 +7,14 @@ import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
 import type { Project } from "./constants";
 import { PROJECT_DETAIL } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ProjectDetailContentProps {
   project: Project;
 }
 
 export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
+  const { t } = useTranslation();
   // Destructure with defaults to ensure no undefined access
   const description = project?.description ?? "";
   const highlights = project?.highlights ?? [];
@@ -31,7 +33,7 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
           <CardContent className="p-0">
             <h2 className="text-2xl md:text-3xl font-bold text-text-primary flex items-center gap-3 mb-4">
               <Rocket className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-              {PROJECT_DETAIL.overviewTitle}
+              {t.projectDetail[PROJECT_DETAIL.overviewTitleKey]}
             </h2>
             <p className="text-text-secondary leading-relaxed text-base md:text-lg">
               {description}
@@ -51,7 +53,7 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
             <CardContent className="p-0">
               <h2 className="text-2xl md:text-3xl font-bold text-text-primary flex items-center gap-3 mb-6">
                 <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-                {PROJECT_DETAIL.highlightsTitle}
+                {t.projectDetail[PROJECT_DETAIL.highlightsTitleKey]}
               </h2>
               <ul className="space-y-6">
                 {highlights.map((point, idx) => (
@@ -80,7 +82,7 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
         transition={prefersReducedMotion ? undefined : { duration: 0.6, delay: 0.2 }}
       >
         <h2 className="text-xl md:text-2xl font-bold text-text-primary mb-4">
-          {PROJECT_DETAIL.stackTitle}
+          {t.projectDetail[PROJECT_DETAIL.stackTitleKey]}
         </h2>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
