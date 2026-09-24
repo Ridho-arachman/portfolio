@@ -4,7 +4,7 @@ import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib
 import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminCertificate } from "@/components/sections/admin-certificates/constants";
-import { certificateCreateSchema, type CertificateCreateValues, type CertificateUpdateValues } from "@/schema/certificate";
+import { type CertificateCreateValues, type CertificateUpdateValues } from "@/schema/certificate";
 
 // Public hooks
 export function usePublicCertificates(params?: Partial<PaginationParams>) {

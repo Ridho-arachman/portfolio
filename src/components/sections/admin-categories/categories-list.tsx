@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
 import { ADMIN_CATEGORIES } from "./constants";
 import {
   useAdminCategories,
@@ -46,16 +45,15 @@ export function CategoriesList() {
   const { data, isLoading, isError } = useAdminCategories(paginationParams);
   const deleteMutation = useDeleteCategory();
 
-  const categories: AdminCategory[] =
-    (data?.data as AdminCategory[]) ?? [];
   const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
+    const categories = (data?.data as AdminCategory[]) ?? [];
     return [...categories].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [categories]);
+  }, [data]);
 
   return (
     <div className="flex flex-1 flex-col">

@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Globe } from 'lucide-react';
-import { LOCALES, LOCALE_FLAGS, LOCALE_NATIVE_NAMES, Locale, addLocaleToPath, removeLocaleFromPath } from '@/lib/i18n';
+import { LOCALES, LOCALE_FLAGS, LOCALE_NATIVE_NAMES, Locale, removeLocaleFromPath } from '@/lib/i18n';
 import { useTranslation } from '@/hooks/use-translation';
 import { useState, useRef, useEffect } from 'react';
 
@@ -87,7 +87,6 @@ export function LanguageSwitcher() {
       {isOpen && (
         <div
           id="language-dropdown"
-          role="listbox"
           aria-label="Select language"
           className={cn(
             'absolute right-0 top-full mt-2 w-40',
@@ -96,18 +95,19 @@ export function LanguageSwitcher() {
             'z-50'
           )}
         >
-          <ul role="listbox" className="py-1">
+          <ul className="py-1">
             {LOCALES.map((locale) => (
-              <li key={locale} role="option" aria-selected={locale === currentLocale}>
+              <li key={locale}>
                 <button
                   onClick={() => handleLocaleChange(locale)}
+                  role="option"
+                  aria-selected={locale === currentLocale}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3',
                     'text-text-primary hover:bg-accent/10 transition-colors',
                     'text-left focus:outline-none focus:bg-accent/10',
                     locale === currentLocale && 'bg-accent/10 text-accent'
                   )}
-                  aria-selected={locale === currentLocale}
                   data-testid={`language-option-${locale}`}
                 >
                   <span className="text-base" aria-hidden="true">{LOCALE_FLAGS[locale]}</span>

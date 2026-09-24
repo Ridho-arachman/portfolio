@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Image from "next/image";
 import { Loader2, X, Upload, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -142,10 +143,12 @@ export function ImageUpload({
 
         {hasImage ? (
           <div className="relative aspect-video w-full">
-            <img
+            <Image
               src={value}
               alt={label}
-              className="rounded-lg w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="rounded-lg object-cover"
             />
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
               <Button

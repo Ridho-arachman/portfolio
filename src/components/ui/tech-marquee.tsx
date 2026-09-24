@@ -23,11 +23,6 @@ export interface MarqueeItem {
   iconName?: string | null;
 }
 
-interface FallbackTech {
-  name: string;
-  icon: ComponentType<{ size?: number; className?: string }>;
-}
-
 const techStack = [
   { name: "Next.js", icon: SiNextdotjs },
   { name: "TypeScript", icon: SiTypescript },
@@ -67,25 +62,6 @@ export function buildMarqueeItems(base: Array<{ name: string; iconName?: string 
   return [...half, ...half];
 }
 
-
-interface MarqueeCardShellProps {
-  name: string;
-  children: React.ReactNode;
-}
-
-function MarqueeCardShell({ name, children }: MarqueeCardShellProps) {
-  return (
-    <div className="flex flex-col items-center gap-3 min-w-25 md:min-w-30 group">
-      <div className="relative p-4 rounded-2xl bg-glass-bg border border-glass-border group-hover:border-accent/50 group-hover:bg-accent-muted transition-all duration-300">
-        {children}
-        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_20px_rgba(167,139,250,0.2)] pointer-events-none" />
-      </div>
-      <span className="text-xs md:text-sm font-medium text-text-muted group-hover:text-text-primary transition-colors text-center leading-tight">
-        {name}
-      </span>
-    </div>
-  );
-}
 
 type IconComponent = ComponentType<{ size?: number; className?: string }>;
 

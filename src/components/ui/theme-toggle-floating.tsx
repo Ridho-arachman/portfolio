@@ -6,7 +6,7 @@ import { useTheme } from "@/providers/theme-provider";
 import { useEffect, useState } from "react";
 
 export function ThemeToggleFloating() {
-  const { theme, setTheme, toggleTheme, resolvedTheme } = useTheme();
+  const { toggleTheme, resolvedTheme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [toggling, setToggling] = useState(false);

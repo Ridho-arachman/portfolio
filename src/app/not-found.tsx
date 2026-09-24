@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
 import type { Metadata } from "next";
 import { NotFoundButton } from "@/components/ui/not-found-button";
 

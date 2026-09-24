@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
-import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
+import {successResponse, errorResponseFrom } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
 

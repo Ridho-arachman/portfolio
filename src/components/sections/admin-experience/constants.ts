@@ -1,7 +1,6 @@
 import {
   type AdminExperience,
   type ExperienceType,
-  EXPERIENCE_TYPES as BASE_EXPERIENCE_TYPES,
 } from "@/types/domain";
 
 // UI-specific experience types with display labels

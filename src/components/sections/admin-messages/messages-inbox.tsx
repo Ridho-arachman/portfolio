@@ -74,7 +74,7 @@ export function MessagesInbox() {
   const updateStatusMutation = useUpdateMessageStatus();
   const deleteMutation = useDeleteMessage();
 
-  const messages: AdminMessage[] = data?.data ?? [];
+  const messages = useMemo(() => (data?.data ?? []) as AdminMessage[], [data]);
 
   const counts = useMemo(() => {
     const total = messages.length;

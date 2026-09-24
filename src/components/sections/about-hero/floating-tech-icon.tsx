@@ -4,9 +4,6 @@ import { FloatingTechIconProps } from "./constants";
 
 export function FloatingTechIcon({
   icon: Icon,
-  intensity = 20,
-  floatDuration = 4,
-  scrollIntensity = 0,
   className,
 }: FloatingTechIconProps) {
   return (

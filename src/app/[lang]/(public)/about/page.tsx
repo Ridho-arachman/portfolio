@@ -39,10 +39,7 @@ const getExperiences = unstable_cache(
   { revalidate: 3600, tags: ["experiences"] },
 );
 
-export default async function AboutPage({ params }: AboutPageProps) {
-  const resolvedParams = await params;
-  const locale = resolvedParams.lang as Locale;
-  const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
+export default async function AboutPage() {
   const rawExperiences = await getExperiences();
   const experiences = mapExperiences(rawExperiences);
 

@@ -60,7 +60,7 @@ export default async function ExperienceDetailPage({
     notFound();
   }
 
-  const exp = mapExperience(rawExperience, 0);
+  const exp = mapExperience(rawExperience);
 
   const allRaw = await prisma.experience.findMany({
     orderBy: { order: "asc" },

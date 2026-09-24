@@ -1,16 +1,15 @@
 "use client";
 
-import { ArrowLeft, Briefcase, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@/lib/zod-resolver";
-import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
 import {
@@ -46,7 +45,6 @@ export function ExperienceForm({
   const {
     register,
     handleSubmit,
-    control,
     setValue,
     watch,
     formState: { errors },

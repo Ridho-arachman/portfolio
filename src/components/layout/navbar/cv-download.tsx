@@ -14,7 +14,7 @@ export function CVDownload() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const pathLocale = getLocaleFromPath(pathname) || 'en';
+  const currentLocale = getLocaleFromPath(pathname) || 'en';
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,7 +93,7 @@ export function CVDownload() {
         >
           <ul role="listbox" className="py-1">
             {(['en', 'id'] as Locale[]).map((locale) => (
-              <li key={locale} role="option">
+              <li key={locale} role="option" aria-selected={locale === currentLocale}>
                 <button
                   onClick={() => handleDownload(locale)}
                   className={cn(

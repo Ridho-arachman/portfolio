@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
 import {
   CONTACT_EMAIL,

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion, useMotionValue, useTransform, useScroll } from "motion/react";
-import { useRef, useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion, useMotionValue } from "motion/react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { Locale } from "@/lib/i18n";
 
@@ -61,17 +61,6 @@ export function HeroContent({ locale }: HeroContentProps) {
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
-  const scrollTargetRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    scrollTargetRef.current = document.documentElement;
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: scrollTargetRef,
-    offset: ["start start", "end start"],
-  });
-  const textParallax = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
   return (
     <div className="relative z-10 w-full max-w-7xl mx-auto px-4 min-h-[100dvh] flex items-center pt-16">

@@ -1,8 +1,14 @@
 // auth-security.integration.test.ts
 // Menguji: rate limiting berbasis database, verifikasi captcha Turnstile,
 // dan kolom role (default USER, bisa diubah ADMIN).
-import { afterAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "./prisma";
+
+const verifyTurnstile = vi.hoisted(() => vi.fn());
+vi.mock("./turnstile", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./turnstile")>();
+  return { ...actual, verifyTurnstile };
+});
 
 const unique = Date.now();
 const TEST_EMAIL = `security-${unique}@example.com`;
@@ -47,6 +53,14 @@ async function handlerSignUp(
 }
 
 describe("auth security (rate limit, captcha, role)", () => {
+  beforeEach(() => {
+    verifyTurnstile.mockResolvedValue(true);
+  });
+
+  afterEach(() => {
+    verifyTurnstile.mockReset();
+  });
+
   afterAll(async () => {
     process.env.DISABLE_RATE_LIMIT = "true";
     delete process.env.TURNSTILE_SECRET_KEY;
@@ -79,7 +93,8 @@ describe("auth security (rate limit, captcha, role)", () => {
   });
 
   it("rejects sign-in when turnstile token is missing/invalid", async () => {
-    process.env.TURNSTILE_SECRET_KEY = "1x0000000000000000000000000000000AA";
+    verifyTurnstile.mockResolvedValue(false);
+
     const auth = await loadAuth();
     const body = { email: TEST_EMAIL, password: "wrong-password" };
 
@@ -89,11 +104,11 @@ describe("auth security (rate limit, captcha, role)", () => {
       error: "CAPTCHA_VERIFICATION_FAILED",
     });
 
+    verifyTurnstile.mockResolvedValue(true);
+
     // Token valid (test key) -> captcha lolos, lanjut ke cek credential.
     const withToken = await handlerSignIn(auth, {}, { ...body, captchaToken: "test-token" });
     expect(withToken.status).toBe(401);
-
-    delete process.env.TURNSTILE_SECRET_KEY;
   });
 
   it("signs up via the HTTP handler with a valid captcha token", async () => {

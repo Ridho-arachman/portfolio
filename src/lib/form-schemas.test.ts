@@ -126,7 +126,7 @@ describe("experienceFormSchema", () => {
     role: "Frontend Developer Intern",
     slug: "frontend-developer-intern",
     company: "PT Tech Startup Indonesia",
-    type: "Work",
+    type: "WORK",
     period: "Jan 2024 - Present",
     location: "Jakarta, Indonesia (Remote)",
     thumbnail: "https://images.example.com/cover.jpg",
@@ -145,16 +145,16 @@ describe("experienceFormSchema", () => {
     ).toBe(false);
   });
 
-  it("rejects a gallery with a non-URL line", () => {
+  it("rejects a gallery entry that is not a string", () => {
     expect(
       experienceFormSchema.safeParse({
         ...valid,
-        gallery: "https://images.example.com/1.jpg\nnot-a-url",
+        gallery: [42],
       }).success,
     ).toBe(false);
   });
 
-  it("accepts a gallery of valid URLs", () => {
+  it("accepts a gallery of image URLs", () => {
     expect(
       experienceFormSchema.safeParse({
         ...valid,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Image from "next/image";
 import { Loader2, X, Upload, Plus, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -136,10 +137,12 @@ export function MultiImageUpload({
               key={`${url}-${index}`}
               className="group relative aspect-video overflow-hidden rounded-xl border border-glass-border bg-glass-bg/50"
             >
-              <img
+              <Image
                 src={url}
                 alt={`Gallery ${index + 1}`}
-                className="h-full w-full object-cover"
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button

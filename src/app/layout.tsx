@@ -95,7 +95,11 @@ export default async function RootLayout({
   const locale = lang === "id" || lang === "en" ? lang : "en";
 
   return (
-    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`scroll-smooth ${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link
           rel="preconnect"

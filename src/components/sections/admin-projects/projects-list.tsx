@@ -34,21 +34,21 @@ import "nuqs/adapters/next";
 
 export function ProjectsList() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const { page, pageSize, search, setSearch, goToPage, paginationParams } =
+  const { page, search, setSearch, goToPage, paginationParams } =
     usePagination({ defaultPageSize: 10 });
 
   const { data, isLoading, isError } = useAdminProjects(paginationParams);
   const deleteMutation = useDeleteProject();
 
-  const projects = (data?.data ?? []) as AdminProject[];
   const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
+    const projects = (data?.data ?? []) as AdminProject[];
     return [...projects].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [projects]);
+  }, [data]);
 
   return (
     <div className="flex flex-1 flex-col">

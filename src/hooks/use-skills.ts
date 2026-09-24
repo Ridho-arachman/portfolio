@@ -29,7 +29,7 @@ export function useAdminSkill(id: string) {
   });
 }
 
-import { skillFormSchema, type SkillFormValues, type SkillCreateValues, type SkillUpdateValues } from "@/schema/skill";
+import { type SkillCreateValues, type SkillUpdateValues } from "@/schema/skill";
 
 export function useCreateSkill() {
   const qc = useQueryClient();

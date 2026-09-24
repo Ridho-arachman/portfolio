@@ -44,10 +44,7 @@ export interface MappedExperience {
   order: number;
 }
 
-export function mapExperience(
-  exp: PrismaExperience,
-  index: number,
-): MappedExperience {
+export function mapExperience(exp: PrismaExperience): MappedExperience {
   const startDate = new Date(exp.startDate);
   const endDate = exp.endDate ? new Date(exp.endDate) : null;
 
@@ -72,5 +69,5 @@ export function mapExperience(
 }
 
 export function mapExperiences(exps: PrismaExperience[]): MappedExperience[] {
-  return exps.map((exp, i) => mapExperience(exp, i));
+  return exps.map((exp) => mapExperience(exp));
 }

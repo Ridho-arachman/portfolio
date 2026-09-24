@@ -57,15 +57,15 @@ export function ExperiencesList() {
   const { data, isLoading, error } = useAdminExperiences(paginationParams);
   const deleteMutation = useDeleteExperience();
 
-  const experiences = data?.data ?? [];
   const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
+    const experiences = data?.data ?? [];
     return [...experiences].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [experiences]);
+  }, [data]);
 
   return (
     <div className="flex flex-1 flex-col">

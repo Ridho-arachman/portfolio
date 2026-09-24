@@ -4,7 +4,7 @@ import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib
 import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminCategory } from "@/components/sections/admin-categories/constants";
-import { categoryCreateSchema, type CategoryCreateValues, type CategoryUpdateValues } from "@/schema/category";
+import { type CategoryCreateValues, type CategoryUpdateValues } from "@/schema/category";
 
 // Public hooks
 export function usePublicCategories() {

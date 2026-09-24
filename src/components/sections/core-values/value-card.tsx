@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
-import { cardVariants, REPLAY_VIEWPORT, ValueCardProps } from "./constants";
+import { cardVariants, ValueCardProps } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
 
 export function ValueCard({ value, index }: ValueCardProps) {

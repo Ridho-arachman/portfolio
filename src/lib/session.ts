@@ -9,7 +9,7 @@ export async function getServerSession() {
       headers: await headers(),
     });
     return session;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

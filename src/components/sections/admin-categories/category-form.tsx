@@ -12,8 +12,6 @@ import { zodResolver } from "@/lib/zod-resolver";
 import {
   categoryFormSchema,
   type CategoryFormValues,
-  type CategoryCreateValues,
-  type CategoryUpdateValues,
 } from "@/schema/category";
 import { ADMIN_CATEGORIES, type AdminCategory } from "./constants";
 import { slugify } from "@/utils/slug";

@@ -5,10 +5,15 @@
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
-const isTestEnv = process.env.DISABLE_RATE_LIMIT === "true" || process.env.NODE_ENV === "test";
+function isTestEnv(): boolean {
+  return (
+    process.env.DISABLE_RATE_LIMIT === "true" ||
+    process.env.NODE_ENV === "test"
+  );
+}
 
 export async function verifyTurnstile(token?: string): Promise<boolean> {
-  if (isTestEnv) {
+  if (isTestEnv()) {
     return true;
   }
 

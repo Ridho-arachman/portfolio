@@ -7,7 +7,7 @@ import { ArrowUpRight, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRef } from "react";
-import { CERTIFICATES_VIEWPORT, type CertificateListData } from "./constants";
+import { type CertificateListData } from "./constants";
 import { CertificateCard } from "./certificate-card";
 import { CertificatesBackground } from "./certificates-background";
 import { useTranslation } from "@/hooks/use-translation";

@@ -4,7 +4,7 @@ import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib
 import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminProject } from "@/components/sections/admin-projects/constants";
-import { projectCreateSchema, type ProjectCreateValues, type ProjectUpdateValues } from "@/schema/project";
+import { type ProjectCreateValues, type ProjectUpdateValues } from "@/schema/project";
 
 // Public hooks
 export function usePublicProjects(params?: Partial<PaginationParams> & { category?: string }) {

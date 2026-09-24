@@ -1,7 +1,12 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "@/providers/theme-provider";
 import { useThemeStore } from "@/stores/theme-store";
+
+const pathnameMock = vi.hoisted(() => ({ value: "/en" }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => pathnameMock.value,
+}));
 
 function Probe() {
   const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
@@ -18,6 +23,7 @@ function Probe() {
 describe("ThemeProvider", () => {
   beforeEach(() => {
     localStorage.clear();
+    pathnameMock.value = "/en";
     useThemeStore.setState({ theme: "dark", resolvedTheme: "dark" });
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.style.colorScheme = "";
@@ -81,6 +87,27 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("theme")).toHaveTextContent("light");
     fireEvent.click(screen.getByRole("button", { name: "toggle" }));
     expect(screen.getByTestId("theme")).toHaveTextContent("dark");
+  });
+
+  it("re-applies the stored theme when the route changes", () => {
+    const { rerender } = render(
+      <ThemeProvider>
+        <Probe />
+      </ThemeProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "set light" }));
+    expect(document.documentElement.classList.contains("light")).toBe(true);
+
+    document.documentElement.classList.remove("light", "dark");
+    pathnameMock.value = "/id";
+    rerender(
+      <ThemeProvider>
+        <Probe />
+      </ThemeProvider>,
+    );
+
+    expect(document.documentElement.classList.contains("light")).toBe(true);
   });
 
   it("useTheme throws outside the provider", () => {

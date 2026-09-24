@@ -4,7 +4,7 @@ import { fetchPaginated, fetchOne, createOne, updateOne, deleteOne } from "@/lib
 import { toast } from "sonner";
 import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminExperience } from "@/components/sections/admin-experience/constants";
-import { experienceCreateSchema, type ExperienceCreateValues, type ExperienceUpdateValues } from "@/schema/experience";
+import { type ExperienceCreateValues, type ExperienceUpdateValues } from "@/schema/experience";
 
 // Public hooks
 export function usePublicExperiences(params?: Partial<PaginationParams>) {

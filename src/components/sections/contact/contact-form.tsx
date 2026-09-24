@@ -24,11 +24,7 @@ function translateSubmitError(t: Messages, code?: string, status?: number): stri
   return t.contact.sendError;
 }
 
-interface ContactFormProps {
-  locale: string;
-}
-
-export function ContactForm({ locale }: ContactFormProps) {
+export function ContactForm() {
   const { t } = useTranslation();
   const {
     register,

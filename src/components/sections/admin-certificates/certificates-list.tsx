@@ -45,15 +45,15 @@ export function CertificatesList() {
   const { data, isLoading, isError } = useAdminCertificates(paginationParams);
   const deleteMutation = useDeleteCertificate();
 
-  const certificates: AdminCertificate[] = (data?.data as AdminCertificate[]) ?? [];
   const totalPages = data?.pagination?.totalPages ?? 1;
 
   const filtered = useMemo(() => {
+    const certificates = (data?.data as AdminCertificate[]) ?? [];
     return [...certificates].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [certificates]);
+  }, [data]);
 
   return (
     <div className="flex flex-1 flex-col">

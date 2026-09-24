@@ -1,21 +1,38 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import {
   cleanupE2EUsers,
   E2E_ADMIN,
   E2E_USER,
-  ensureAdminUser,
   ensureRegularUser,
   loginAsEmail,
+  promoteE2EAdmin,
 } from "./helpers/admin-auth";
 
 async function loginViaForm(page: Page) {
+  await page.goto("/admin/login");
   await page.locator('input[id="email"]').fill(E2E_ADMIN.email);
   await page.getByLabel("Password", { exact: true }).fill(E2E_ADMIN.password);
   await page.getByRole("button", { name: "Sign In" }).click();
+  await page.waitForURL(/\/admin$/, { timeout: 90_000 });
 }
 
-test.beforeAll(async ({ request }) => {
-  await ensureAdminUser(request);
+// Seed ulang user admin sebelum test yang butuh login sesi. Dipakai per-test
+// (bukan beforeAll) karena Playwright beforeAll tidak punya request fixture.
+async function seedAdminViaApi(request: APIRequestContext) {
+  const origin = process.env.BETTER_AUTH_URL || "http://localhost:3005";
+  await request.post(`${origin}/api/auth/sign-up/email`, {
+    headers: { origin },
+    data: {
+      email: E2E_ADMIN.email,
+      password: E2E_ADMIN.password,
+      name: E2E_ADMIN.name,
+    },
+  });
+  await promoteE2EAdmin();
+}
+
+test.beforeEach(async ({ request }) => {
+  await seedAdminViaApi(request);
 });
 
 test.afterAll(async () => {
@@ -29,6 +46,18 @@ test("admin login page renders", async ({ page }) => {
   await expect(page.locator('input[id="email"]')).toBeVisible({ timeout: 60_000 });
   await expect(page.locator('input[id="password"]')).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
+});
+
+test("admin login offers a back link and a theme toggle", async ({ page }) => {
+  await page.goto("/admin/login");
+
+  const back = page.getByRole("link", { name: "Back" }).first();
+  await expect(back).toBeVisible();
+  await expect(back).toHaveAttribute("href", "/");
+
+  await expect(
+    page.getByRole("button", { name: "Toggle theme" }),
+  ).toBeVisible();
 });
 
 test("admin login validates credentials", async ({ page }) => {

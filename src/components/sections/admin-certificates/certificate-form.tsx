@@ -2,7 +2,6 @@
 
 import { ArrowLeft, Award, Loader2, Save } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,6 @@ export function CertificateForm({
   isLoading: boolean;
   onSubmit: (data: CertificateCreateValues) => void;
 }) {
-  const router = useRouter();
   const slugTouched = useRef(mode === "edit");
   const tempIdRef = useRef(generateTempId());
 
@@ -95,7 +93,7 @@ export function CertificateForm({
     if (!slugTouched.current) {
       setValue("slug", slugify(titleValue), { shouldValidate: false });
     }
-  }, [titleValue, control]);
+  }, [titleValue, setValue]);
 
   const entityId = initialData?.id ?? tempIdRef.current;
 

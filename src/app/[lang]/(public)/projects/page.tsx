@@ -43,10 +43,7 @@ const getProjects = unstable_cache(
   { revalidate: 3600, tags: ["projects"] },
 );
 
-export default async function ProjectsPage({ params }: ProjectsPageProps) {
-  const resolvedParams = await params;
-  const locale = resolvedParams.lang as Locale;
-  const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
+export default async function ProjectsPage() {
   const projects = await getProjects();
 
   return <ProjectsPageContent projects={projects} />;

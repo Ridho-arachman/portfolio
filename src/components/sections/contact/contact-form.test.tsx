@@ -26,7 +26,7 @@ async function fillValidForm(user: ReturnType<typeof userEvent.setup>) {
 
 describe("ContactForm", () => {
   it("renders the form fields", () => {
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("ContactForm", () => {
 
   it("shows validation errors for an invalid submission", async () => {
     const user = userEvent.setup();
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     await user.click(screen.getByRole("button", { name: /send message/i }));
 
@@ -59,7 +59,7 @@ describe("ContactForm", () => {
 
   it("flags invalid email while valid fields pass", async () => {
     const user = userEvent.setup();
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     await user.type(screen.getByLabelText(/name/i), "Ridho Arachman");
     await user.type(screen.getByLabelText(/subject/i), "Project Inquiry");
@@ -85,7 +85,7 @@ describe("ContactForm", () => {
       ok: true,
       json: async () => ({ success: true }),
     });
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     await fillValidForm(user);
     await user.click(screen.getByRole("button", { name: /send message/i }));
@@ -94,7 +94,7 @@ describe("ContactForm", () => {
       await screen.findByText(/message sent successfully/i, {}, { timeout: 5000 }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/i'll get back to you soon/i),
+      screen.getByText(/i'll get back to you as soon as possible/i),
     ).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -113,13 +113,13 @@ describe("ContactForm", () => {
       status: 429,
       json: async () => ({ error: "RATE_LIMITED" }),
     });
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     await fillValidForm(user);
     await user.click(screen.getByRole("button", { name: /send message/i }));
 
     expect(
-      await screen.findByText(/terlalu banyak pesan dalam waktu singkat/i, {}, { timeout: 5000 }),
+      await screen.findByText(/too many messages in a short time/i, {}, { timeout: 5000 }),
     ).toBeInTheDocument();
   });
 
@@ -129,7 +129,7 @@ describe("ContactForm", () => {
       ok: true,
       json: async () => ({ success: true }),
     });
-    render(<ContactForm locale="en" />);
+    render(<ContactForm />);
 
     await fillValidForm(user);
     await user.click(screen.getByRole("button", { name: /send message/i }));

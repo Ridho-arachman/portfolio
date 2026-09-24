@@ -141,12 +141,6 @@ function mapExperience(items: AdminExperience[]): RecentItem[] {
 }
 
 export function AdminDashboard() {
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
   const prefersReducedMotion = useReducedMotion();
 
   const { data: analytics, isLoading: analyticsLoading } =

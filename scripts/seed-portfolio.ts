@@ -21,7 +21,7 @@ async function main() {
     },
   });
 
-  const mobileCategory = await prisma.category.create({
+  await prisma.category.create({
     data: {
       name: "Mobile Development",
       slug: "mobile-dev",

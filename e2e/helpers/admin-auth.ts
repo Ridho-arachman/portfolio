@@ -25,10 +25,6 @@ export const E2E_USER = {
   name: "E2E User",
 };
 
-function randomIp() {
-  return `127.0.0.${Math.floor(Math.random() * 250) + 1}`;
-}
-
 // Pastikan user admin ada (via API sign-up untuk hash yang konsisten)
 export async function ensureAdminUser(request: APIRequestContext) {
   // Hapus user lama jika ada
@@ -36,6 +32,7 @@ export async function ensureAdminUser(request: APIRequestContext) {
 
   // Sign up via API untuk hash password yang konsisten dengan better-auth
   const response = await request.post(`${SERVER_ORIGIN}/api/auth/sign-up/email`, {
+    headers: { origin: SERVER_ORIGIN },
     data: {
       email: E2E_ADMIN.email,
       password: E2E_ADMIN.password,
@@ -65,6 +62,7 @@ export async function ensureRegularUser(request: APIRequestContext) {
 
   // Sign up via API untuk hash password yang konsisten dengan better-auth
   const response = await request.post(`${SERVER_ORIGIN}/api/auth/sign-up/email`, {
+    headers: { origin: SERVER_ORIGIN },
     data: {
       email: E2E_USER.email,
       password: E2E_USER.password,
@@ -96,16 +94,72 @@ export async function loginAsEmail(page: Page, email: string) {
     (url) =>
       !url.pathname.endsWith("/admin/login") ||
       url.searchParams.has("error"),
-    { timeout: 30_000 },
+    { waitUntil: "domcontentloaded", timeout: 90_000 },
   );
-  // Tunggu navigasi/redirect berikutnya selesai (network idle).
-  await page.waitForLoadState("networkidle", { timeout: 10_000 });
 }
 
 export async function cleanupE2EUsers() {
   await prisma.user.deleteMany({
     where: { email: { in: [E2E_ADMIN.email, E2E_USER.email] } },
   });
+}
+
+// Sign-up via API selalu membuat role USER, jadi naikkan ke ADMIN lewat DB
+// sebelum test yang butuh sesi admin.
+export async function promoteE2EAdmin() {
+  await prisma.user.updateMany({
+    where: { email: E2E_ADMIN.email },
+    data: { role: "ADMIN" },
+  });
+}
+
+// Seed user langsung ke DB memakai hash yang sama dengan better-auth
+// (@node-rs/argon2). Dipakai dari beforeAll yang tidak punya HTTP fixture.
+export async function seedE2EUsers() {
+  const { hash } = await import("@node-rs/argon2");
+
+  const accounts = await Promise.all(
+    [
+      { ...E2E_ADMIN, role: "ADMIN" as const },
+      { ...E2E_USER, role: "USER" as const },
+    ].map(async (account) => ({
+      user: {
+        email: account.email,
+        name: account.name,
+        emailVerified: false,
+        image: null,
+        role: account.role,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      password: await hash(account.password),
+    })),
+  );
+
+  for (const { user, password } of accounts) {
+    const record = await prisma.user.upsert({
+      where: { email: user.email },
+      create: user,
+      update: user,
+    });
+
+    await prisma.account.upsert({
+      where: {
+        providerId_accountId: {
+          providerId: "email-password",
+          accountId: record.email,
+        },
+      },
+      create: {
+        id: crypto.randomUUID(),
+        accountId: record.email,
+        providerId: "email-password",
+        userId: record.id,
+        password,
+      },
+      update: { password },
+    });
+  }
 }
 
 const SEED_VISITS = [

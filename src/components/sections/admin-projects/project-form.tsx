@@ -37,7 +37,6 @@ export function ProjectForm({
 }) {
   const router = useRouter();
   const slugTouched = useRef(mode === "edit");
-  const tempIdRef = useRef(generateTempId());
 
   const {
     register,

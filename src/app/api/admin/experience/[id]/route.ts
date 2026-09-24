@@ -1,6 +1,5 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { slugify } from "@/utils/slug";
 import { experienceUpdateSchema } from "@/schema/experience";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";

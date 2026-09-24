@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEFAULT_LOCALE, getLocaleFromPath, isValidLocale } from "./lib/i18n";
-import type { UserRole } from "@/types/domain";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -64,14 +63,8 @@ export async function proxy(request: NextRequest) {
 
 async function handleAdminAuth(request: NextRequest, response: NextResponse) {
   const pathname = request.nextUrl.pathname;
-
-  // Only check auth for admin routes
-  const isLoginPage =
-    pathname === `/${request.headers.get("x-current-locale")}/admin/login` ||
-    pathname === "/admin/login";
-  const isAdminRoute =
-    pathname.startsWith(`/${request.headers.get("x-current-locale")}/admin`) ||
-    pathname.startsWith("/admin");
+  const isLoginPage = pathname === "/admin/login";
+  const isAdminRoute = pathname.startsWith("/admin");
 
   if (!isAdminRoute) {
     return response;
@@ -84,10 +77,7 @@ async function handleAdminAuth(request: NextRequest, response: NextResponse) {
 
   // If user tries to access /admin but NOT logged in -> Redirect to /admin/login
   if (isAdminRoute && !isLoginPage && !session) {
-    const loginUrl = new URL(
-      `/${request.headers.get("x-current-locale")}/admin/login`,
-      request.url,
-    );
+    const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
@@ -99,10 +89,7 @@ async function handleAdminAuth(request: NextRequest, response: NextResponse) {
     session &&
     session.user.role !== "ADMIN"
   ) {
-    const loginUrl = new URL(
-      `/${request.headers.get("x-current-locale")}/admin/login`,
-      request.url,
-    );
+    const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     loginUrl.searchParams.set("error", "forbidden");
     return NextResponse.redirect(loginUrl);
@@ -111,9 +98,7 @@ async function handleAdminAuth(request: NextRequest, response: NextResponse) {
   // If already logged in but tries to access /admin/login -> Redirect to /admin
   // Unless there's an error parameter (e.g., non-admin denied -> ?error=forbidden)
   if (isLoginPage && session && !request.nextUrl.searchParams.get("error")) {
-    return NextResponse.redirect(
-      new URL(`/${request.headers.get("x-current-locale")}/admin`, request.url),
-    );
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return response;

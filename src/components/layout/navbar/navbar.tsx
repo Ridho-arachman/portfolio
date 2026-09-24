@@ -1,20 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NavbarLogo } from "./navbar-logo";
 import { DesktopNav } from "./desktop-nav";
 import { NavCollapseClient } from "./nav-collapse-client";
 import { LanguageSwitcher } from "./language-switcher";
 import { CVDownload } from "./cv-download";
-import { useTranslation } from "@/hooks/use-translation";
-import { getLocaleFromPath, removeLocaleFromPath } from "@/lib/i18n";
 
 export function Navbar() {
-  const pathname = usePathname();
-  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -25,10 +19,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const pathLocale = getLocaleFromPath(pathname) || 'en';
-  const cleanPath = removeLocaleFromPath(pathname);
-  const isActiveContact = cleanPath === "/contact" || cleanPath.startsWith("/contact");
 
   return (
     <header

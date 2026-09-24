@@ -1,17 +1,12 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { useRef } from "react";
-import { REPLAY_VIEWPORT } from "./constants";
+import { Badge } from "@/components/ui/badge";
 import { ContactForm } from "./contact-form";
 import { ContactInfo } from "./contact-info";
 import { useTranslation } from "@/hooks/use-translation";
 
-interface ContactSectionProps {
-  locale: string;
-}
-
-export function ContactSection({ locale }: ContactSectionProps) {
+export function ContactSection() {
   const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -40,8 +35,8 @@ export function ContactSection({ locale }: ContactSectionProps) {
 
         {/* Contact Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          <ContactInfo locale={locale} />
-          <ContactForm locale={locale} />
+          <ContactInfo />
+          <ContactForm />
         </div>
       </div>
     </section>

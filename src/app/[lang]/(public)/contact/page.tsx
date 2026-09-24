@@ -28,10 +28,6 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
 
 export const dynamic = 'force-dynamic';
 
-export default async function ContactPage({ params }: ContactPageProps) {
-  const resolvedParams = await params;
-  const locale = resolvedParams.lang as Locale;
-  const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
-
-  return <ContactPageContent locale={validLocale} />;
+export default function ContactPage() {
+  return <ContactPageContent />;
 }

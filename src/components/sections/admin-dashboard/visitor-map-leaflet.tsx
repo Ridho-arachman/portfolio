@@ -169,7 +169,7 @@ export function VisitorMapLeaflet({
       ),
     );
     return points.length > 0 ? L.latLngBounds(points) : null;
-  }, [visibleCountries, selectedCode]);
+  }, [byCode, visibleCountries, selectedCode]);
 
   return (
     <div className="visitor-leaflet relative h-full w-full">

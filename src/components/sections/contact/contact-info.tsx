@@ -18,11 +18,7 @@ interface InfoItem {
   href?: string;
 }
 
-interface ContactInfoProps {
-  locale: string;
-}
-
-export function ContactInfo({ locale }: ContactInfoProps) {
+export function ContactInfo() {
   const { t } = useTranslation();
   const INFO_ITEMS: InfoItem[] = [
     {
