@@ -81,7 +81,7 @@
     "@types/react-dom": "^19",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^5.0.1",
     "babel-plugin-react-compiler": "1.0.0",
     "chrome-launcher": "^1.2.1",
     "critters": "^0.0.25",
@@ -94,7 +94,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.1"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
