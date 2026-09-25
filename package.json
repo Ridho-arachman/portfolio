@@ -29,7 +29,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "^1.8.0",
     "@node-rs/bcrypt": "^1.10.9",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.10.0",
