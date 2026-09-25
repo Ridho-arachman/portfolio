@@ -6,11 +6,23 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
+    ignore:
+      # eslint-plugin-react has no ESLint 10 release (latest peer stops at ^9.7),
+      # so `npm run lint` dies on 'react/display-name' (PR #37). Lift when it
+      # adds ^10 to its peer range.
+      - dependency-name: "eslint"
+        versions: [">=10.0.0"]
     groups:
       react:
         patterns:
           - "react"
           - "react-dom"
+      # @vitest/coverage-v8 pins an exact peer on vitest; splitting them makes
+      # `npm ci` fail with ERESOLVE (PR #34).
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/coverage-v8"
       dev-dependencies:
         dependency-type: "development"
         update-types:
