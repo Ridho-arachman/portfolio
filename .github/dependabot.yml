@@ -5,7 +5,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
+    # 0 = Dependabot proposes no version updates. The weekly run kept refilling
+    # open-pull-requests-limit slots from a backlog deeper than it looked, so
+    # merging never reached an empty queue. To resume updates, change 0 back to
+    # a number (5-10) — the ignore/groups rules below stay ready.
+    open-pull-requests-limit: 0
     ignore:
       # eslint-plugin-react has no ESLint 10 release (latest peer stops at ^9.7),
       # so `npm run lint` dies on 'react/display-name' (PR #37). Lift when it
@@ -37,7 +41,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     labels:
       - "dependencies"
       - "ci"
