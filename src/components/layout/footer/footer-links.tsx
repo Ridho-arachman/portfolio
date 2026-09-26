@@ -3,23 +3,14 @@
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
 import { getLocaleFromPath, removeLocaleFromPath, addLocaleToPath } from "@/lib/i18n";
+import { isQuickLinkKey, QUICK_LINK_PATHS } from "@/lib/quick-links";
 import { usePathname } from "next/navigation";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
 import { cn } from "@/lib/utils";
-
-const QUICK_LINK_KEYS = ['home', 'about', 'projects', 'experience', 'certificates', 'contact'] as const;
-type QuickLinkKey = (typeof QUICK_LINK_KEYS)[number];
-
-const QUICK_LINK_PATHS: Record<QuickLinkKey, string> = {
-  home: '/',
-  about: '/about',
-  projects: '/projects',
-  experience: '/experience',
-  certificates: '/certificates',
-  contact: '/contact',
-};
 
 export function FooterLinks() {
   const { t } = useTranslation();
+  const { quickLinks } = useSiteSettings();
   const pathname = usePathname();
   const pathLocale = getLocaleFromPath(pathname) || 'en';
   const cleanPath = removeLocaleFromPath(pathname);
@@ -37,11 +28,17 @@ export function FooterLinks() {
         {t.footer.quickLinks}
       </h3>
       <ul className="space-y-3">
-        {QUICK_LINK_KEYS.map((key, idx) => {
+        {/* `quickLinks` menentukan isi DAN urutan. Key yang tidak dikenal ikut
+            dilewati: isQuickLinkKey menolak key di luar enam nav key, filter
+            kedua menolak key yang belum punya label di katalog pesan. */}
+        {quickLinks
+          .filter(isQuickLinkKey)
+          .filter((key) => key in t.nav)
+          .map((key, idx) => {
           const path = QUICK_LINK_PATHS[key];
           const active = isActive(path);
           return (
-            <li key={path} className="animate-fade-in-up" style={{ animationDelay: `${200 + idx * 80}ms` }}>
+            <li key={key} className="animate-fade-in-up" style={{ animationDelay: `${200 + idx * 80}ms` }}>
               <Link
                 href={buildHref(path)}
                 aria-current={active ? "page" : undefined}
@@ -56,7 +53,7 @@ export function FooterLinks() {
                     active ? "bg-accent" : "bg-accent/0 group-hover:bg-accent",
                   )}
                 />
-                {t.nav[key as keyof typeof t.nav]}
+                {t.nav[key]}
               </Link>
             </li>
           );

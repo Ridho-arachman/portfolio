@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { SOCIAL_LINKS } from "./constants";
+import { resolveSocialLinks } from "./constants";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
 import { useTranslation } from "@/hooks/use-translation";
 
 const SOCIAL_LINK_CLASS =
@@ -12,13 +13,14 @@ const SOCIAL_LINK_CLASS =
 // Lighthouse target-size and keeps the footer socials WCAG-conformant.
 export function FooterSocial() {
   const { t } = useTranslation();
+  const links = resolveSocialLinks(useSiteSettings());
   return (
     <div className="animate-fade-in-up delay-200">
       <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
         {t.footer.connect}
       </h3>
       <div className="flex gap-3">
-        {SOCIAL_LINKS.map(({ href, icon: Icon, label }, index) => (
+        {links.map(({ href, icon: Icon, label }, index) => (
           <div
             key={label}
             className="animate-fade-in-up"

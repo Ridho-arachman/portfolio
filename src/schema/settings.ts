@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { DEFAULT_QUICK_LINK_KEYS } from "@/lib/settings";
+import { DEFAULT_QUICK_LINK_KEYS } from "@/lib/quick-links";
 
 export const profileSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -60,20 +60,13 @@ function required(label: string) {
 }
 
 /**
- * Kunci nav kanonik, disalin dari `DEFAULT_QUICK_LINK_KEYS` (@/lib/settings)
- * dan tidak diimpor sebagai nilai: modul ini ikut ter-bundle ke browser lewat
- * form admin, sementara `@/lib/settings` menarik `@/lib/prisma` ke client graph.
- * `satisfies` gagal build kalau ada key yang bukan key kanonik, dan
- * `form-schemas.test.ts` menjaga kedua arah sinkronisitasnya.
+ * Kunci nav kanonik diimpor sebagai nilai, bukan disalin: `@/lib/quick-links`
+ * bebas dari Prisma dan react-icons, jadi aman ikut ter-bundle ke browser lewat
+ * form admin. Jangan dikembalikan jadi salinan — `settings.test.ts` menjaga
+ * kedua arah sinkronisitasnya.
  */
-const quickLinkKeys = [
-  "home",
-  "about",
-  "projects",
-  "experience",
-  "certificates",
-  "contact",
-] as const satisfies readonly (typeof DEFAULT_QUICK_LINK_KEYS)[number][];
+const quickLinkKeys = DEFAULT_QUICK_LINK_KEYS;
+
 
 const profileUpdateSchema = z.object({
   fullName: required("Full name"),

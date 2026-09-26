@@ -1,14 +1,11 @@
 "use client";
 
-import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
+import { resolveSocialLinks } from "@/components/layout/footer/constants";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Clock, Mail, MapPin, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import {
-  CONTACT_EMAIL,
-  getContactLocation,
-  getContactResponseTime,
-} from "./constants";
+import { getContactResponseTime } from "./constants";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
 import { useTranslation } from "@/hooks/use-translation";
 
 interface InfoItem {
@@ -20,14 +17,17 @@ interface InfoItem {
 
 export function ContactInfo() {
   const { t } = useTranslation();
+  const settings = useSiteSettings();
+  const email = settings.contactEmail.trim();
+  const socials = resolveSocialLinks(settings);
   const INFO_ITEMS: InfoItem[] = [
     {
       icon: Mail,
       labelKey: "email",
-      value: CONTACT_EMAIL,
-      href: `mailto:${CONTACT_EMAIL}`,
+      value: email,
+      href: email ? `mailto:${email}` : undefined,
     },
-    { icon: MapPin, labelKey: "location", value: getContactLocation(t) },
+    { icon: MapPin, labelKey: "location", value: t.contact.location },
     {
       icon: Clock,
       labelKey: "responseTime",
@@ -69,12 +69,12 @@ export function ContactInfo() {
             {t.contact.social}
           </p>
           <div className="flex flex-wrap gap-3">
-            {SOCIAL_LINKS.map((social) => (
+            {socials.map((social) => (
               <Link
-                key={social.label}
+                key={social.key}
                 href={social.href}
-                target={social.href.startsWith("mailto:") ? undefined : "_blank"}
-                rel={social.href.startsWith("mailto:") ? undefined : "noreferrer"}
+                target={social.key === "email" ? undefined : "_blank"}
+                rel={social.key === "email" ? undefined : "noreferrer"}
                 aria-label={social.label}
                 className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >

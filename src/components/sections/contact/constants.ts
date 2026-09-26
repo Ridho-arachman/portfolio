@@ -1,12 +1,5 @@
 import type { Messages } from "@/lib/translation-types";
 
-export const CONTACT_EMAIL = "ridho@example.com";
-
-
-export function getContactLocation(t: Messages): string {
-  return t.contact.location;
-}
-
 export function getContactResponseTime(t: Messages): string {
   return t.contact.responseTimeValue;
 }

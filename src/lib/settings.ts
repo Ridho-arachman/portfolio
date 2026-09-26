@@ -10,20 +10,14 @@ import { unstable_cache } from "next/cache";
 
 import type { SiteSettings as SiteSettingsModel } from "@/generated/prisma/client";
 import { getClientEnv } from "@/lib/env";
+import { DEFAULT_QUICK_LINK_KEYS } from "@/lib/quick-links";
 import prisma from "@/lib/prisma";
 
 /** Id baris singleton; kolom `id` di Prisma sudah di-default ke string ini. */
 export const SITE_SETTINGS_ID = "singleton";
 
-/** Kunci nav kanonik. Akan dikonsolidasikan ke src/lib/quick-links.ts. */
-export const DEFAULT_QUICK_LINK_KEYS = [
-  "home",
-  "about",
-  "projects",
-  "experience",
-  "certificates",
-  "contact",
-] as const;
+// Re-export, bukan definisi: schema/server/test mengimpor dari modul ini.
+export { DEFAULT_QUICK_LINK_KEYS };
 
 /**
  * Hanya kolom nilai yang dipilih — SENGAJA tanpa `createdAt`/`updatedAt`.

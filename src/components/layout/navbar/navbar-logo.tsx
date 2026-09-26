@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
 import { useTranslation } from "@/hooks/use-translation";
 
 export function NavbarLogo() {
   const { t } = useTranslation();
+  const { siteName } = useSiteSettings();
   return (
     <div className="hover:scale-105 active:scale-95 transition-transform duration-200">
 <Link
@@ -16,7 +18,7 @@ export function NavbarLogo() {
             >
               <Image
                 src="/logo-optimized.webp"
-                alt="Ridho Arachman logo"
+                alt={`${siteName} logo`}
                 width={48}
                 height={48}
                 className="w-12 h-12 rounded-sm object-cover shadow-sm"
@@ -27,7 +29,7 @@ export function NavbarLogo() {
                 aria-hidden="true"
               />
               <span className="text-xl font-bold text-text-primary">
-                Ridho.dev
+                {siteName}
               </span>
             </Link>
     </div>
