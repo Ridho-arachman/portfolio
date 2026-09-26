@@ -1,9 +1,9 @@
 'use client';
 
 import { useParams, usePathname } from 'next/navigation';
-import { useMemo } from 'react';
 import { Locale, DEFAULT_LOCALE, isValidLocale, getLocaleFromPath } from '@/lib/i18n';
-import { getMessagesSync, type Messages } from '@/lib/translations-client';
+import type { Messages } from '@/lib/translation-types';
+import { useMessages } from '@/components/providers/public-content-provider';
 
 function getLocaleFromPathname(pathname: string): Locale {
   const locale = getLocaleFromPath(pathname);
@@ -21,7 +21,9 @@ export function useTranslation(): { t: Messages; locale: Locale } {
     ? paramsLocale
     : getLocaleFromPathname(pathname || '');
 
-  const t = useMemo(() => getMessagesSync(locale), [locale]);
+  // `t` berasal dari server (sudah dioverlay settings), jadi `locale` di atas
+  // hanya untuk namespace switcher — jangan pernah memfilter `t` berdasarnya.
+  const t = useMessages();
 
   return { t, locale };
 }

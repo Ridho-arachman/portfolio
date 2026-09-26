@@ -1,8 +1,20 @@
-import { render, screen } from "@testing-library/react";
+import { render as renderUi, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { AdminSkill } from "@/components/sections/admin-skills/constants";
+import { PublicContentProvider } from "@/components/providers/public-content-provider";
+import { testMessages, testSiteSettings } from "@/test-fixtures/public-content";
 import { SkillsSection } from "./skills-section";
+
+// SkillsSection memanggil useTranslation, jadi harus dirender di dalam provider
+// seperti di layout publik.
+function render(ui: React.ReactNode) {
+  return renderUi(
+    <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+      {ui}
+    </PublicContentProvider>,
+  );
+}
 
 const skillsMock = vi.hoisted(() => ({ value: [] as AdminSkill[] }));
 

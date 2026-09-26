@@ -1,7 +1,19 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render as renderUi, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContactForm } from "./contact-form";
+import { PublicContentProvider } from "@/components/providers/public-content-provider";
+import { testMessages, testSiteSettings } from "@/test-fixtures/public-content";
+
+// ContactForm memanggil useTranslation, jadi harus dirender di dalam provider
+// seperti di layout publik.
+function render(ui: React.ReactNode) {
+  return renderUi(
+    <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+      {ui}
+    </PublicContentProvider>,
+  );
+}
 
 const fetchMock = vi.fn();
 
