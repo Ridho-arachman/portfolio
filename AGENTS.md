@@ -6,12 +6,12 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
 
 ## 1. Project Context & Environment
 
-- **Environment:** Windows + Nginx + Node.js (dev lokal 24, CI 20) + Supabase (PostgreSQL).
+- **Environment:** Windows + Nginx + Node.js 24 (dev dan CI) + Supabase (PostgreSQL).
 - **Project Type:** Web Application — Next.js 16 / React 19 / TypeScript 5 / Tailwind CSS 4.
   - Data & auth: Prisma 7 (PostgreSQL via `@prisma/adapter-pg`) + better-auth + nuqs + axios + @tanstack/react-query + @tanstack/react-table + use-debounce + react-hook-form + zod.
   - UI: shadcn/ui + @base-ui/react, motion, lucide-react, react-icons, recharts, zustand, next-themes, class-variance-authority, clsx, tailwind-merge.
   - Map: leaflet + react-leaflet + topojson-client + world-atlas.
-  - Infra: Docker (dev/prod) + Nginx + ngrok; deploy via GitHub Actions → VPS.
+  - Infra: deploy ke **Vercel** lewat Vercel Git integration (otomatis saat push ke `main`). Docker (dev/prod) + Nginx + ngrok tersedia untuk workflow lokal/container, **tapi tidak ada job deploy VPS di `.github/workflows/ci.yml`** — jangan menulis docs yang mengesatkan.
 - `src/generated/prisma` adalah hasil generate Prisma — jangan diedit manual.
 - `.env*` di-gitignore; `DATABASE_URL` dll cukup di `.env` / secrets CI, tidak pernah di kode.
 
@@ -38,7 +38,9 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
 2. **Auto Push:** Setelah komit berhasil, user sudah menyetujui hasil review, dan dipastikan bebas error, kamu **WAJIB** menjalankan perintah:
    `git push origin main`
 
-   > ⚠️ **Catatan Penting:** Perintah `git push` ini adalah pemicu (_trigger_) otomatis untuk pipeline CI/CD (GitHub Actions) agar perubahan ter-deploy langsung ke VPS.
+   > ⚠️ **Catatan Penting:** `git push origin main` memicu dua hal: (a) pipeline `.github/workflows/ci.yml` (3 job test — Lint/Typecheck/Build/Unit&Docker, Integration, E2E), dan (b) deploy ke Vercel lewat Vercel Git integration. Tidak ada deploy ke VPS.
+   >
+   > **Penting — schema database:** tidak ada step otomatis yang menerapkan migrasi Prisma. `vercel.json` hanya menjalankan `prisma generate`, dan `ci.yml` hanya `db push` ke database test. Jadi setelah mengubah `prisma/schema.prisma`, kamu **wajib** menjalankan `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script -o prisma/migrations/<timestamp>_<nama>/migration.sql` lalu `npx prisma migrate deploy` terhadap database production. (`migrate dev` tidak bisa dipakai: `DATABASE_URL` production menunjuk ke Supabase pooler, yang tidak mendukung shadow database.)
 
 ---
 

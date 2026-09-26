@@ -31,7 +31,7 @@ A full-stack developer portfolio built with Next.js 16, featuring an admin dashb
 | HTTP | Axios |
 | Testing | [Vitest](https://vitest.dev) 5 (unit + integration) + [Playwright](https://playwright.dev) 1.63 (E2E) |
 | Quality | ESLint 9, Lighthouse 13, commitlint + Husky |
-| Deployment | Vercel (app) + Docker/Nginx (VPS), both via GitHub Actions |
+| Deployment | Vercel via Git integration, plus Docker/Nginx for local and container workflows |
 
 ## Features
 
@@ -184,7 +184,7 @@ To resume, change that `0` to a number (5–10). These rules stay in place and a
 
 ## Deployment
 
-The app deploys to two targets, both driven by GitHub Actions.
+The app deploys to Vercel. GitHub Actions runs the test pipeline; it does **not** deploy anything.
 
 ### Vercel — the hosted app
 
@@ -194,11 +194,23 @@ The app deploys to two targets, both driven by GitHub Actions.
 - **Preview:** one per pull request; requires the three Preview-scoped variables listed above
 - `.vercel/project.json` links a local checkout to the project
 
-### VPS — Docker + Nginx
+### Database migrations are manual
 
-Once CI is green, the workflow builds the Docker image and deploys over SSH. Configuration lives in `docker/`: `Dockerfile.dev` / `docker-compose.dev.yml`, `Dockerfile.prod` / `docker-compose.prod.yml`, `docker-compose.test.yml`, and `nginx.conf`.
+Nothing applies Prisma migrations for you. The Vercel build only runs `prisma generate`, and CI only runs `prisma db push` against a throwaway test database. So after editing `prisma/schema.prisma` you must apply it yourself:
 
-> ⚠️ Pushing to `main` triggers CI/CD. Do not push with failing checks.
+```bash
+npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma \
+  --script -o prisma/migrations/$(date +%Y%m%d%H%M%S)_<name>/migration.sql
+npx prisma migrate deploy
+```
+
+`prisma migrate dev` is not an option here: `DATABASE_URL` points at the Supabase **pooler**, which cannot host the shadow database that `migrate dev` needs.
+
+> ⚠️ Pushing to `main` runs the CI test pipeline and triggers the Vercel deploy. Do not push with failing checks.
+
+### Docker + Nginx (local / self-hosted only)
+
+`docker/` contains `Dockerfile.dev` / `docker-compose.dev.yml`, `Dockerfile.prod` / `docker-compose.prod.yml`, `docker-compose.test.yml`, and `nginx.conf`. Run these with the `npm run docker:*` scripts. There is **no automated VPS deploy** — no deploy job exists in `.github/workflows/ci.yml`.
 
 ## Commit Conventions
 
