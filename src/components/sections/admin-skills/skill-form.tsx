@@ -97,7 +97,7 @@ export function SkillForm({
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           noValidate
-          className="mx-auto max-w-3xl space-y-6"
+          className="space-y-6"
         >
           <section className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl">
             <div className="space-y-5 p-5 sm:p-6">
