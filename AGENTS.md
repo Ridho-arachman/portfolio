@@ -47,6 +47,14 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
    > Build Vercel hanya menjalankan `prisma generate`; `ci.yml` hanya `db push` ke database test. **Jangan pernah** menambah `prisma migrate deploy` ke `vercel.json` — sudah dicoba dan build-nya **hang** tanpa batas: `DATABASE_URL` production menunjuk ke PgBouncer pooler, sedangkan `migrate deploy` butuh koneksi direct untuk mengambil advisory lock. Akibatnya deploy production berhenti. Terapkan migrasi dari mesin yang bisa mengakses database secara langsung.
    >
    > `npx prisma migrate dev` juga tidak bisa dipakai: pooler yang sama tidak mendukung shadow database.
+   >
+   > 🚨 **URUTAN WAJIB — migrasi dulu, baru push.** Ini sudah menyebabkan seluruh situs balas 500 di production:
+   > 1. `npx prisma migrate diff ... -o prisma/migrations/<timestamp>_<nama>/migration.sql`
+   > 2. `npx prisma generate`
+   > 3. **`npx prisma migrate deploy`** ← harus SUDAH selesai **sebelum** `git push`
+   > 4. baru `git push origin main`
+   >
+   > Kenapa urutannya penting: build Vercel menjalankan `prisma generate`, dan client yang di-generate akan **memilih kolom baru itu** pada setiap `findMany` yang tidak menyebut `select`. Kalau kamu push sebelum `migrate deploy`, production langsung `The column "X" does not exist in the current database` (P2022) dan **seluruh route publik balas 500** — bukan hanya halaman yang fitur barunya. Jadi migrate dulu, baru push. Kalau sudah terlanjur push, jalankan `migrate deploy` segera; deploy berikutnya akan-Off dengan sendirinya.
 
 ---
 
