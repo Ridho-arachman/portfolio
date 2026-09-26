@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
+import { heroScrollProgress } from "./hero-scroll-progress";
+
 export function useAboutHeroAnimations() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -18,8 +20,7 @@ export function useAboutHeroAnimations() {
       if (!section) return;
       const rect = section.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-      const progress = 1 - Math.max(0, Math.min(1, (rect.bottom - viewportHeight) / (rect.height + viewportHeight)));
-      setScrollYProgress(progress);
+      setScrollYProgress(heroScrollProgress(rect.bottom, rect.height, viewportHeight));
     };
 
     const handleMouseMove = (e: MouseEvent) => {

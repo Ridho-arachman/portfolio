@@ -37,6 +37,7 @@ const getProjects = unstable_cache(
     return prisma.project.findMany({
       where: { isPublished: true },
       orderBy: { order: "asc" },
+      include: { category: true },
     });
   },
   ["public-projects"],

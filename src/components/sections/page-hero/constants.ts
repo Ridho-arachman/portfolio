@@ -23,8 +23,9 @@ export interface PageHeroProps {
   badge: string;
   /** Kata pertama judul (plain). */
   title: string;
-  /** Kata kedua judul — bergradasi + glow, mengikuti bahasa visual About. */
-  titleAccent: string;
+  /** Kata kedua judul — bergradasi + glow, mengikuti bahasa visual About.
+   * Opsional: jika kosong, span aksen (dan glow-nya) tidak dirender sama sekali. */
+  titleAccent?: string;
   /** Kalimat subjudul di bawah judul. */
   description: string;
   /** Nama set ikon mengapung (dipetakan di sisi client). */

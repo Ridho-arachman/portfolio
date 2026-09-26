@@ -3,7 +3,7 @@
 import { AboutAvatar } from "./about-avatar";
 import { AboutBackground } from "./about-background";
 import { AboutContent } from "./about-content";
-import { AboutMarquee } from "./about-marquee";
+import { SkillsSection } from "./skills-section";
 
 
 export function AboutSection() {
@@ -18,8 +18,7 @@ export function AboutSection() {
           <AboutContent />
         </div>
 
-        {/* Tech Stack Marquee */}
-        <AboutMarquee />
+        <SkillsSection />
       </div>
     </section>
   );

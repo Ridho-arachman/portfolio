@@ -77,7 +77,7 @@ export default async function Home({ params }: HomePageProps) {
         title: c.title,
         issuer: c.issuer,
         credentialId: c.credentialId ?? undefined,
-        issueDate: c.issueDate.toISOString(),
+        issueDate: new Date(c.issueDate).toISOString(),
         period: (() => { const issued = `${messages.certificates.issuedOn} ${monthYear.format(new Date(c.issueDate))}`; if (!c.expiryDate) return issued; return `${issued} · ${messages.certificates.expiresOn} ${monthYear.format(new Date(c.expiryDate))}`; })(),
         thumbnail: c.thumbnail ?? "",
         gallery: c.gallery,

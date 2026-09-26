@@ -37,7 +37,7 @@ export function ContactInfo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in-up delay-100">
       {INFO_ITEMS.map((item) => (
-        <GlassCard key={item.labelKey} variant="hover" className="p-6 animate-fade-in-up delay-200">
+        <GlassCard key={item.labelKey} variant="hover" className="p-6">
           <div className="relative z-10 flex items-start gap-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-muted border border-accent/30 text-accent">
               <item.icon className="w-5 h-5" />
@@ -63,7 +63,7 @@ export function ContactInfo() {
         </GlassCard>
       ))}
 
-      <GlassCard variant="hover" className="p-6 sm:col-span-2 animate-fade-in-up delay-300">
+      <GlassCard variant="hover" className="p-6 sm:col-span-2">
         <div className="relative z-10">
           <p className="text-xs font-semibold tracking-wider uppercase text-text-muted mb-4">
             {t.contact.social}

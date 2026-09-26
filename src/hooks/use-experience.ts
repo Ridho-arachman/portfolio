@@ -6,24 +6,6 @@ import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminExperience } from "@/components/sections/admin-experience/constants";
 import { type ExperienceCreateValues, type ExperienceUpdateValues } from "@/schema/experience";
 
-// Public hooks
-export function usePublicExperiences(params?: Partial<PaginationParams>) {
-  return useQuery<PaginatedResponse<AdminExperience>>({
-    queryKey: ["public-experiences", params],
-    queryFn: () => fetchPaginated<AdminExperience>("/public/experience", params),
-    staleTime: 10 * 60 * 1000,
-  });
-}
-
-export function usePublicExperience(slug: string) {
-  return useQuery<AdminExperience>({
-    queryKey: ["public-experience", slug],
-    queryFn: () => fetchOne(`/public/experience/${slug}`),
-    staleTime: 10 * 60 * 1000,
-    enabled: !!slug,
-  });
-}
-
 // Admin hooks
 export function useAdminExperiences(params?: Partial<PaginationParams>) {
   return useQuery<PaginatedResponse<AdminExperience>>({

@@ -33,5 +33,4 @@ export const SOCIAL_LINKS = [
   },
 ] as const;
 
-export type SocialLink = (typeof SOCIAL_LINKS)[number];
-export type QuickLink = (typeof QUICK_LINKS)[number];
+

@@ -23,24 +23,37 @@ export interface CertificateCardProps {
 
 export type CertificatesBackgroundProps = Record<string, never>;
 
-export const CERTIFICATES_VIEWPORT = {
-  once: false,
-  amount: 0.2,
-  margin: "0px 0px -100px 0px",
-} as const;
+
 
 export interface CertificatePeriodLabels {
   issued: string;
   expires: string;
 }
 
-export function formatMonthYear(date: Date, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric" }).format(date);
+export type DateLike = Date | string;
+
+type ToDateLike<T> = T extends Date
+  ? DateLike
+  : T extends null
+    ? null
+    : T;
+
+/**
+ * unstable_cache persists results as JSON, so a cache hit returns every Date
+ * column as an ISO string even though Prisma types them as Date. Both forms are
+ * valid, so anything crossing that boundary must be mapped through this type.
+ */
+export type Cached<T> = { [K in keyof T]: ToDateLike<T[K]> };
+
+export function formatMonthYear(date: DateLike, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric" }).format(
+    new Date(date),
+  );
 }
 
 function formatPeriod(
-  issueDate: Date,
-  expiryDate: Date | null,
+  issueDate: DateLike,
+  expiryDate: DateLike | null,
   locale: Locale,
   labels: CertificatePeriodLabels,
 ): string {
@@ -50,7 +63,7 @@ function formatPeriod(
 }
 
 export function mapCertificateToData(
-  cert: Certificate,
+  cert: Cached<Certificate>,
   locale: Locale,
   labels: CertificatePeriodLabels,
 ): CertificateListData {

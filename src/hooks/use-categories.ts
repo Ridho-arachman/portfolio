@@ -6,15 +6,6 @@ import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminCategory } from "@/components/sections/admin-categories/constants";
 import { type CategoryCreateValues, type CategoryUpdateValues } from "@/schema/category";
 
-// Public hooks
-export function usePublicCategories() {
-  return useQuery<AdminCategory[]>({
-    queryKey: ["public-categories"],
-    queryFn: () => fetchOne("/public/categories"),
-    staleTime: 10 * 60 * 1000,
-  });
-}
-
 // Admin hooks
 export function useAdminCategories(params?: Partial<PaginationParams>) {
   return useQuery<PaginatedResponse<AdminCategory>>({

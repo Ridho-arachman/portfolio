@@ -1,4 +1,5 @@
 import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
+import { MotionProvider } from "@/components/providers/motion-provider";
 import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata, Viewport } from "next";
@@ -120,7 +121,9 @@ export default async function RootLayout({
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
         <ThemeProvider disableTransitionOnChange>
-          <NuqsAdapterLoader>{children}</NuqsAdapterLoader>
+          <MotionProvider>
+            <NuqsAdapterLoader>{children}</NuqsAdapterLoader>
+          </MotionProvider>
           <ThemeToggleFloating />
         </ThemeProvider>
       </body>

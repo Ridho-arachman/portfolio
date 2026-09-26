@@ -71,14 +71,14 @@ export function PageHero({
 
       {/* Konten utama */}
       <div
-        className="relative z-10 container mx-auto px-4 text-center max-w-4xl animate-fade-in-up"
+        className="relative z-10 container mx-auto px-4 text-center max-w-4xl"
         style={{
           transform: `translateY(${scrollYProgress * -100}px) scale(${1 - scrollYProgress * 0.1})`,
           opacity: Math.max(0, 1 - scrollYProgress * 2),
         } as React.CSSProperties}
       >
-        <div className="animate-fade-in-up">
-          <div className="mb-6 animate-fade-in-up delay-100">
+        <div className="animate-rise-in">
+          <div className="mb-6 animate-rise-in delay-100">
             <Badge
               variant="outline"
               className="px-4 py-2 rounded-full border-accent/30 bg-accent-muted/50 text-accent text-xs font-semibold tracking-wider uppercase"
@@ -87,20 +87,25 @@ export function PageHero({
             </Badge>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9] animate-fade-in-up delay-200">
-            {title}{" "}
-            <span className="text-gradient-elegant inline-block relative">
-              {titleAccent}
-              <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
-            </span>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.9] animate-rise-in delay-200">
+            {title}
+            {titleAccent ? (
+              <>
+                {" "}
+                <span className="text-gradient-elegant inline-block relative">
+                  {titleAccent}
+                  <span className="absolute inset-0 blur-3xl bg-accent/20 -z-10 rounded-full scale-150" />
+                </span>
+              </>
+            ) : null}
           </h1>
 
-          <p className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-300">
+          <p className="text-lg md:text-2xl text-text-secondary max-w-2xl mx-auto leading-relaxed animate-rise-in delay-300">
             {description}
           </p>
 
           {/* Garis dekoratif */}
-          <div className="mt-12 mx-auto h-px w-24 bg-linear-to-r from-transparent via-accent/50 to-transparent animate-fade-in-up delay-400" />
+          <div className="mt-12 mx-auto h-px w-24 bg-linear-to-r from-transparent via-accent/50 to-transparent animate-rise-in delay-400" />
         </div>
       </div>
     </section>

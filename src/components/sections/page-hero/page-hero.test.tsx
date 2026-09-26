@@ -37,6 +37,14 @@ describe("PageHero", () => {
     ).toBeInTheDocument();
   });
 
+  it("omits the gradient accent span when titleAccent is empty", () => {
+    renderHero({ titleAccent: "" });
+
+    const heading = screen.getByRole("heading", { level: 1 });
+    expect(heading).toHaveTextContent("My");
+    expect(heading.querySelector(".text-gradient-elegant")).toBeNull();
+  });
+
   it("renders up to three floating icons when iconSet is provided", () => {
     const { container } = renderHero({ iconSet: "certificates" });
 

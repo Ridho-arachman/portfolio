@@ -96,6 +96,15 @@
     "heroTitleA": "About",
     "heroTitleAccent": "Me"
   },
+  "skills": {
+    "categories": {
+      "FRONTEND": "Frontend",
+      "BACKEND": "Backend",
+      "DATABASE": "Database",
+      "DEVOPS_TOOLS": "DevOps & Tools",
+      "SOFT_SKILL": "Soft Skill"
+    }
+  },
   "coreValues": {
     "title": "My Core Philosophy",
     "subtitle": "Principles that guide every line of code and design decision I make.",
@@ -121,6 +130,7 @@
     "noProjects": "No projects available yet",
     "filterAll": "All",
     "filterFeatured": "Featured",
+    "filterLabel": "Filter projects by category",
     "noProjectsDesc": "Projects will appear here once published.",
     "badge": "Selected Works",
     "headerDesc": "A glimpse into my recent work, showcasing scalable architecture and immersive user experiences.",

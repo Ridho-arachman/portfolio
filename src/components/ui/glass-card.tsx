@@ -17,6 +17,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
         whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        whileHover={prefersReducedMotion || variant !== "hover" ? undefined : { y: -8 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
         className={cn(
@@ -28,9 +29,11 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           // Variant: default
           variant === "default" && "shadow-lg",
 
-          // Variant: hover - lift effect
+          // Variant: hover - lift effect (transform is owned by whileHover,
+          // a CSS hover:translate here would lose to framer-motion's inline
+          // transform and never apply)
           variant === "hover" && [
-            "hover:-translate-y-2 hover:shadow-2xl",
+            "hover:shadow-2xl",
             "hover:border-accent/40 hover:bg-glass-hover",
           ],
 

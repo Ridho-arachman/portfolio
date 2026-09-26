@@ -486,8 +486,23 @@
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
-  opacity: 0;
+  animation: fade-in-up 0.8s ease-out backwards;
+}
+
+/* Rise-only reveal: animates transform but never opacity, so the element is
+   painted on the first frame and stays eligible as an LCP candidate. Use this
+   for hero headings and lede text; keep .animate-fade-in-up for everything else. */
+@keyframes rise-in {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 0.8s ease-out backwards;
 }
 
 /* Slow ambient float (transform + opacity only, GPU-friendly) */

@@ -6,24 +6,6 @@ import type { PaginatedResponse, PaginationParams } from "@/types/api";
 import type { AdminCertificate } from "@/components/sections/admin-certificates/constants";
 import { type CertificateCreateValues, type CertificateUpdateValues } from "@/schema/certificate";
 
-// Public hooks
-export function usePublicCertificates(params?: Partial<PaginationParams>) {
-  return useQuery<PaginatedResponse<AdminCertificate>>({
-    queryKey: ["public-certificates", params],
-    queryFn: () => fetchPaginated<AdminCertificate>("/public/certificates", params),
-    staleTime: 10 * 60 * 1000,
-  });
-}
-
-export function usePublicCertificate(slug: string) {
-  return useQuery<AdminCertificate>({
-    queryKey: ["public-certificate", slug],
-    queryFn: () => fetchOne(`/public/certificates/${slug}`),
-    staleTime: 10 * 60 * 1000,
-    enabled: !!slug,
-  });
-}
-
 // Admin hooks
 export function useAdminCertificates(params?: Partial<PaginationParams>) {
   return useQuery<PaginatedResponse<AdminCertificate>>({

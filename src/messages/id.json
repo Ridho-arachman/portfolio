@@ -96,6 +96,15 @@
     "heroTitleA": "Tentang",
     "heroTitleAccent": "Saya"
   },
+  "skills": {
+    "categories": {
+      "FRONTEND": "Frontend",
+      "BACKEND": "Backend",
+      "DATABASE": "Basis Data",
+      "DEVOPS_TOOLS": "DevOps & Alat",
+      "SOFT_SKILL": "Soft Skill"
+    }
+  },
   "coreValues": {
     "title": "Filosofi Inti Saya",
     "subtitle": "Prinsip yang memandu setiap baris kode dan keputusan desain yang saya buat.",
@@ -121,6 +130,7 @@
     "noProjects": "Belum ada proyek tersedia",
     "filterAll": "Semua",
     "filterFeatured": "Unggulan",
+    "filterLabel": "Filter proyek berdasarkan kategori",
     "noProjectsDesc": "Proyek akan muncul di sini setelah dipublikasikan.",
     "badge": "Karya Pilihan",
     "headerDesc": "Sekilas karya terbaru saya, menampilkan arsitektur scalable dan pengalaman pengguna yang imersif.",
