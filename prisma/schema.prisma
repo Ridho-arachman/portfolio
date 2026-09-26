@@ -75,8 +75,8 @@ model Verification {
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   user       User?    @relation(fields: [userId], references: [id])
   userId     String?
 
@@ -85,8 +85,8 @@ model Verification {
 }
 
 model RateLimit {
-  id          String  @id @default(cuid())
-  key         String  @unique
+  id          String @id @default(cuid())
+  key         String @unique
   count       Int
   lastRequest BigInt
 
@@ -122,11 +122,11 @@ model Project {
   repoUrl      String? // Link GitHub (opsional)
   technologies String[] // Array of strings: ["Next.js", "Tailwind", "Prisma"]
   gallery      String[] // Array of image URLs untuk gallery detail
-  role         String?  // e.g., "Frontend Developer"
-  year         String?  // e.g., "2024"
+  role         String? // e.g., "Frontend Developer"
+  year         String? // e.g., "2024"
   highlights   String[] // Bullet points pencapaian
-  isPublished  Boolean  @default(true)
-  order        Int      @default(0) // Untuk sorting manual di admin
+  isPublished  Boolean   @default(true)
+  order        Int       @default(0) // Untuk sorting manual di admin
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt    DateTime  @default(now())
@@ -205,15 +205,15 @@ model Experience {
 
 model Visit {
   id          String   @id @default(cuid())
-  path        String   // Page path: "/", "/projects", "/projects/my-project"
-  country     String   // Resolved country name
-  countryCode String   // ISO code: "id", "us", "gb"
-  region      String   // Geographic region: "Southeast Asia", "Europe"
-  city        String?  // Resolved city name (nullable)
-  lat         Float?   // Latitude
-  lng         Float?   // Longitude
-  userAgent   String?  // Browser/OS info
-  sessionId   String?  // Anonymous session ID for unique visitor tracking
+  path        String // Page path: "/", "/projects", "/projects/my-project"
+  country     String // Resolved country name
+  countryCode String // ISO code: "id", "us", "gb"
+  region      String // Geographic region: "Southeast Asia", "Europe"
+  city        String? // Resolved city name (nullable)
+  lat         Float? // Latitude
+  lng         Float? // Longitude
+  userAgent   String? // Browser/OS info
+  sessionId   String? // Anonymous session ID for unique visitor tracking
   createdAt   DateTime @default(now())
 
   @@index([createdAt(sort: Desc)])
@@ -228,8 +228,8 @@ model Visit {
 // =============================================================================
 
 model Certificate {
-  id            String   @id @default(cuid())
-  slug          String   @unique // URL friendly: /certificates/aws-cloud-practitioner
+  id            String    @id @default(cuid())
+  slug          String    @unique // URL friendly: /certificates/aws-cloud-practitioner
   title         String // e.g., "AWS Certified Cloud Practitioner"
   issuer        String // e.g., "Amazon Web Services"
   logoUrl       String? // URL logo issuer (opsional)
@@ -241,15 +241,59 @@ model Certificate {
   expiryDate    DateTime? // Nullable = berlaku seumur hidup / no expiration
   skills        String[] // Skill yang tervalidasi: ["Cloud", "AWS"]
   summary       String[] // Bullet points pencapaian / detail sertifikat
-  order         Int      @default(0) // Untuk sorting manual di Admin Dashboard
-  isPublished   Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  order         Int       @default(0) // Untuk sorting manual di Admin Dashboard
+  isPublished   Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([slug])
   @@index([isPublished])
   @@index([order])
   @@map("certificate")
+}
+
+// =============================================================================
+// 7. SITE SETTINGS & TRANSLATIONS
+// =============================================================================
+//
+
+// Setiap kolom nullable berarti "belum di-override admin": resolver di
+// src/lib/settings.ts memakai nilai dari env (NEXT_PUBLIC_*) sebagai fallback,
+// jadi baris yang kosongpun tetap menampilkan situs yang utuh.
+model SiteSettings {
+  id              String   @id @default("singleton") // DB-enforced singleton: insert kedua -> P2002
+  // Profile
+  fullName        String? // Nama author, override NEXT_PUBLIC_AUTHOR_NAME
+  jobTitle        String? // Jabatan, override NEXT_PUBLIC_AUTHOR_TITLE
+  bio             String? // Bio singkat, override NEXT_PUBLIC_AUTHOR_BIO
+  location        String? // Lokasi, override NEXT_PUBLIC_LOCATION
+  contactEmail    String? // Email publik, override NEXT_PUBLIC_CONTACT_EMAIL
+  // Social
+  githubUrl       String? // Override NEXT_PUBLIC_GITHUB_URL
+  linkedinUrl     String? // Override NEXT_PUBLIC_LINKEDIN_URL
+  twitterUrl      String? // Override NEXT_PUBLIC_TWITTER_URL
+  // Site
+  siteName        String? // Override NEXT_PUBLIC_SITE_NAME
+  tagline         String? // Override NEXT_PUBLIC_SITE_TAGLINE
+  siteUrl         String? // Override NEXT_PUBLIC_SITE_URL
+  siteDescription String? // Override NEXT_PUBLIC_SITE_DESCRIPTION
+  // Urutan subset dari 6 nav key kanonik (lihat src/lib/quick-links.ts)
+  quickLinks      String[] @default(["home", "about", "projects", "experience", "certificates", "contact"])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// values = patch partial di atas dokumen bundled (src/messages/*.json), dengan
+// key dotted ("hero.greeting"). Key yang tidak ada di en.json ditolak server.
+model Translation {
+  locale    String   @id // "en" | "id"
+  values    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("translation")
 }
 
 // =============================================================================
