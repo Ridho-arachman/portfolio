@@ -53,7 +53,7 @@
     "backHome": "Kembali ke Beranda"
   },
   "hero": {
-    "greeting": "Halo, saya Ridho Arachman",
+    "greeting": "Halo, saya {name}",
     "title": "Full Stack Developer",
     "typewriter": [
       "Software Engineer",

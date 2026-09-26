@@ -53,7 +53,7 @@
     "backHome": "Back to Home"
   },
   "hero": {
-    "greeting": "Hi, I'm Ridho Arachman",
+    "greeting": "Hi, I'm {name}",
     "title": "Full Stack Developer",
     "typewriter": [
       "Software Engineer",
