@@ -40,7 +40,12 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
 
    > ⚠️ **Catatan Penting:** `git push origin main` memicu dua hal: (a) pipeline `.github/workflows/ci.yml` (3 job test — Lint/Typecheck/Build/Unit&Docker, Integration, E2E), dan (b) deploy ke Vercel lewat Vercel Git integration. Tidak ada deploy ke VPS.
    >
-   > **Penting — schema database:** tidak ada step otomatis yang menerapkan migrasi Prisma. `vercel.json` hanya menjalankan `prisma generate`, dan `ci.yml` hanya `db push` ke database test. Jadi setelah mengubah `prisma/schema.prisma`, kamu **wajib** menjalankan `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script -o prisma/migrations/<timestamp>_<nama>/migration.sql` lalu `npx prisma migrate deploy` terhadap database production. (`migrate dev` tidak bisa dipakai: `DATABASE_URL` production menunjuk ke Supabase pooler, yang tidak mendukung shadow database.)
+   > **Penting — schema database:** setelah mengubah `prisma/schema.prisma`, kamu **wajib** membuat file migration dan commit itu:
+   > `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script -o prisma/migrations/<timestamp>_<nama>/migration.sql`
+   >
+   > Deploy ke production menjalankan `prisma migrate deploy` otomatis (`vercel.json`, hanya saat `VERCEL_ENV=production`). Preview build tidak pernah menyentuh database production. Kalau migrasi gagal, build production gagal — itu memang yang diinginkan.
+   >
+   > `npx prisma migrate dev` **tidak bisa dipakai** di repo ini: `DATABASE_URL` production menunjuk ke Supabase pooler, yang tidak mendukung shadow database. Selain itu, `prisma migrate deploy` harus dijalankan manual (`npx prisma migrate deploy`) bila kamu mau langsung menerapkan tanpa menunggu deploy.
 
 ---
 
