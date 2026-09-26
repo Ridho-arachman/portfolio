@@ -161,42 +161,53 @@ export function AdminDashboard() {
   const { data: certificatesData } = useAdminCertificates({ pageSize: 3 });
   const { data: experienceData } = useAdminExperiences({ pageSize: 3 });
 
-  const statCards = stats
-    ? [
-        {
-          icon: FolderKanban,
-          value: String(stats.projects),
-          label: "Total Projects",
-          delta: `${stats.projects} total`,
-          tone: "up" as const,
-        },
-        {
-          icon: Briefcase,
-          value: String(stats.experiences),
-          label: "Experience",
-          delta: `${stats.experiences} total`,
-          tone: "up" as const,
-        },
-        {
-          icon: Award,
-          value: String(stats.certificates),
-          label: "Certificates",
-          delta: `${stats.certificates} total`,
-          tone: "up" as const,
-        },
-        {
-          icon: MessageSquare,
-          value: String(stats.messages),
-          label: "Messages",
-          delta: `${stats.unreadMessages} unread`,
-          accent: true,
-        },
-      ]
-    : [];
+  const statCards = [
+    {
+      icon: FolderKanban,
+      value: String(stats?.projects ?? 0),
+      label: "Total Projects",
+      delta: `${stats?.projects ?? 0} total`,
+      tone: "up" as const,
+    },
+    {
+      icon: Briefcase,
+      value: String(stats?.experiences ?? 0),
+      label: "Experience",
+      delta: `${stats?.experiences ?? 0} total`,
+      tone: "up" as const,
+    },
+    {
+      icon: Award,
+      value: String(stats?.certificates ?? 0),
+      label: "Certificates",
+      delta: `${stats?.certificates ?? 0} total`,
+      tone: "up" as const,
+    },
+    {
+      icon: MessageSquare,
+      value: String(stats?.messages ?? 0),
+      label: "Messages",
+      delta: `${stats?.unreadMessages ?? 0} unread`,
+      accent: true,
+    },
+  ];
 
   return (
     <div className="flex flex-1 flex-col">
       <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+        <m.section
+          variants={staggerContainer}
+          initial={prefersReducedMotion ? undefined : "hidden"}
+          animate={prefersReducedMotion ? undefined : "visible"}
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        >
+          {statsLoading
+            ? Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
+            : statCards.map((stat) => (
+                <StatCard key={stat.label} stat={stat} />
+              ))}
+        </m.section>
+
         {analyticsLoading ? (
           <ChartSkeleton />
         ) : analytics ? (
@@ -206,20 +217,6 @@ export function AdminDashboard() {
             deltaLabel={analytics.deltaLabel}
           />
         ) : null}
-
-        <m.section
-          variants={staggerContainer}
-          initial={prefersReducedMotion ? undefined : "hidden"}
-          whileInView={prefersReducedMotion ? undefined : "visible"}
-          viewport={{ once: true, amount: 0.3 }}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
-        >
-          {statsLoading
-            ? Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
-            : statCards.map((stat) => (
-                <StatCard key={stat.label} stat={stat} />
-              ))}
-        </m.section>
 
         {analyticsLoading ? (
           <MapSkeleton />
