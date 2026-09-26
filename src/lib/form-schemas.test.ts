@@ -3,7 +3,12 @@ import { contactFormSchema } from "@/schema/contact";
 import { loginFormSchema } from "@/schema/login";
 import { certificateFormSchema } from "@/schema/certificate";
 import { experienceFormSchema } from "@/schema/experience";
-import { passwordSchema } from "@/schema/settings";
+import {
+  passwordSchema,
+  settingsResetSchema,
+  settingsUpdateSchema,
+  SETTINGS_SECTIONS,
+} from "@/schema/settings";
 
 describe("contactFormSchema", () => {
   const valid = {
@@ -204,3 +209,44 @@ describe("passwordSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("settingsUpdateSchema", () => {
+  it("accepts every canonical nav key in a subset, in any order", () => {
+    expect(
+      settingsUpdateSchema.safeParse({ quickLinks: ["contact", "home"] }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a nav key outside the canonical six", () => {
+    expect(settingsUpdateSchema.safeParse({ quickLinks: ["pricing"] }).success).toBe(false);
+  });
+
+  it("rejects a blank value so an empty field can never reach the DB", () => {
+    expect(settingsUpdateSchema.safeParse({ profile: { fullName: "   " } }).success).toBe(
+      false,
+    );
+  });
+
+  it("treats every group as optional so one section can be saved alone", () => {
+    expect(settingsUpdateSchema.safeParse({}).success).toBe(true);
+    expect(settingsUpdateSchema.safeParse({ socials: { githubUrl: "" } }).success).toBe(false);
+  });
+});
+
+describe("settingsResetSchema", () => {
+  it("defaults to resetting every section when section is omitted", () => {
+    expect(settingsResetSchema.parse(undefined)).toEqual({});
+    expect(settingsResetSchema.parse({})).toEqual({});
+  });
+
+  it("accepts each of the four sections", () => {
+    for (const section of SETTINGS_SECTIONS) {
+      expect(settingsResetSchema.parse({ section })).toEqual({ section });
+    }
+  });
+
+  it("rejects an unknown section", () => {
+    expect(settingsResetSchema.safeParse({ section: "security" }).success).toBe(false);
+  });
+});
+

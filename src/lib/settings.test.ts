@@ -13,6 +13,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import prisma from "@/lib/prisma";
+import { settingsUpdateSchema } from "@/schema/settings";
 import {
   DEFAULT_QUICK_LINK_KEYS,
   envSiteSettings,
@@ -125,6 +126,15 @@ describe("DEFAULT_QUICK_LINK_KEYS", () => {
       "certificates",
       "contact",
     ]);
+  });
+
+  // src/schema/settings.ts menyalin key ini, bukan mengimpornya: file itu ikut
+  // ter-bundle ke browser lewat form admin, sedangkan modul ini menarik Prisma
+  // ke client graph. Test inilah penjaga sinkronisitas salinannya.
+  it("matches the nav keys the admin API accepts", () => {
+    const accepted = settingsUpdateSchema.shape.quickLinks.unwrap().element.options;
+
+    expect([...accepted].sort()).toEqual([...DEFAULT_QUICK_LINK_KEYS].sort());
   });
 });
 
