@@ -194,20 +194,19 @@ The app deploys to Vercel. GitHub Actions runs the test pipeline; it does **not*
 - **Preview:** one per pull request; requires the three Preview-scoped variables listed above
 - `.vercel/project.json` links a local checkout to the project
 
-### Database migrations
+### Database migrations are manual
 
-Production builds apply pending migrations automatically. `vercel.json` runs `prisma migrate deploy` before `next build`, gated on `VERCEL_ENV=production` so preview builds never touch the live database. A failed migration fails the build rather than deploying an app whose schema does not match its code.
-
-To create a migration, generate the SQL and commit it:
+Nothing applies Prisma migrations for you. The Vercel build only runs `prisma generate`, and CI only runs `prisma db push` against a throwaway test database. After editing `prisma/schema.prisma`, generate the migration and apply it:
 
 ```bash
 npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma \
   --script -o prisma/migrations/$(date +%Y%m%d%H%M%S)_<name>/migration.sql
+npx prisma migrate deploy
 ```
 
-Commit the new `prisma/migrations/<name>/migration.sql`. It is applied on the next production deploy. To apply it immediately instead, run `npx prisma migrate deploy` yourself.
+`prisma migrate dev` is not usable here: `DATABASE_URL` points at the Supabase **pooler**, which cannot host the shadow database that `migrate dev` needs.
 
-`prisma migrate dev` is not usable here: `DATABASE_URL` points at the Supabase **pooler**, which cannot host the shadow database that `migrate dev` needs. CI runs `prisma db push` against a throwaway test database, so it verifies the schema compiles but not the migration chain.
+> ⚠️ Do **not** add `prisma migrate deploy` to the Vercel build command. It has been tried and it hangs: `DATABASE_URL` is a PgBouncer pooler, and `migrate deploy` needs a direct connection to take its advisory lock. The build sits in `Building` indefinitely and production deploys stop shipping. Apply migrations from a machine that can reach the database directly.
 
 > ⚠️ Pushing to `main` runs the CI test pipeline and triggers the Vercel deploy. Do not push with failing checks.
 
