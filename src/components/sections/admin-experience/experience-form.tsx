@@ -3,6 +3,7 @@
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useEntityId } from "@/hooks/use-entity-id";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,10 +25,6 @@ import {
   type ExperienceType,
 } from "./constants";
 
-function generateTempId(): string {
-  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
 export function ExperienceForm({
   mode,
   initialData,
@@ -40,7 +37,6 @@ export function ExperienceForm({
   isLoading?: boolean;
 }) {
   const slugTouched = useRef(mode === "edit");
-  const tempIdRef = useRef(generateTempId());
 
   const {
     register,
@@ -93,12 +89,12 @@ export function ExperienceForm({
     }
   }, [role, setValue]);
 
-  const entityId = initialData?.id ?? tempIdRef.current;
+  const entityId = useEntityId(initialData?.id);
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-6 max-w-3xl mx-auto"
+      className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8"
     >
       <div className="flex items-center justify-between gap-4">
         <Link

@@ -3,7 +3,8 @@
 import { ArrowLeft, FolderKanban, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useEntityId } from "@/hooks/use-entity-id";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +20,6 @@ import {
 } from "@/schema/project";
 import { ADMIN_PROJECTS, type AdminProject } from "./constants";
 import { slugify } from "@/utils/slug";
-
-function generateTempId(): string {
-  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 export function ProjectForm({
   mode,
@@ -85,10 +82,7 @@ export function ProjectForm({
     }
   }, [titleValue, setValue]);
 
-  const entityId = useMemo(
-    () => initialData?.id ?? generateTempId(),
-    [initialData?.id],
-  );
+  const entityId = useEntityId(initialData?.id);
 
   const handleFormSubmit = (values: ProjectFormValues) => {
     const payload = {
@@ -149,7 +143,7 @@ export function ProjectForm({
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           noValidate
-          className="mx-auto max-w-3xl space-y-6"
+          className="space-y-6"
         >
           <section className="overflow-hidden rounded-2xl border border-glass-border bg-glass-bg/80 backdrop-blur-xl">
             <div className="space-y-5 p-5 sm:p-6">
