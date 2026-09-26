@@ -1,6 +1,8 @@
 "use client";
 
-import { Info, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
+import { useAdminSettings } from "@/hooks/use-settings";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_SETTINGS } from "./constants";
 import { DangerZone } from "./danger-zone";
 import { PasswordForm } from "./password-form";
@@ -9,6 +11,11 @@ import { SiteForm } from "./site-form";
 import { SocialsForm } from "./socials-form";
 
 export function SettingsPage() {
+  // Form memetakan nilai efektif dari query ini. Sebelum query selesai, form akan
+  // tampil kosong — administrator bisa langsung menekan Save dan menimpa isi DB,
+  // jadi tunggu data dulu.
+  const { isPending } = useAdminSettings();
+
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-20 border-b border-glass-border bg-bg-primary/80 backdrop-blur-xl">
@@ -31,18 +38,21 @@ export function SettingsPage() {
 
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="mx-auto max-w-3xl space-y-6">
-          <div className="flex items-start gap-3 rounded-2xl border border-glass-border bg-glass-bg/80 px-4 py-3">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-            <p className="text-sm text-text-secondary">
-              {ADMIN_SETTINGS.mockNote}
-            </p>
-          </div>
-
-          <ProfileForm />
-          <SocialsForm />
-          <SiteForm />
-          <PasswordForm />
-          <DangerZone />
+          {isPending ? (
+            <div className="space-y-6" aria-busy="true">
+              <Skeleton className="h-64 w-full rounded-2xl" />
+              <Skeleton className="h-48 w-full rounded-2xl" />
+              <Skeleton className="h-72 w-full rounded-2xl" />
+            </div>
+          ) : (
+            <>
+              <ProfileForm />
+              <SocialsForm />
+              <SiteForm />
+              <PasswordForm />
+              <DangerZone />
+            </>
+          )}
         </div>
       </main>
     </div>

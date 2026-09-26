@@ -3,6 +3,7 @@ import { AdminSidebar } from "@/components/sections/admin-dashboard";
 import { AdminMobileSidebar } from "@/components/sections/admin-dashboard/admin-mobile-sidebar";
 import { AdminSidebarProvider } from "@/components/sections/admin-dashboard/admin-sidebar-context";
 import { AdminTopbarWrapper } from "@/components/sections/admin-dashboard/admin-topbar-wrapper";
+import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/lib/lazy-providers";
 
 export const metadata: Metadata = {
@@ -31,6 +32,9 @@ export default function AdminDashboardLayout({
             </div>
           </div>
       </Providers>
+      {/* Sonner hanya bisa nampil lewat <Toaster />; tanpa ini setiap
+          toast.success/toast.error di hook admin jadi Diam-diam hilang. */}
+      <Toaster richColors position="top-right" />
     </AdminSidebarProvider>
   );
 }

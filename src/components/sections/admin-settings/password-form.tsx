@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { zodResolver } from "@/lib/zod-resolver";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import {
   passwordSchema,
   type PasswordFormValues,
 } from "@/schema/settings";
+import { authClient } from "@/lib/auth-client";
 import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
 import { SettingsSection } from "./settings-section";
@@ -32,13 +34,30 @@ export function PasswordForm() {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: PasswordFormValues) => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    reset({ currentPassword: "", newPassword: "", confirmPassword: "" });
+
+    // `confirmPassword` hanya validasi client-side, jadi sengaja tidak dikirim:
+    // body better-auth hanya punya newPassword/currentPassword/revokeOtherSessions.
+    // `revokeOtherSessions: true` menghapus semua session lalu menerbitkan
+    // session baru untuk browser ini, jadi admin yang sedang login tetap masuk
+    // sementara token di device lain langsung invalid.
+    const { error } = await authClient.changePassword({
+      currentPassword: values.currentPassword,
+      newPassword: values.newPassword,
+      revokeOtherSessions: true,
+    });
+
     setIsSaving(false);
+
+    if (error) {
+      toast.error(error.message || ADMIN_SETTINGS.passwordError);
+      return;
+    }
+
+    reset({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    toast.success(ADMIN_SETTINGS.passwordSuccess);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -46,7 +65,7 @@ export function PasswordForm() {
       title={ADMIN_SETTINGS.securityTitle}
       subtitle={ADMIN_SETTINGS.securitySubtitle}
       footer={
-        <SaveButton isSaving={isSaving} saved={saved} />
+        <SaveButton formId="settings-password-form" isSaving={isSaving} saved={saved} />
       }
     >
       <form id="settings-password-form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -104,10 +123,6 @@ export function PasswordForm() {
               </p>
             )}
           </div>
-
-          <p className="text-xs text-text-muted sm:col-span-2">
-            {ADMIN_SETTINGS.passwordMockNote}
-          </p>
         </div>
       </form>
     </SettingsSection>

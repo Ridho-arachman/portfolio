@@ -1,47 +1,50 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  socialsSchema,
-  type SocialsFormValues,
-} from "@/schema/settings";
+import { socialsSchema, type SocialsFormValues } from "@/schema/settings";
+import { useAdminSettings, useUpdateSettings } from "@/hooks/use-settings";
+import type { SiteSettings } from "@/lib/settings";
 import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
-import { useSettingsStore } from "./settings-store";
 import { SettingsSection } from "./settings-section";
 
-export function SocialsForm() {
-  const socials = useSettingsStore((state) => state.settings.socials);
-  const updateSocials = useSettingsStore((state) => state.updateSocials);
+function toFormValues(settings: SiteSettings): SocialsFormValues {
+  return {
+    github: settings.githubUrl,
+    linkedin: settings.linkedinUrl,
+    x: settings.twitterUrl,
+    email: settings.contactEmail,
+  };
+}
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+export function SocialsForm() {
+  const { data: settings } = useAdminSettings();
+  const { mutate, isPending, isSuccess, isError } = useUpdateSettings();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<SocialsFormValues>({
     resolver: zodResolver(socialsSchema),
     mode: "onTouched",
-    defaultValues: socials,
+    values: settings ? toFormValues(settings) : undefined,
   });
 
   const onSubmit = (values: SocialsFormValues) => {
-    setIsSaving(true);
-    updateSocials({
-      github: values.github ?? "",
-      linkedin: values.linkedin ?? "",
-      x: values.x ?? "",
-      email: values.email ?? "",
+    mutate({
+      socials: {
+        githubUrl: values.github,
+        linkedinUrl: values.linkedin,
+        twitterUrl: values.x,
+      },
+      // `contactEmail` tinggal di grup `profile` (lihat profileUpdateSchema),
+      // jadi email form ini dikirim sebagai override kolom yang sama.
+      profile: { contactEmail: values.email },
     });
-    setIsSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -49,7 +52,11 @@ export function SocialsForm() {
       title={ADMIN_SETTINGS.socialsTitle}
       subtitle={ADMIN_SETTINGS.socialsSubtitle}
       footer={
-        <SaveButton isSaving={isSaving} saved={saved} />
+        <SaveButton
+          formId="settings-socials-form"
+          isSaving={isPending}
+          saved={isSuccess && !isDirty && !isError}
+        />
       }
     >
       <form id="settings-socials-form" onSubmit={handleSubmit(onSubmit)} noValidate>

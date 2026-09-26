@@ -13,6 +13,7 @@ export const Switch = forwardRef<
   return (
     <button
       ref={ref}
+      type="button"
       role="switch"
       aria-checked={checked}
       aria-disabled={disabled}

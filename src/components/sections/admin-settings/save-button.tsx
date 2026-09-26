@@ -7,13 +7,18 @@ import { ADMIN_SETTINGS } from "./constants";
 export function SaveButton({
   isSaving,
   saved,
+  formId,
 }: {
   isSaving: boolean;
   saved: boolean;
+  formId?: string;
 }) {
   return (
     <Button
       type="submit"
+      // Tombol ini dirender di footer `SettingsSection`, jadi berada di luar
+      // elemen <form>. Tanpa atribut `form` submit-nya tidak pernah terkirim.
+      form={formId}
       disabled={isSaving}
       className="rounded-full bg-accent font-semibold text-bg-primary hover:bg-accent-hover hover:shadow-[0_0_24px_rgba(167,139,250,0.4)]"
     >

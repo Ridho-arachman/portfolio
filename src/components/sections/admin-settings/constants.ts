@@ -1,59 +1,23 @@
-import { SOCIAL_LINKS } from "@/components/layout/footer/constants";
-import {
-  CONTACT_EMAIL,
-} from "@/components/sections/contact/constants";
+import { type QuickLinkKey } from "@/lib/quick-links";
+import { type SettingsSection } from "@/schema/settings";
 
-export interface AdminProfile {
-  fullName: string;
-  title: string;
-  email: string;
-  location: string;
-  bio: string;
-}
-
-export interface AdminSocials {
-  github: string;
-  linkedin: string;
-  x: string;
-  email: string;
-}
-
-export interface AdminSite {
-  siteName: string;
-  tagline: string;
-}
-
-export interface AdminSettings {
-  profile: AdminProfile;
-  socials: AdminSocials;
-  site: AdminSite;
-}
-
-function findSocial(label: string) {
-  return SOCIAL_LINKS.find((item) => item.label === label)?.href ?? "";
-}
-
-const SEED_EMAIL = findSocial("Email").replace(/^mailto:/, "") || CONTACT_EMAIL;
-
-export const SEED_SETTINGS: AdminSettings = {
-  profile: {
-    fullName: "Ridho Arachman",
-    title: "Web Developer",
-    email: SEED_EMAIL,
-    location: "Indonesia (Remote-ready)",
-    bio: "Recent Information Systems graduate with a deep passion for crafting immersive, high-performance, and user-centric web experiences.",
-  },
-  socials: {
-    github: findSocial("GitHub"),
-    linkedin: findSocial("LinkedIn"),
-    x: findSocial("X (Twitter)"),
-    email: SEED_EMAIL,
-  },
-  site: {
-    siteName: "Ridho.dev",
-    tagline: "Web3 Portfolio",
-  },
+/** Label nav cepat. Kuncinya tetap milik `@/lib/quick-links`. */
+export const QUICK_LINK_LABELS: Record<QuickLinkKey, string> = {
+  home: "Home",
+  about: "About",
+  projects: "Projects",
+  experience: "Experience",
+  certificates: "Certificates",
+  contact: "Contact",
 };
+
+/** Baris Danger Zone: satu per section yang bisa di-reset lewat API. */
+export const RESET_SECTIONS: { key: SettingsSection; label: string }[] = [
+  { key: "profile", label: "Profile" },
+  { key: "socials", label: "Social links" },
+  { key: "site", label: "Site" },
+  { key: "quickLinks", label: "Quick links" },
+];
 
 export const ADMIN_SETTINGS = {
   title: "Settings",
@@ -64,13 +28,20 @@ export const ADMIN_SETTINGS = {
   socialsSubtitle: "Links displayed in the footer and contact section.",
   siteTitle: "Site Settings",
   siteSubtitle: "Branding used across the site.",
+  quickLinksTitle: "Quick Links",
+  quickLinksSubtitle:
+    "Which nav items appear in the quick-links bar, in the order shown.",
+  quickLinkMoveUp: "Move {label} up",
+  quickLinkMoveDown: "Move {label} down",
   securityTitle: "Security",
-  securitySubtitle: "Update your admin password (mockup).",
+  securitySubtitle:
+    "Change your admin password. Other sessions are signed out afterwards.",
   dangerTitle: "Danger Zone",
-  dangerSubtitle: "Destructive actions that reset mockup data.",
+  dangerSubtitle:
+    "Reset stored overrides. Values fall back to their NEXT_PUBLIC_* environment defaults, not deleted.",
   saveLabel: "Save Changes",
   savingLabel: "Saving...",
-  savedLabel: "Saved <Check className='w-4 h-4 inline' />",
+  savedLabel: "Saved",
   fieldFullName: "Full Name",
   fieldTitle: "Title / Role",
   fieldEmail: "Email",
@@ -86,11 +57,15 @@ export const ADMIN_SETTINGS = {
   fieldCurrentPassword: "Current Password",
   fieldNewPassword: "New Password",
   fieldConfirmPassword: "Confirm New Password",
-  passwordMockNote:
-    "Mockup — password tidak benar-benar diubah, integrasi auth menyusul.",
+  resetSectionNote: "Back to the NEXT_PUBLIC_* environment default.",
   dangerNote:
-    "This resets profile, social links and site settings to the default seed data.",
+    "Resetting clears the stored overrides so those values come from the NEXT_PUBLIC_* environment variables again. The rows are kept, not deleted.",
   resetLabel: "Reset all settings",
   resetConfirmLabel: "Reset all?",
-  mockNote: "Mockup — data disimpan di localStorage, integrasi backend menyusul.",
+  resetSectionLabel: "Reset",
+  resetSectionConfirmLabel: "Reset?",
+  resetSectionAriaLabel: "Reset {label}",
+  resetSectionConfirmAriaLabel: "Confirm reset: {label}",
+  passwordSuccess: "Password updated. Other sessions have been signed out.",
+  passwordError: "Could not update the password.",
 } as const;

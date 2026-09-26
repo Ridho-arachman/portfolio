@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { Input } from "@/components/ui/input";
@@ -10,34 +9,55 @@ import {
   profileSchema,
   type ProfileFormValues,
 } from "@/schema/settings";
+import { useAdminSettings, useUpdateSettings } from "@/hooks/use-settings";
+import type { SiteSettings } from "@/lib/settings";
 import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
-import { useSettingsStore } from "./settings-store";
 import { SettingsSection } from "./settings-section";
 
-export function ProfileForm() {
-  const profile = useSettingsStore((state) => state.settings.profile);
-  const updateProfile = useSettingsStore((state) => state.updateProfile);
+/**
+ * Nama field form ("title", "email") berbeda dari nama kolom `site_settings`
+ * ("jobTitle", "contactEmail") yang jadi body PUT, jadi dipetakan di dua arah:
+ * form -> PUT di `onSubmit`, PUT -> form di sini.
+ */
+function toFormValues(settings: SiteSettings): ProfileFormValues {
+  return {
+    fullName: settings.fullName,
+    title: settings.jobTitle,
+    email: settings.contactEmail,
+    location: settings.location,
+    bio: settings.bio,
+  };
+}
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+export function ProfileForm() {
+  const { data: settings } = useAdminSettings();
+  const { mutate, isPending, isSuccess, isError } = useUpdateSettings();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     mode: "onTouched",
-    defaultValues: profile,
+    // `values`, bukan `defaultValues`: form harus ikut berubah saat query selesai
+    // dimuat dan setelah reset di Danger Zone. RHF hanya me-reset kalau nilainya
+    // benar-benar berubah, jadi refetch dengan data yang sama tidak menimpa
+    // ketikan yang belum di-save.
+    values: settings ? toFormValues(settings) : undefined,
   });
 
   const onSubmit = (values: ProfileFormValues) => {
-    setIsSaving(true);
-    updateProfile(values);
-    setIsSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    mutate({
+      profile: {
+        fullName: values.fullName,
+        jobTitle: values.title,
+        bio: values.bio,
+        location: values.location,
+        contactEmail: values.email,
+      },
+    });
   };
 
   return (
@@ -45,7 +65,11 @@ export function ProfileForm() {
       title={ADMIN_SETTINGS.profileTitle}
       subtitle={ADMIN_SETTINGS.profileSubtitle}
       footer={
-        <SaveButton isSaving={isSaving} saved={saved} />
+        <SaveButton
+          formId="settings-profile-form"
+          isSaving={isPending}
+          saved={isSuccess && !isDirty && !isError}
+        />
       }
     >
       <form id="settings-profile-form" onSubmit={handleSubmit(onSubmit)} noValidate>
