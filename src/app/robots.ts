@@ -1,9 +1,13 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
+import { getSiteSettings } from "@/lib/settings";
 
-export const dynamic = "force-static";
+// Sama seperti sitemap: `force-static` akan membekukan hostname saat build, jadi
+// perubahan domain di admin tidak akan pernah sampai ke robots.txt.
+export const dynamic = "force-dynamic";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const { siteUrl } = await getSiteSettings();
+
   return {
     rules: [
       {
@@ -12,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin"],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

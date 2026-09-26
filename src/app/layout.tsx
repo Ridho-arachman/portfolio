@@ -2,6 +2,7 @@ import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { getSiteSettings } from "@/lib/settings";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -22,57 +23,67 @@ const geistMono = Geist_Mono({
   fallback: ["JetBrains Mono", "Fira Code", "monospace"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://ridhoarachman.dev"),
-  title: {
-    default: "Ridho Arachman | Full Stack Developer",
-    template: "%s | Ridho Arachman",
-  },
-  description:
-    "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
-  keywords: [
-    "Full Stack Developer",
-    "React",
-    "Next.js",
-    "TypeScript",
-    "Information Systems",
-    "E-Business",
-    "Web Developer",
-    "Portfolio",
-  ],
-  authors: [{ name: "Ridho Arachman", url: "https://ridhoarachman.dev" }],
-  creator: "Ridho Arachman",
-  publisher: "Ridho Arachman",
-  robots: "index, follow",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://ridhoarachman.dev",
-    siteName: "Ridho Arachman | Portfolio",
-    title: "Ridho Arachman | Full Stack Developer",
-    description:
-      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Ridho Arachman - Portfolio",
-      },
+// `export const metadata` bersifat statis: ia dievaluasi saat build dan tidak
+// bisa `await`, jadi domain/title dari admin tidak akan pernah masuk ke tag
+// SEO. `generateMetadata` bisa-await, dan `getSiteSettings()` tidak pernah
+// melempar error (jatuh ke default env), jadi `next build` tetap aman saat DB mati.
+export async function generateMetadata(): Promise<Metadata> {
+  const { siteUrl, siteName, siteDescription, fullName, jobTitle, bio, twitterUrl } =
+    await getSiteSettings();
+
+  const title = `${fullName} | ${jobTitle}`;
+  const description = siteDescription || bio;
+  const twitterCreator = twitterUrl.split("/").filter(Boolean).pop();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: title,
+      template: `%s | ${fullName}`,
+    },
+    description,
+    keywords: [
+      "Full Stack Developer",
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Information Systems",
+      "E-Business",
+      "Web Developer",
+      "Portfolio",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Ridho Arachman | Full Stack Developer",
-    description:
-      "Information Systems graduate specializing in E-Business. Building immersive, high-performance web experiences with React, Next.js, TypeScript, and modern tech stacks.",
-    images: ["/og-image.png"],
-    creator: "@ridhoarachman",
-  },
-  verification: {
-    google: "google-site-verification-code",
-  },
-};
+    authors: [{ name: fullName, url: siteUrl }],
+    creator: fullName,
+    publisher: fullName,
+    robots: "index, follow",
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: siteUrl,
+      siteName,
+      title,
+      description,
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: `${fullName} - Portfolio`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png"],
+      creator: twitterCreator ? `@${twitterCreator}` : undefined,
+    },
+    verification: {
+      google: "google-site-verification-code",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

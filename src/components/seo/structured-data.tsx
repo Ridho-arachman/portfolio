@@ -1,28 +1,39 @@
 "use client";
 
-import { getClientEnv } from "@/lib/env";
-import Script from "next/script";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
 
 interface StructuredDataProps {
   type?: "Person" | "WebSite";
 }
 
+// Inline script, bukan `next/script`: `lazyOnload` menyuntik JSON-LD lewat
+// efek client saat `window.load`, jadi tag-nya tidak pernah ada di HTML awal
+// dan crawler yang cuma mengambil respons pertama tidak melihatnya sama sekali.
+// React tetap merender `<script dangerouslySetInnerHTML>` ini di HTML server
+// meski komponennya client, jadi structured data ikut masuk respons pertama.
+//
+// `<` di-escape ke `<` karena nilainya berasal dari settings yang bisa
+// diisi admin; tanpa itu nilai `</script>` bisa menutup tag dan membocorkan
+// markup.
+const escapeJsonLd = (schema: object) =>
+  JSON.stringify(schema).replace(/</g, "\\u003c");
+
 export function StructuredData({ type = "Person" }: StructuredDataProps) {
-  const env = getClientEnv();
+  const settings = useSiteSettings();
 
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: env.NEXT_PUBLIC_AUTHOR_NAME,
-    alternateName: "Ridho Arachman",
-    jobTitle: env.NEXT_PUBLIC_AUTHOR_TITLE,
-    description: env.NEXT_PUBLIC_AUTHOR_BIO,
-    url: env.NEXT_PUBLIC_SITE_URL,
-    image: `${env.NEXT_PUBLIC_SITE_URL}/avatar.png`,
+    name: settings.fullName,
+    alternateName: settings.siteName,
+    jobTitle: settings.jobTitle,
+    description: settings.bio,
+    url: settings.siteUrl,
+    image: `${settings.siteUrl}/avatar.png`,
     sameAs: [
-      env.NEXT_PUBLIC_GITHUB_URL,
-      env.NEXT_PUBLIC_LINKEDIN_URL,
-      env.NEXT_PUBLIC_TWITTER_URL,
+      settings.githubUrl,
+      settings.linkedinUrl,
+      settings.twitterUrl,
     ].filter(Boolean),
     knowsAbout: [
       "React",
@@ -50,23 +61,23 @@ export function StructuredData({ type = "Person" }: StructuredDataProps) {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: env.NEXT_PUBLIC_SITE_NAME,
-    alternateName: env.NEXT_PUBLIC_SITE_TAGLINE,
-    url: env.NEXT_PUBLIC_SITE_URL,
-    description: env.NEXT_PUBLIC_SITE_DESCRIPTION,
+    name: settings.siteName,
+    alternateName: settings.tagline,
+    url: settings.siteUrl,
+    description: settings.siteDescription,
     author: {
       "@type": "Person",
-      name: env.NEXT_PUBLIC_AUTHOR_NAME,
+      name: settings.fullName,
     },
     publisher: {
       "@type": "Person",
-      name: env.NEXT_PUBLIC_AUTHOR_NAME,
+      name: settings.fullName,
     },
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${env.NEXT_PUBLIC_SITE_URL}/search?q={search_term_string}`,
+        urlTemplate: `${settings.siteUrl}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -75,11 +86,10 @@ export function StructuredData({ type = "Person" }: StructuredDataProps) {
   const schema = type === "Person" ? personSchema : websiteSchema;
 
   return (
-    <Script
-      id="structured-data"
+    <script
+      id={`structured-data-${type.toLowerCase()}`}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      strategy="lazyOnload"
+      dangerouslySetInnerHTML={{ __html: escapeJsonLd(schema) }}
     />
   );
 }

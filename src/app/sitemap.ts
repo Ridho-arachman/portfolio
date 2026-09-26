@@ -1,10 +1,15 @@
 import type { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
-import { SITE_URL } from "@/lib/seo";
+import { getSiteSettings } from "@/lib/settings";
 
-export const dynamic = "force-static";
+// Optimasi static TIDAK tersedia di sini: `force-static` membekukan URL saat
+// build, jadi admin yang ganti domain di settings tidak akan pernah sampai ke
+// sitemap.xml sampai redeploy. `getSiteSettings` sudah `unstable_cache`, jadi
+// biayanya kecil (satu query per jam per tag).
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { siteUrl } = await getSiteSettings();
   const staticEntries: MetadataRoute.Sitemap = [
     "",
     "/about",
@@ -13,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/certificates",
     "/contact",
   ].map((path) => ({
-    url: `${SITE_URL}${path}`,
+    url: `${siteUrl}${path}`,
     lastModified: new Date(),
     changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.8,
@@ -38,19 +43,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       ...staticEntries,
       ...projects.map((p) => ({
-        url: `${SITE_URL}/projects/${p.slug}`,
+        url: `${siteUrl}/projects/${p.slug}`,
         lastModified: p.updatedAt,
         changeFrequency: "monthly" as const,
         priority: 0.7,
       })),
       ...experiences.map((e) => ({
-        url: `${SITE_URL}/experience/${e.slug}`,
+        url: `${siteUrl}/experience/${e.slug}`,
         lastModified: e.updatedAt,
         changeFrequency: "monthly" as const,
         priority: 0.6,
       })),
       ...certificates.map((c) => ({
-        url: `${SITE_URL}/certificates/${c.slug}`,
+        url: `${siteUrl}/certificates/${c.slug}`,
         lastModified: c.updatedAt,
         changeFrequency: "monthly" as const,
         priority: 0.6,
