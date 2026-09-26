@@ -98,17 +98,19 @@ model RateLimit {
 // =============================================================================
 
 model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique // e.g., "Web Development", "Mobile App"
-  slug        String   @unique // e.g., "web-dev"
+  id          String    @id @default(cuid())
+  name        String    @unique // e.g., "Web Development", "Mobile App"
+  slug        String    @unique // e.g., "web-dev"
   description String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   projects Project[]
 
   @@index([slug])
+  @@index([deletedAt])
   @@map("category")
 }
 
@@ -131,11 +133,13 @@ model Project {
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])
   @@index([isPublished])
   @@index([categoryId])
   @@index([order])
+  @@index([deletedAt])
   @@map("project")
 }
 
@@ -152,9 +156,14 @@ model Message {
   status    MessageStatus @default(NEW)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  deletedAt DateTime? // Soft delete: berbeda dari MessageStatus.ARCHIVED,
+  // itu status kerja ("sudah ditangani"), ini penghapusan dari inbox
 
   @@index([status])
   @@index([createdAt(sort: Desc)])
+  @@index([deletedAt])
+  // dashboard-stats memfilter status + deletedAt pada setiap load dashboard
+  @@index([status, deletedAt])
   @@map("message")
 }
 
@@ -167,9 +176,11 @@ model Skill {
   order       Int           @default(0)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([category])
   @@index([order])
+  @@index([deletedAt])
   @@map("skill")
 }
 
@@ -191,11 +202,13 @@ model Experience {
   order       Int            @default(0) // Untuk sorting manual di Admin Dashboard
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])
   @@index([type])
   @@index([order])
   @@index([isPublished])
+  @@index([deletedAt])
   @@map("experience")
 }
 
@@ -245,10 +258,12 @@ model Certificate {
   isPublished   Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])
   @@index([isPublished])
   @@index([order])
+  @@index([deletedAt])
   @@map("certificate")
 }
 
