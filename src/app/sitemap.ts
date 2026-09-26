@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { getSiteSettings } from "@/lib/settings";
 
 // Optimasi static TIDAK tersedia di sini: `force-static` membekukan URL saat
@@ -27,15 +28,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [projects, experiences, certificates] = await Promise.all([
       prisma.project.findMany({
-        where: { isPublished: true },
+        where: { isPublished: true, ...notDeleted },
         select: { slug: true, updatedAt: true },
       }),
       prisma.experience.findMany({
-        where: { isPublished: true },
+        where: { isPublished: true, ...notDeleted },
         select: { slug: true, updatedAt: true },
       }),
       prisma.certificate.findMany({
-        where: { isPublished: true },
+        where: { isPublished: true, ...notDeleted },
         select: { slug: true, updatedAt: true },
       }),
     ]);

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { categoryUpdateSchema } from "@/schema/category";
 import { requireAdminSession } from "@/lib/session";
@@ -15,7 +16,7 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const category = await prisma.category.findUnique({ where: { id } });
+    const category = await prisma.category.findUnique({ where: { id, ...notDeleted } });
 
     if (!category) {
       return errorResponse("Category not found", 404);
@@ -46,7 +47,7 @@ export async function PUT(
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const existing = await prisma.category.findUnique({ where: { id } });
+    const existing = await prisma.category.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Category not found", 404);
     }
@@ -86,7 +87,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.category.findUnique({ where: { id } });
+    const existing = await prisma.category.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Category not found", 404);
     }

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { requireAdminSession } from "@/lib/session";
 import {
   paginatedResponse,
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
       | "ARCHIVED"
       | null;
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { ...notDeleted };
 
     if (status) {
       where.status = status;

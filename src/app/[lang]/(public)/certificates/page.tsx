@@ -1,6 +1,7 @@
 import { CertificatesPageContent } from "./certificates-content";
 import { mapCertificateToData } from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
@@ -36,7 +37,7 @@ export const revalidate = 3600;
 const getCertificates = unstable_cache(
   async () => {
     return prisma.certificate.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       orderBy: { order: "asc" },
     });
   },

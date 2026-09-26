@@ -2,6 +2,7 @@ import { HomePageContent } from "./home-content";
 import { HeroSection } from "@/components/sections/hero";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
@@ -38,7 +39,7 @@ export const revalidate = 60;
 const getCertificates = unstable_cache(
   async () =>
     prisma.certificate.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       orderBy: { order: "asc" },
       take: 6,
     }),
@@ -49,7 +50,7 @@ const getCertificates = unstable_cache(
 const getProjects = unstable_cache(
   async () =>
     prisma.project.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       orderBy: { order: "asc" },
       take: 6,
     }),

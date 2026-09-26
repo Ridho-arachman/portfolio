@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { certificateUpdateSchema } from "@/schema/certificate";
 import { requireAdminSession } from "@/lib/session";
@@ -16,7 +17,7 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const certificate = await prisma.certificate.findUnique({ where: { id } });
+    const certificate = await prisma.certificate.findUnique({ where: { id, ...notDeleted } });
 
     if (!certificate) {
       return errorResponse("Certificate not found", 404);
@@ -47,7 +48,7 @@ export async function PUT(
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const existing = await prisma.certificate.findUnique({ where: { id } });
+    const existing = await prisma.certificate.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Certificate not found", 404);
     }
@@ -111,7 +112,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.certificate.findUnique({ where: { id } });
+    const existing = await prisma.certificate.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Certificate not found", 404);
     }

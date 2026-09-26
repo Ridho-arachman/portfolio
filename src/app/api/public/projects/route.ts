@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import {
   successResponse,
   paginatedResponse,
@@ -16,7 +17,7 @@ export async function GET(req: Request) {
     let categoryId: string | undefined;
     if (categorySlug) {
       const category = await prisma.category.findUnique({
-        where: { slug: categorySlug },
+        where: { slug: categorySlug, ...notDeleted },
         select: { id: true },
       });
       if (!category) {
@@ -33,6 +34,7 @@ export async function GET(req: Request) {
     const where = {
       isPublished: true,
       ...(categoryId ? { categoryId } : {}),
+      ...notDeleted,
     };
 
     const [data, total] = await Promise.all([

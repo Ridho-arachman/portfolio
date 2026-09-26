@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -16,9 +17,12 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const { page, pageSize, search, skip } = parsePagination(searchParams);
 
-    const where = search
-      ? { name: { contains: search, mode: "insensitive" as const } }
-      : {};
+    const where = {
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" as const } }
+        : {}),
+      ...notDeleted,
+    };
 
     const [data, total] = await Promise.all([
       prisma.category.findMany({

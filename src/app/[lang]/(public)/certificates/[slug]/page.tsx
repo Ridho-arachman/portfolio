@@ -4,6 +4,7 @@ import {
   type CertificateListData,
 } from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Metadata } from "next";
@@ -12,13 +13,13 @@ import { notFound } from "next/navigation";
 // Helper functions defined FIRST to avoid hoisting issues
 async function getCertificate(slug: string) {
   return prisma.certificate.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...notDeleted },
   });
 }
 
 async function getAllSlugs() {
   const certs = await prisma.certificate.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
     select: { slug: true },
   });
@@ -74,7 +75,7 @@ export default async function CertificateDetailPage({ params }: { params: Promis
   }
 
   const allData = await prisma.certificate.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
   });
   const allMapped = allData.map((c) => mapCertificateToData(c, validLocale, labels));

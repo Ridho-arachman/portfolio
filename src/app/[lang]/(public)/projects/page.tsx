@@ -1,5 +1,6 @@
 import { ProjectsPageContent } from "./projects-content";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
@@ -35,9 +36,13 @@ export const revalidate = 3600;
 const getProjects = unstable_cache(
   async () => {
     return prisma.project.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       orderBy: { order: "asc" },
-      include: { category: true },
+      // `include: { category: true }` menarik `deletedAt` ke payload cache dan
+      // kolom Date kembali jadi string setelah warm. Insiden 86d09b0.
+      include: {
+        category: { where: notDeleted, select: { id: true, name: true } },
+      },
     });
   },
   ["public-projects"],

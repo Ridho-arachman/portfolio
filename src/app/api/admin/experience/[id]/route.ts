@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { experienceUpdateSchema } from "@/schema/experience";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -15,7 +16,7 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const experience = await prisma.experience.findUnique({ where: { id } });
+    const experience = await prisma.experience.findUnique({ where: { id, ...notDeleted } });
 
     if (!experience) {
       return errorResponse("Experience not found", 404);
@@ -81,7 +82,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.experience.findUnique({ where: { id } });
+    const existing = await prisma.experience.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Experience not found", 404);
     }

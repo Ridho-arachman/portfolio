@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { paginatedResponse, parsePagination } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
@@ -8,14 +9,16 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const { skip, pageSize, page } = parsePagination(searchParams);
 
+    const where = { isPublished: true, ...notDeleted };
+
     const [data, total] = await Promise.all([
       prisma.experience.findMany({
-        where: { isPublished: true },
+        where,
         orderBy: [{ order: "asc" }, { createdAt: "desc" }],
         skip,
         take: pageSize,
       }),
-      prisma.experience.count({ where: { isPublished: true } }),
+      prisma.experience.count({ where }),
     ]);
 
     return paginatedResponse(data, {

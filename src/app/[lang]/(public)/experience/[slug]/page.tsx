@@ -1,5 +1,6 @@
 import { ExperienceDetailPageContent } from "./experience-detail-content";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -13,7 +14,7 @@ interface ExperienceDetailPageProps {
 export async function generateStaticParams() {
   try {
     const experiences = await prisma.experience.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       select: { slug: true },
     });
     return experiences.map((exp) => ({ slug: exp.slug }));
@@ -29,7 +30,7 @@ export async function generateMetadata({
   const locale: Locale = isValidLocale(lang) ? lang : DEFAULT_LOCALE;
   const messages = await getMessages(locale);
   const experience = await prisma.experience.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...notDeleted },
     select: { title: true, company: true },
   });
 
@@ -54,7 +55,7 @@ export default async function ExperienceDetailPage({
   const { slug } = await params;
 
   const rawExperience = await prisma.experience.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...notDeleted },
   });
 
   if (!rawExperience) {
@@ -64,7 +65,7 @@ export default async function ExperienceDetailPage({
   const exp = mapExperience(rawExperience);
 
   const allRaw = await prisma.experience.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
   });
   const allMapped = mapExperiences(allRaw);

@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { projectCreateSchema } from "@/schema/project";
 import { requireAdminSession } from "@/lib/session";
@@ -17,9 +18,12 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const { page, pageSize, search, skip } = parsePagination(searchParams);
 
-    const where = search
-      ? { title: { contains: search, mode: "insensitive" as const } }
-      : {};
+    const where = {
+      ...(search
+        ? { title: { contains: search, mode: "insensitive" as const } }
+        : {}),
+      ...notDeleted,
+    };
 
     const [data, total] = await Promise.all([
       prisma.project.findMany({

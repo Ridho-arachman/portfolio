@@ -1,5 +1,6 @@
 import { ExperiencePageContent } from "./experience-content";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { mapExperiences } from "@/lib/utils/experience-mapper";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
@@ -36,7 +37,7 @@ export const revalidate = 3600;
 const getExperiences = unstable_cache(
   async () => {
     return prisma.experience.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       orderBy: { order: "asc" },
     });
   },

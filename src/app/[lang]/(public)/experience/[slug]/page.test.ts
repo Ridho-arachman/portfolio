@@ -38,13 +38,13 @@ describe("generateStaticParams (/experience/[slug])", () => {
 
   // Draft tidak boleh ikut terdaftar sebagai params: kalau tidak, `next build`
   // akan mem-pre-render halaman draft dan membiarkan URL-nya terindeks.
-  it("meminta hanya experience yang published", async () => {
+  it("meminta hanya experience yang published dan belum di-trash", async () => {
     vi.mocked(prisma.experience.findMany).mockResolvedValue([]);
 
     await generateStaticParams();
 
     expect(prisma.experience.findMany).toHaveBeenCalledWith({
-      where: { isPublished: true },
+      where: { isPublished: true, deletedAt: null },
       select: { slug: true },
     });
   });

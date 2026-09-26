@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -17,8 +18,21 @@ export async function GET(
     const { id } = await params;
 
     const project = await prisma.project.findUnique({
-      where: { id },
-      include: { category: true },
+      where: { id, ...notDeleted },
+      // Jangan kembali ke `include: { category: true }`: itu menarik `deletedAt`
+      // ke respons. Insiden 86d09b0.
+      include: {
+        category: {
+          where: notDeleted,
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            order: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -50,7 +64,7 @@ export async function PUT(
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const existing = await prisma.project.findUnique({ where: { id } });
+    const existing = await prisma.project.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Project not found", 404);
     }
@@ -113,7 +127,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.project.findUnique({ where: { id } });
+    const existing = await prisma.project.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Project not found", 404);
     }

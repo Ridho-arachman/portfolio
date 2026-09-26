@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { messageStatusUpdateSchema } from "@/schema/message";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -14,7 +15,7 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const message = await prisma.message.findUnique({ where: { id } });
+    const message = await prisma.message.findUnique({ where: { id, ...notDeleted } });
 
     if (!message) {
       return errorResponse("Message not found", 404);
@@ -45,7 +46,7 @@ export async function PUT(
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const existing = await prisma.message.findUnique({ where: { id } });
+    const existing = await prisma.message.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Message not found", 404);
     }
@@ -74,7 +75,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.message.findUnique({ where: { id } });
+    const existing = await prisma.message.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Message not found", 404);
     }

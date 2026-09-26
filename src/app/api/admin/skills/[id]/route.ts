@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { skillUpdateSchema } from "@/schema/skill";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -14,7 +15,7 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const skill = await prisma.skill.findUnique({ where: { id } });
+    const skill = await prisma.skill.findUnique({ where: { id, ...notDeleted } });
 
     if (!skill) {
       return errorResponse("Skill not found", 404);
@@ -45,7 +46,7 @@ export async function PUT(
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const existing = await prisma.skill.findUnique({ where: { id } });
+    const existing = await prisma.skill.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Skill not found", 404);
     }
@@ -84,7 +85,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await prisma.skill.findUnique({ where: { id } });
+    const existing = await prisma.skill.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Skill not found", 404);
     }

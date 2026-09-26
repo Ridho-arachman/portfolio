@@ -1,5 +1,6 @@
 import { ProjectDetailPageContent } from "./project-detail-content";
 import prisma from "@/lib/prisma";
+import { notDeleted } from "@/lib/soft-delete";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
 import type { Project } from "@/components/sections/projects/constants";
 import { notFound } from "next/navigation";
@@ -9,13 +10,13 @@ import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 
 async function fetchProject(slug: string) {
   return prisma.project.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...notDeleted },
   });
 }
 
 async function fetchAllPublishedProjects() {
   return prisma.project.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
   });
 }
@@ -34,7 +35,7 @@ function getAdjacentProjects(
 export async function generateStaticParams() {
   try {
     const projects = await prisma.project.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...notDeleted },
       select: { slug: true },
     });
     return projects.map((p) => ({ slug: p.slug }));
