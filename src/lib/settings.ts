@@ -116,17 +116,20 @@ export function resolveSiteSettings(row: SiteSettingsRow | null): SiteSettings {
 }
 
 /**
- * Sumber tunggal untuk halaman publik. `upsert` membuat baris singleton saat
- * pertama dipanggil, jadi tidak perlu migrasi atau seed. Kalau database mati,
- * kembalikan default env — situs tetap utuh, tidak 500.
+ * Sumber tunggal untuk halaman publik.
+ *
+ * Baca dengan `findUnique`, bukan `upsert`. `upsert` di jalur baca bersaing antar
+ * request saat cache masih dingin: dua request sekaligus sama-sama mencoba
+ * `create`, dan yang kalah kena P2002 di `site_settings_pkey` — fallback env
+ * lalu menutupi setting admin sampai cache hangat. Baris singleton-nya sendiri
+ * dibuat oleh `PUT /api/admin/settings`, jadi pembacaan tidak perlu membuat.
+ * Kalau database mati, kembalikan default env — situs tetap utuh, tidak 500.
  */
 export const getSiteSettings = unstable_cache(
   async (): Promise<SiteSettings> => {
     try {
-      const row = await prisma.siteSettings.upsert({
+      const row = await prisma.siteSettings.findUnique({
         where: { id: SITE_SETTINGS_ID },
-        create: {},
-        update: {},
         select: SITE_SETTINGS_SELECT,
       });
 

@@ -9,7 +9,7 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  default: { siteSettings: { upsert: vi.fn() } },
+  default: { siteSettings: { findUnique: vi.fn() } },
 }));
 
 import prisma from "@/lib/prisma";
@@ -46,7 +46,7 @@ function makeRow(overrides: Partial<SiteSettingsRow> = {}): SiteSettingsRow {
   };
 }
 
-const upsert = vi.mocked(prisma.siteSettings.upsert);
+const findUnique = vi.mocked(prisma.siteSettings.findUnique);
 
 describe("resolveSiteSettings", () => {
   it("returns the env defaults when there is no admin override yet", () => {
@@ -140,23 +140,23 @@ describe("DEFAULT_QUICK_LINK_KEYS", () => {
 
 describe("getSiteSettings", () => {
   beforeEach(() => {
-    upsert.mockReset();
+    findUnique.mockReset();
   });
 
   it("reads the singleton row and applies the DB overrides", async () => {
-    upsert.mockResolvedValue(
-      makeRow({ fullName: "Ridho A." }) as Awaited<ReturnType<typeof upsert>>,
+    findUnique.mockResolvedValue(
+      makeRow({ fullName: "Ridho A." }) as Awaited<ReturnType<typeof findUnique>>,
     );
 
     await expect(getSiteSettings()).resolves.toMatchObject({ fullName: "Ridho A." });
 
-    expect(upsert).toHaveBeenCalledWith(
+    expect(findUnique).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: SITE_SETTINGS_ID }, select: SITE_SETTINGS_SELECT }),
     );
   });
 
   it("falls back to the env defaults instead of throwing when the database is down", async () => {
-    upsert.mockRejectedValue(new Error("P1001: can't reach database server"));
+    findUnique.mockRejectedValue(new Error("P1001: can't reach database server"));
 
     await expect(getSiteSettings()).resolves.toEqual(envSiteSettings());
   });

@@ -25,6 +25,7 @@ function cachedCert(issueDate: string, expiryDate: string | null = null) {
     expiryDate,
     order: 0,
     isPublished: true,
+    deletedAt: null,
     createdAt: ISO_ISSUE,
     updatedAt: ISO_ISSUE,
   };
