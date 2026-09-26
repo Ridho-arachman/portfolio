@@ -38,6 +38,9 @@ A full-stack developer portfolio built with Next.js 16, featuring an admin dashb
 - **Public site** — projects, experience, certificates, contact form; i18n at `/en` and `/id`
 - **Admin dashboard** — analytics, visitor map, CRUD management
 - **Draft/Publish** — toggle content visibility before going live
+- **Soft delete** — nothing is destroyed by accident: trash, restore, or permanently purge from the admin Trash screen
+- **Site settings** — profile, socials, contact details, and quick links edited from the admin, falling back to env vars when a field is left empty
+- **Translations** — per-locale message overrides edited from the admin, with inherited strings distinguished from stored ones
 - **Image upload** — Supabase Storage with client-side preview
 - **Authentication** — email/password + Google/GitHub OAuth, Cloudflare Turnstile, rate limiting
 - **Visitor tracking** — GeoIP-based analytics with Leaflet map visualization
@@ -160,7 +163,7 @@ src/
     layout/           # Navbar, footer
     ui/               # Shared UI (shadcn/ui + custom)
   hooks/              # Custom React hooks
-  lib/                # Utilities (auth, prisma, env, supabase, seo, ...)
+  lib/                # Utilities (auth, prisma, env, settings, translations, soft-delete, ...)
   schema/             # Zod schemas
   stores/             # Zustand stores
   messages/           # i18n messages (en.json, id.json)
