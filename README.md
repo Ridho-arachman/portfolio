@@ -90,7 +90,7 @@ Open http://localhost:3000 — it redirects to `/en` or `/id`.
 | `npm run analyze` | Production build with the bundle analyzer |
 | `npm run lint` | ESLint |
 | `npm run db:seed` | Seed the admin user |
-| `npm run db:seed:portfolio` | Seed portfolio content |
+| `npm run db:seed:portfolio` | Seed portfolio content. Refuses to run against a database that already has content, because it hard-deletes first — pass `-- --force` to overwrite deliberately |
 | `npm run docker:dev` | Start the Docker dev stack |
 | `npm run docker:prod` | Start the Docker production stack |
 

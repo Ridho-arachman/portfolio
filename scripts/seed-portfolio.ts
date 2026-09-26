@@ -2,6 +2,44 @@ import "dotenv/config";
 import prisma from "../src/lib/prisma";
 
 async function main() {
+  // Seed ini memakai `deleteMany()` tanpa filter, jadi HARD delete: isinya hilang
+  // permanen dan tidak masuk Trash. Aman untuk DB dev yang kosong, tapi kalau
+  // menunjuk DB yang sudah berisi konten, hilang tidak bisa dipulihkan. Karena itu
+  // skrip menolak jalan dulu dan minta `--force` eksplisit.
+  const force = process.argv.includes("--force");
+  const [
+    projectCount,
+    experienceCount,
+    certificateCount,
+    skillCount,
+    categoryCount,
+  ] = await Promise.all([
+    prisma.project.count(),
+    prisma.experience.count(),
+    prisma.certificate.count(),
+    prisma.skill.count(),
+    prisma.category.count(),
+  ]);
+  const existing =
+    projectCount +
+    experienceCount +
+    certificateCount +
+    skillCount +
+    categoryCount;
+
+  if (existing > 0 && !force) {
+    console.error(
+      `DIBATASI: database sudah berisi ${existing} baris konten ` +
+        `(project ${projectCount}, experience ${experienceCount}, ` +
+        `certificate ${certificateCount}, skill ${skillCount}, category ${categoryCount}).`,
+    );
+    console.error(
+      "Seed ini akan menghapusnya permanen. Kalau itu memang yang mau: " +
+        "npm run db:seed:portfolio -- --force",
+    );
+    process.exit(1);
+  }
+
   console.log("Seeding database...");
 
   // Clean existing data
