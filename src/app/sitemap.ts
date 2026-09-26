@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         select: { slug: true, updatedAt: true },
       }),
       prisma.experience.findMany({
+        where: { isPublished: true },
         select: { slug: true, updatedAt: true },
       }),
       prisma.certificate.findMany({

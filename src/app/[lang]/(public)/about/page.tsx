@@ -34,7 +34,11 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
 const getExperiences = unstable_cache(
-  async () => prisma.experience.findMany({ orderBy: { order: "asc" } }),
+  async () =>
+    prisma.experience.findMany({
+      where: { isPublished: true },
+      orderBy: { order: "asc" },
+    }),
   ["about-experiences"],
   { revalidate: 3600, tags: ["experiences"] },
 );

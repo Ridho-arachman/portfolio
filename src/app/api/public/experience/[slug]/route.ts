@@ -11,7 +11,7 @@ export async function GET(
     const { slug } = await params;
 
     const experience = await prisma.experience.findFirst({
-      where: { slug },
+      where: { slug, isPublished: true },
     });
 
     if (!experience) {
