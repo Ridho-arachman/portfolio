@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertCircle,
-  Loader2,
   Pencil,
   Plus,
   Search,
@@ -208,32 +198,17 @@ export function SkillsList() {
         </section>
       </main>
 
-      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{ADMIN_SKILLS.deleteConfirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {ADMIN_SKILLS.deleteConfirmDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
-              onClick={() => {
-                if (deleteId) deleteMutation.mutate(deleteId);
-                setDeleteId(null);
-              }}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                ADMIN_SKILLS.deleteConfirmLabel
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        title={ADMIN_SKILLS.deleteConfirmTitle}
+        description={ADMIN_SKILLS.deleteConfirmDescription}
+        confirmLabel={ADMIN_SKILLS.deleteConfirmLabel}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (deleteId) deleteMutation.mutate(deleteId);
+        }}
+        onClose={() => setDeleteId(null)}
+      />
     </div>
   );
 }

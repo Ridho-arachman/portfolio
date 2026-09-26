@@ -12,7 +12,9 @@ describe("dashboard constants consistency", () => {
       "Certificates",
       "Skills",
       "Messages",
+      "Trash",
       "Settings",
+      "Translations",
     ]);
   });
 

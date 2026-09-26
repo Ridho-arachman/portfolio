@@ -4,9 +4,11 @@ import {
   Briefcase,
   FolderKanban,
   FolderTree,
+  Languages,
   LayoutDashboard,
   MessageSquare,
   Settings,
+  Trash2,
   Wrench,
 } from "lucide-react";
 
@@ -59,7 +61,9 @@ export const ADMIN_NAV_LINKS: AdminNavLink[] = [
   { label: "Certificates", href: "/admin/certificates", icon: Award },
   { label: "Skills", href: "/admin/skills", icon: Wrench },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Trash", href: "/admin/trash", icon: Trash2 },
   { label: "Settings", href: "/admin/settings", icon: Settings },
+  { label: "Translations", href: "/admin/translations", icon: Languages },
 ];
 
 export interface VisitPoint {

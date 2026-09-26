@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Briefcase,
-  Loader2,
   Pencil,
   Plus,
   Search,
@@ -216,32 +206,17 @@ export function ExperiencesList() {
         )}
       </main>
 
-      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{ADMIN_EXPERIENCE.deleteConfirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {ADMIN_EXPERIENCE.deleteConfirmDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
-              onClick={() => {
-                if (deleteId) deleteMutation.mutate(deleteId);
-                setDeleteId(null);
-              }}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                ADMIN_EXPERIENCE.deleteConfirmLabel
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        title={ADMIN_EXPERIENCE.deleteConfirmTitle}
+        description={ADMIN_EXPERIENCE.deleteConfirmDescription}
+        confirmLabel={ADMIN_EXPERIENCE.deleteConfirmLabel}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (deleteId) deleteMutation.mutate(deleteId);
+        }}
+        onClose={() => setDeleteId(null)}
+      />
     </div>
   );
 }

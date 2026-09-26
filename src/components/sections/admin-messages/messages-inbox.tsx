@@ -1,22 +1,12 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Archive,
   ArchiveRestore,
   CheckCheck,
   Inbox,
-  Loader2,
   Mail,
   MailCheck,
   Search,
@@ -421,35 +411,19 @@ export function MessagesInbox() {
         </section>
       </main>
 
-      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{ADMIN_MESSAGES.deleteConfirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {ADMIN_MESSAGES.deleteConfirmDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId);
-                  if (expandedId === deleteId) setExpandedId(null);
-                }
-                setDeleteId(null);
-              }}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                ADMIN_MESSAGES.deleteConfirmLabel
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        title={ADMIN_MESSAGES.deleteConfirmTitle}
+        description={ADMIN_MESSAGES.deleteConfirmDescription}
+        confirmLabel={ADMIN_MESSAGES.deleteConfirmLabel}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => {
+          if (!deleteId) return;
+          deleteMutation.mutate(deleteId);
+          if (expandedId === deleteId) setExpandedId(null);
+        }}
+        onClose={() => setDeleteId(null)}
+      />
     </div>
   );
 }
