@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { skillUpdateSchema } from "@/schema/skill";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -68,7 +68,11 @@ export async function PUT(
 
     return successResponse(skill);
   } catch (error) {
-    return errorResponseFrom(error, "Skill operation failed");
+    return errorResponseFrom(
+      error,
+      "Skill operation failed",
+      slugReserved("Skill"),
+    );
   }
 }
 
@@ -90,9 +94,12 @@ export async function DELETE(
       return errorResponse("Skill not found", 404);
     }
 
-    await prisma.skill.delete({ where: { id } });
+    await prisma.skill.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
-    return successResponse({ message: "Skill deleted" });
+    return successResponse({ message: "Skill moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Skill operation failed");
   }

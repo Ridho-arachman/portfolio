@@ -93,7 +93,7 @@ describe("/api/admin/messages/[id]", () => {
     expect(res.status).toBe(400);
   });
 
-  it("deletes the message", async () => {
+  it("moves the message to trash instead of removing the row", async () => {
     const seeded = await seedMessage();
 
     const res = await deleteRoute(
@@ -105,6 +105,7 @@ describe("/api/admin/messages/[id]", () => {
 
     expect(res.status).toBe(200);
     const row = await prisma.message.findUnique({ where: { id: seeded.id } });
-    expect(row).toBeNull();
+    expect(row).not.toBeNull();
+    expect(row?.deletedAt).toBeInstanceOf(Date);
   });
 });

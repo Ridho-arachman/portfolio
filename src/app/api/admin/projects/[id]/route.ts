@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -110,7 +110,11 @@ export async function PUT(
 
     return successResponse(project);
   } catch (error) {
-    return errorResponseFrom(error, "Project operation failed");
+    return errorResponseFrom(
+      error,
+      "Project operation failed",
+      slugReserved("Project"),
+    );
   }
 }
 
@@ -132,13 +136,18 @@ export async function DELETE(
       return errorResponse("Project not found", 404);
     }
 
-    await prisma.project.delete({ where: { id } });
+    // Soft delete: baris tetap ada supaya bisa di-restore atau di-purge dari
+    // trash, dan slug-nya tetap terikat sampai salah satu dilakukan.
+    await prisma.project.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${existing.slug}`);
     revalidateTag("projects", { expire: 0 });
 
-    return successResponse({ message: "Project deleted" });
+    return successResponse({ message: "Project moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Project operation failed");
   }

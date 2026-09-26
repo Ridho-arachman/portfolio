@@ -14,12 +14,21 @@ export function errorResponse(error: string, status = 400, headers?: Record<stri
  * Convert a thrown error into a safe JSON error response.
  * Maps Prisma error codes and the auth guard to proper statuses;
  * everything else becomes `fallbackMessage` with status 500.
+ *
+ * `uniqueConflictMessage` replaces the generic P2002 text for entities whose
+ * unique values (slug, name) can still be held by a soft-deleted row.
  */
 export function errorResponseFrom(
   error: unknown,
   fallbackMessage = "Internal Server Error",
+  uniqueConflictMessage?: string,
 ) {
-  const info = handleApiError(error, fallbackMessage);
+  const info = handleApiError(
+    error,
+    fallbackMessage,
+    "Record",
+    uniqueConflictMessage,
+  );
   return errorResponse(info.message, info.status);
 }
 

@@ -15,6 +15,20 @@ describe("describePrismaError", () => {
     });
   });
 
+  // Override dipakai route yang nilai uniknya bisa masih dipegang baris
+  // soft-deleted, supaya 409-nya menyuruh ke trash.
+  it("lets the caller override the P2002 message", () => {
+    const result = describePrismaError(
+      prismaError("P2002"),
+      "Project",
+      "This value is still held by a trashed Project.",
+    );
+    expect(result).toEqual({
+      message: "This value is still held by a trashed Project.",
+      status: 409,
+    });
+  });
+
   it("maps P2025 record-not-found to a 404", () => {
     const result = describePrismaError(prismaError("P2025"), "Category");
     expect(result).toEqual({ message: "Category not found", status: 404 });

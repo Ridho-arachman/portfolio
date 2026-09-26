@@ -75,12 +75,15 @@ describe("POST /api/admin/projects", () => {
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("projects", { expire: 0 });
   });
 
-  it("maps a duplicate slug (P2002) to a 409 conflict", async () => {
+  it("maps a duplicate slug (P2002) to a 409 that points at the trash", async () => {
     const res = await post(validBody({ slug: `${prefix}-platform` }));
 
     expect(res.status).toBe(409);
     const json = await res.json();
-    expect(json.error).toContain("already exists");
+    // Baris yang bentrok bisa saja sudah di-trash dan tidak terlihat di daftar
+    // admin, jadi pesannya harus menyuruh ke trash, bukan sekadar "already exists".
+    expect(json.error).toContain("trashed Project");
+    expect(json.error).toMatch(/restore|purge/i);
     expect(json.error).not.toContain("prisma");
   });
 

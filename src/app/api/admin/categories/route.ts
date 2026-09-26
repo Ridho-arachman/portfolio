@@ -1,5 +1,6 @@
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, trashedOnly, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -16,12 +17,13 @@ export async function GET(req: Request) {
     await requireAdminSession();
     const { searchParams } = new URL(req.url);
     const { page, pageSize, search, skip } = parsePagination(searchParams);
+    const trashed = searchParams.get("trashed") === "true";
 
     const where = {
       ...(search
         ? { name: { contains: search, mode: "insensitive" as const } }
         : {}),
-      ...notDeleted,
+      ...(trashed ? trashedOnly : notDeleted),
     };
 
     const [data, total] = await Promise.all([
@@ -68,8 +70,14 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidateTag("categories", { expire: 0 });
+
     return successResponse(category, 201);
   } catch (error) {
-    return errorResponseFrom(error, "Category operation failed");
+    return errorResponseFrom(
+      error,
+      "Category operation failed",
+      slugReserved("Category"),
+    );
   }
 }

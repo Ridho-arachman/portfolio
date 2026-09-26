@@ -80,9 +80,12 @@ export async function DELETE(
       return errorResponse("Message not found", 404);
     }
 
-    await prisma.message.delete({ where: { id } });
+    await prisma.message.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
-    return successResponse({ message: "Message deleted" });
+    return successResponse({ message: "Message moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Message operation failed");
   }

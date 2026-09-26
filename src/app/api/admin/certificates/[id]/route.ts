@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { certificateUpdateSchema } from "@/schema/certificate";
 import { requireAdminSession } from "@/lib/session";
@@ -95,7 +95,11 @@ export async function PUT(
 
     return successResponse(certificate);
   } catch (error) {
-    return errorResponseFrom(error, "Certificate operation failed");
+    return errorResponseFrom(
+      error,
+      "Certificate operation failed",
+      slugReserved("Certificate"),
+    );
   }
 }
 
@@ -117,13 +121,16 @@ export async function DELETE(
       return errorResponse("Certificate not found", 404);
     }
 
-    await prisma.certificate.delete({ where: { id } });
+    await prisma.certificate.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
     revalidatePath("/certificates");
     revalidatePath(`/certificates/${existing.slug}`);
     revalidateTag("certificates", { expire: 0 });
 
-    return successResponse({ message: "Certificate deleted" });
+    return successResponse({ message: "Certificate moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Certificate operation failed");
   }

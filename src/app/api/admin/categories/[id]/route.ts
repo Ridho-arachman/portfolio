@@ -1,5 +1,6 @@
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { categoryUpdateSchema } from "@/schema/category";
 import { requireAdminSession } from "@/lib/session";
@@ -68,9 +69,15 @@ export async function PUT(
       },
     });
 
+    revalidateTag("categories", { expire: 0 });
+
     return successResponse(category);
   } catch (error) {
-    return errorResponseFrom(error, "Category operation failed");
+    return errorResponseFrom(
+      error,
+      "Category operation failed",
+      slugReserved("Category"),
+    );
   }
 }
 
@@ -92,9 +99,14 @@ export async function DELETE(
       return errorResponse("Category not found", 404);
     }
 
-    await prisma.category.delete({ where: { id } });
+    await prisma.category.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
-    return successResponse({ message: "Category deleted" });
+    revalidateTag("categories", { expire: 0 });
+
+    return successResponse({ message: "Category moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Category operation failed");
   }

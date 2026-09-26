@@ -2,7 +2,7 @@
 // `where` Prisma, jadi bentuknya harus persis.
 import { describe, expect, it } from "vitest";
 
-import { notDeleted, trashedOnly } from "./soft-delete";
+import { notDeleted, slugReserved, trashedOnly } from "./soft-delete";
 
 describe("soft-delete filter fragments", () => {
   it("notDeleted menyaring baris yang belum dihapus", () => {
@@ -36,5 +36,21 @@ describe("soft-delete filter fragments", () => {
   it("tidak menyimpan nilai Date, hanya operator", () => {
     expect(notDeleted.deletedAt).toBeNull();
     expect(trashedOnly.deletedAt).toEqual({ not: null });
+  });
+});
+
+describe("slugReserved", () => {
+  it("menyebutkan entitas dan mengarahkan admin ke trash", () => {
+    const message = slugReserved("Project");
+
+    expect(message).toContain("Project");
+    expect(message).toContain("trashed");
+    expect(message).toMatch(/restore|purge/i);
+  });
+
+  // Category juga punya `name @unique`, jadi pesan tidak boleh mengklaim
+  // bentroknya pasti slug.
+  it("tidak mengklaim nilai yang bentrok itu slug", () => {
+    expect(slugReserved("Category")).not.toMatch(/slug/i);
   });
 });

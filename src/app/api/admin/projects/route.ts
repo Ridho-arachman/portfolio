@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, trashedOnly, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { projectCreateSchema } from "@/schema/project";
 import { requireAdminSession } from "@/lib/session";
@@ -17,12 +17,13 @@ export async function GET(req: Request) {
     await requireAdminSession();
     const { searchParams } = new URL(req.url);
     const { page, pageSize, search, skip } = parsePagination(searchParams);
+    const trashed = searchParams.get("trashed") === "true";
 
     const where = {
       ...(search
         ? { title: { contains: search, mode: "insensitive" as const } }
         : {}),
-      ...notDeleted,
+      ...(trashed ? trashedOnly : notDeleted),
     };
 
     const [data, total] = await Promise.all([
@@ -85,6 +86,10 @@ export async function POST(req: Request) {
 
     return successResponse(project, 201);
   } catch (error) {
-    return errorResponseFrom(error, "Project operation failed");
+    return errorResponseFrom(
+      error,
+      "Project operation failed",
+      slugReserved("Project"),
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
-import { notDeleted } from "@/lib/soft-delete";
+import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { experienceUpdateSchema } from "@/schema/experience";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -65,7 +65,11 @@ export async function PUT(
 
     return successResponse(experience);
   } catch (error) {
-    return errorResponseFrom(error, "Experience operation failed");
+    return errorResponseFrom(
+      error,
+      "Experience operation failed",
+      slugReserved("Experience"),
+    );
   }
 }
 
@@ -87,13 +91,16 @@ export async function DELETE(
       return errorResponse("Experience not found", 404);
     }
 
-    await prisma.experience.delete({ where: { id } });
+    await prisma.experience.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
     revalidatePath("/experience");
     revalidatePath(`/experience/${existing.slug}`);
     revalidateTag("experiences", { expire: 0 });
 
-    return successResponse({ deleted: true });
+    return successResponse({ message: "Experience moved to trash" });
   } catch (error) {
     return errorResponseFrom(error, "Experience operation failed");
   }

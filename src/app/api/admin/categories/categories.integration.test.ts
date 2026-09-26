@@ -8,9 +8,11 @@ vi.mock("@/lib/session", () => ({
 }));
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
 import prisma from "@/lib/prisma";
+import { revalidateTag } from "next/cache";
 import { requireAdminSession } from "@/lib/session";
 import { GET as listRoute, POST as createRoute } from "./route";
 import {
@@ -65,14 +67,22 @@ describe("POST /api/admin/categories", () => {
       where: { slug: `${prefix}-web-dev` },
     });
     expect(row?.order).toBe(5);
+
+    // `public-projects` di [lang]/(public)/projects/page.tsx menyematkan
+    // `category.name` ke payload-nya, jadi perubahan kategori wajib
+    // meng-invalidate cache itu. Tanpa tag ini, rename kategori baru terlihat
+    // setelah TTL 3600s habis.
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith("categories", {
+      expire: 0,
+    });
   });
 
-  it("maps a duplicate slug (P2002) to a 409 conflict", async () => {
+  it("maps a duplicate slug (P2002) to a 409 that points at the trash", async () => {
     const res = await post({ name: `${prefix} Web Dev`, order: 1 });
 
     expect(res.status).toBe(409);
     const json = await res.json();
-    expect(json.error).toContain("already exists");
+    expect(json.error).toContain("trashed Category");
     // Internal Prisma details must never leak.
     expect(json.error).not.toContain("prisma");
     expect(json.error).not.toContain("Unique constraint");
@@ -152,7 +162,7 @@ describe("GET/PUT/DELETE /api/admin/categories/[id]", () => {
     expect(row?.slug).toBe(`${prefix}-renamed`);
   });
 
-  it("deletes the category", async () => {
+  it("moves the category to trash instead of removing the row", async () => {
     const res = await deleteRoute(
       new Request(`http://localhost/api/admin/categories/${categoryId}`, {
         method: "DELETE",
@@ -162,7 +172,8 @@ describe("GET/PUT/DELETE /api/admin/categories/[id]", () => {
 
     expect(res.status).toBe(200);
     const row = await prisma.category.findUnique({ where: { id: categoryId } });
-    expect(row).toBeNull();
+    expect(row).not.toBeNull();
+    expect(row?.deletedAt).toBeInstanceOf(Date);
   });
 });
 

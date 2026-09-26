@@ -46,7 +46,10 @@ const getProjects = unstable_cache(
     });
   },
   ["public-projects"],
-  { revalidate: 3600, tags: ["projects"] },
+  // Tag `categories` ikut diambil karena payload ini menyematkan
+  // `category.name`. Tanpa itu, rename atau trash kategori tidak pernah menyentuh
+  // cache ini dan `/projects` menampilkan nama lama sampai TTL 3600s habis.
+  { revalidate: 3600, tags: ["projects", "categories"] },
 );
 
 export default async function ProjectsPage() {

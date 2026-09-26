@@ -71,7 +71,7 @@ describe("POST /api/admin/skills", () => {
 
     expect(res.status).toBe(409);
     const json = await res.json();
-    expect(json.error).toContain("already exists");
+    expect(json.error).toContain("trashed Skill");
   });
 
   it("rejects out-of-range proficiency with 400", async () => {

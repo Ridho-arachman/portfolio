@@ -19,3 +19,12 @@
 export const notDeleted = { deletedAt: null } as const;
 
 export const trashedOnly = { deletedAt: { not: null } } as const;
+
+// Konsekuensi dari dua const di atas: create dengan slug yang dipegang baris di
+// trash tetap kena P2002, dan pesan default "already exists" menyesatkan karena
+// baris pembentrok tidak terlihat di mana pun. Route create/update meneruskan
+// pesan ini lewat `errorResponseFrom(error, fallback, slugReserved("Project"))`.
+// Sengaja tidak menyebut "slug": Category juga punya `name @unique`, jadi nilai
+// yang bentrok belum tentu slug.
+export const slugReserved = (entity: string) =>
+  `This value is still held by a trashed ${entity}. Restore it or purge it from the trash first.`;
