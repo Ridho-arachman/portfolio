@@ -19,6 +19,11 @@ export interface AdminNavLink {
   disabled?: boolean;
 }
 
+export function isNavActive(pathname: string, href: string): boolean {
+  if (pathname === href) return true;
+  return href.split("/").length > 2 && pathname.startsWith(`${href}/`);
+}
+
 export interface DashboardStat {
   icon: LucideIcon;
   value: string;

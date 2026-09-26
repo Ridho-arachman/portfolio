@@ -12,6 +12,7 @@ import {
   ADMIN_DASHBOARD,
   ADMIN_NAV_LINKS,
   ADMIN_USER,
+  isNavActive,
 } from "./constants";
 
 const sidebarVariants: Variants = {
@@ -66,7 +67,7 @@ export function AdminSidebar() {
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {ADMIN_NAV_LINKS.map((link) => {
           const Icon = link.icon;
-          const active = !link.disabled && pathname === link.href;
+          const active = !link.disabled && isNavActive(pathname, link.href);
 
           if (link.disabled) {
             return (
