@@ -71,5 +71,4 @@ graphify-out/
 .vercel
 .env*
 
-.vercel
-.env*
+.lighthouse
