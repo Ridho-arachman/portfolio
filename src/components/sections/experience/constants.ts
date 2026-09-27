@@ -1,4 +1,4 @@
-import { type Variants } from "framer-motion";
+import { type Variants } from "motion/react";
 import { type ExperiencePublic } from "@/types/domain";
 
 export { type ExperiencePublic as Experience };

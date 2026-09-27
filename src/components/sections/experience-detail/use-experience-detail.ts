@@ -1,4 +1,4 @@
-import { useScroll, useTransform, type MotionValue } from "framer-motion";
+import { useScroll, useTransform, type MotionValue } from "motion/react";
 
 export interface UseExperienceDetailReturn {
   containerRef: React.RefObject<HTMLDivElement | null>;
