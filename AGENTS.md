@@ -111,6 +111,22 @@ Menambah fitur **bukan hanya soal design/tampilan bagus** — kualitas web (perf
 - ⚠️ **Artefak lingkungan tidak dihitung sebagai bug kode.** Contoh: Lighthouse terhadap hostname lokal memaksa HTTPS → `ERR_SSL_PROTOCOL_ERROR`. Pada kasus ini, dokumentasikan sebagai keterbatasan lingkungan (akan hilang di produksi dengan SSL valid), jangan buang waktu memperbaikinya di kode.
 - ✅ Catat skor Lighthouse terakhir di deskripsi commit atau laporan tugas agar regresi terdeteksi.
 
+### Baseline terukur (28 Sep 2026, `/en`, mobile 412×823)
+
+| Kategori | Skor | Status |
+|---|---|---|
+| Performance | **61** (58–63 antar run) | ❌ di bawah ambang 95 |
+| Accessibility | 100 | ✅ |
+| Best Practices | 100 | ✅ |
+| SEO | 100 | ✅ |
+
+- **Variasi antar-run ±3 poin / ±50ms.** Tiga run berturut-turut pada kode yang sama memberi 58, 63, 61. Satu run tidak bisa dipakai menyimpulkan perubahan kecil — audit minimal 3× sebelum menyimpulkan, dan yang terlihat pada TBT (metrik CPU) lebih stabil daripada Speed Index.
+- Penyebab Performance di bawah ambang: **baseline React/Next**, bukan gambar atau library besar. Chunk terbesar 229 KiB = `react-dom` + implementasi `framer-motion`, 1599ms scripting. `leaflet` dan `recharts` hanya masuk ke `/admin`, bukan halaman publik. Audit menunjukkan nol byte pihak ketiga.
+- Yang sudah baik dan jangan dibongkar: section below-fold sudah `dynamic(..., { ssr: false })`, `optimizePackageImports` dan `removeConsole` aktif di production, home page adalah server component.
+- **Animasi hanya boleh diimpor dari `motion/react`.** `framer-motion` tidak dideklarasi di `package.json` — ia hanya resolve karena `motion` menariknya sebagai dependensi, jadi mengimpornya langsung adalah phantom dependency yang bisa pecah saat `motion` berubah. Memperbaiki 3 file ini menurunkan TBT dari 1760ms ke ~1000ms.
+- `forced-reflow-insight` sering melaporkan 0 tanpa subitem: penyebabnya ada di chunk vendor yang sudah minify dan tidak bisa dilacak dari laporan. Jangan mengejar ini tanpa reproduksi lokal.
+- ⚠️ Di Windows, `lighthouse` sering gagal `EPERM` saat `chrome-launcher` menghapus temp profile. Itu artefak file-lock, bukan kegagalan audit — bersihkan `%LOCALAPPDATA%\Temp\lighthouse.*`, tunggu, lalu ulangi. Jangan sampai 3x; setelah itu dokumentasikan sebagai keterbatasan.
+
 ---
 
 ## 7. Testing Requirements
