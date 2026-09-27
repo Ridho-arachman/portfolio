@@ -1,16 +1,18 @@
-"use client";
-
-import { useSiteSettings } from "@/components/providers/public-content-provider";
+import type { SiteSettings } from "@/lib/settings";
 
 interface StructuredDataProps {
+  settings: SiteSettings;
   type?: "Person" | "WebSite";
 }
 
 // Inline script, bukan `next/script`: `lazyOnload` menyuntik JSON-LD lewat
 // efek client saat `window.load`, jadi tag-nya tidak pernah ada di HTML awal
 // dan crawler yang cuma mengambil respons pertama tidak melihatnya sama sekali.
-// React tetap merender `<script dangerouslySetInnerHTML>` ini di HTML server
-// meski komponennya client, jadi structured data ikut masuk respons pertama.
+//
+// Ini server component, jadi tag-nya masuk respons pertama tanpa hidrasi sama
+// sekali. `settings` diteruskan sebagai prop, bukan dibaca dari context client:
+// JSON-LD statis tidak ada gunanya jadi client, dan membacanya lewat
+// `useSiteSettings()` adalah alasan ia pernah hidrasi.
 //
 // `<` di-escape ke `<` karena nilainya berasal dari settings yang bisa
 // diisi admin; tanpa itu nilai `</script>` bisa menutup tag dan membocorkan
@@ -18,8 +20,7 @@ interface StructuredDataProps {
 const escapeJsonLd = (schema: object) =>
   JSON.stringify(schema).replace(/</g, "\\u003c");
 
-export function StructuredData({ type = "Person" }: StructuredDataProps) {
-  const settings = useSiteSettings();
+export function StructuredData({ settings, type = "Person" }: StructuredDataProps) {
 
   const personSchema = {
     "@context": "https://schema.org",

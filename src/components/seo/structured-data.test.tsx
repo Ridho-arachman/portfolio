@@ -1,16 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 
-import { PublicContentProvider } from "@/components/providers/public-content-provider";
-import { testMessages, testSiteSettings } from "@/test-fixtures/public-content";
+import { testSiteSettings } from "@/test-fixtures/public-content";
 import { StructuredData } from "./structured-data";
 
 function renderStructuredData(ui: React.ReactNode) {
-  return render(
-    <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
-      {ui}
-    </PublicContentProvider>,
-  );
+  return render(ui);
 }
 
 function readJsonLd(container: HTMLElement) {
@@ -21,7 +16,7 @@ function readJsonLd(container: HTMLElement) {
 
 describe("StructuredData", () => {
   it("menanamkan satu script ld+json ke dalam DOM", () => {
-    const { container } = renderStructuredData(<StructuredData />);
+    const { container } = renderStructuredData(<StructuredData settings={testSiteSettings} />);
 
     expect(
       container.querySelectorAll('script[type="application/ld+json"]'),
@@ -29,7 +24,7 @@ describe("StructuredData", () => {
   });
 
   it("mengisi Person dari site settings, bukan env", () => {
-    const { container } = renderStructuredData(<StructuredData />);
+    const { container } = renderStructuredData(<StructuredData settings={testSiteSettings} />);
     const schema = readJsonLd(container);
 
     expect(schema["@type"]).toBe("Person");
@@ -41,7 +36,7 @@ describe("StructuredData", () => {
   });
 
   it("memakai shape yang sama dengan sebelumnya: sameAs, knowsAbout, alumniOf, worksFor", () => {
-    const { container } = renderStructuredData(<StructuredData />);
+    const { container } = renderStructuredData(<StructuredData settings={testSiteSettings} />);
     const schema = readJsonLd(container);
 
     expect(schema.sameAs).toEqual([
@@ -61,7 +56,9 @@ describe("StructuredData", () => {
   });
 
   it("memancarkan WebSite dari prop type", () => {
-    const { container } = renderStructuredData(<StructuredData type="WebSite" />);
+    const { container } = renderStructuredData(
+      <StructuredData settings={testSiteSettings} type="WebSite" />,
+    );
     const schema = readJsonLd(container);
 
     expect(schema["@type"]).toBe("WebSite");
@@ -75,11 +72,7 @@ describe("StructuredData", () => {
       bio: "</script><img src=x onerror=alert(1)>",
     };
 
-    const { container } = render(
-      <PublicContentProvider messages={testMessages} settings={hostile}>
-        <StructuredData />
-      </PublicContentProvider>,
-    );
+    const { container } = render(<StructuredData settings={hostile} />);
 
     // `&lt;` di-escape jadi escape sequence JSON, jadi tidak ada tag HTML baru
     // yang muncul dari data.

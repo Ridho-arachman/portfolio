@@ -33,7 +33,7 @@ export default async function PublicLayout({
       settings={settings}
     >
       <Navbar />
-      <StructuredData />
+        <StructuredData settings={settings} />
       <main id="main-content" role="main" className="min-h-screen pt-20">
         {children}
       </main>
