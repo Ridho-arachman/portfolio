@@ -109,7 +109,7 @@ export function NavCollapseClient() {
               ikut bergulir, jadi Unduh CV dan pilihan bahasa selalu terjangkau. */}
           <div className="shrink-0 border-t border-glass-border bg-bg-secondary/95 backdrop-blur-xl">
             <div className="container mx-auto space-y-2 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-              <CVDownload />
+              <CVDownload dropUp fullWidth />
               <LanguageSwitcher inline />
             </div>
           </div>

@@ -7,7 +7,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import { useState, useRef, useEffect } from 'react';
 import { getLocaleFromPath, Locale } from '@/lib/i18n';
 
-export function CVDownload() {
+export function CVDownload({ dropUp = false, fullWidth = false }: { dropUp?: boolean; fullWidth?: boolean }) {
   const pathname = usePathname();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +58,7 @@ export function CVDownload() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={cn('relative', fullWidth && 'w-full')} ref={dropdownRef}>
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
@@ -67,7 +67,8 @@ export function CVDownload() {
           'transition-all duration-300 hover:scale-105 active:scale-95',
           'min-h-[48px] min-w-[48px]',
           'bg-accent text-bg-primary shadow-[0_0_15px_rgba(167,139,250,0.4)] hover:bg-accent-hover',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent',
+          fullWidth && 'w-full'
         )}
         aria-label={t.nav.downloadCV}
         aria-expanded={isOpen}
@@ -84,10 +85,16 @@ export function CVDownload() {
           id="cv-dropdown"
           role="listbox"
           aria-label={t.nav.selectCVLanguage}
+          // `dropUp` untuk menu mobile: tombolnya menempel di kaki panel, jadi
+          // dropdown yang membuka ke bawah keluar dari kotak panel dan ter-clipe
+          // oleh `overflow-hidden` — hanya 61px dari 130px yang terlihat, opsi
+          // Bahasa Indonesia terpotong. Di desktop tombolnya di navbar atas,
+          // jadi ke bawah tetap benar.
           className={cn(
-            'absolute right-0 top-full mt-2 w-48',
+            'absolute right-0 w-48',
+            dropUp ? 'bottom-full mb-2' : 'top-full mt-2',
             'bg-bg-secondary border border-glass-border rounded-xl',
-            'shadow-lg overflow-hidden animate-slide-down',
+            'shadow-lg overflow-hidden',
             'z-50'
           )}
         >
