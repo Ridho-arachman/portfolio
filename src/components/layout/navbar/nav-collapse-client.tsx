@@ -73,30 +73,24 @@ export function NavCollapseClient() {
       {isMobileMenuOpen && (
         <div
           id="nav-menu"
-          className="absolute inset-x-0 top-full bg-bg-secondary border-b border-glass-border shadow-lg overflow-hidden animate-slide-down"
+          className="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain bg-bg-secondary border-b border-glass-border shadow-lg animate-slide-down"
         >
-          <ul className="container mx-auto px-4 py-6 space-y-2">
+          <ul className="container mx-auto px-4 py-4 space-y-1">
             {NAV_LINK_KEYS.map((key, index) => {
               const path = NAV_LINK_PATHS[key];
               const active = isActive(path);
               return (
-                <li key={path} className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
+                <li key={path} className="animate-fade-in-up" style={{ animationDelay: `${index * 40}ms` }}>
                   <Link
                     href={buildHref(path)}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={cn(
-                      "block py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 min-h-[56px] min-w-[56px] flex items-center",
+                      "flex min-h-[48px] items-center rounded-xl px-4 py-3 text-sm font-medium no-underline",
+                      "transition-colors duration-200",
                       active
-                        ? "bg-accent/10"
-                        : "hover:bg-accent/5",
+                        ? "bg-accent/10 text-accent"
+                        : "text-text-primary hover:bg-accent/5 hover:text-accent",
                     )}
-                    style={{
-                      textDecoration: "none",
-                      display: "flex",
-                      alignItems: "center",
-                      minHeight: "56px",
-                      minWidth: "56px",
-                    }}
                   >
                     {t.nav[key as keyof typeof t.nav]}
                   </Link>
@@ -104,13 +98,12 @@ export function NavCollapseClient() {
               );
             })}
 
-            <li className="pt-4 mt-2 border-t border-glass-border animate-fade-in-up delay-400">
+            <li className="pt-4 mt-2 border-t border-glass-border animate-fade-in-up" style={{ animationDelay: "240ms" }}>
               <CVDownload />
             </li>
 
-            {/* Language Switcher in Mobile Menu */}
-            <li className="pt-2 animate-fade-in-up delay-500">
-              <LanguageSwitcher />
+            <li className="pt-2 animate-fade-in-up" style={{ animationDelay: "280ms" }}>
+              <LanguageSwitcher inline />
             </li>
           </ul>
         </div>

@@ -7,7 +7,7 @@ import { LOCALES, LOCALE_FLAGS, LOCALE_NATIVE_NAMES, Locale, removeLocaleFromPat
 import { useTranslation } from '@/hooks/use-translation';
 import { useState, useRef, useEffect } from 'react';
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ inline = false }: { inline?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { locale: currentLocale } = useTranslation();
@@ -57,6 +57,38 @@ export function LanguageSwitcher() {
     router.push(newPath);
     setIsOpen(false);
   };
+
+  // Varian inline untuk menu mobile: dropdown-nya `absolute`, sedangkan menu
+  // mobile scroll, jadi apa pun yang keluar dari kotak menu akan ter-clipe.
+  // Pilihan bahasa digabung deret saja supaya tidak pernah meluber keluar
+  // viewport, dan labelnya selalu terlihat — di bawah 640px varian dropdown
+  // menyembunyikan nama bahasa sehingga yang tersisa cuma ikon globe tanpa
+  // konteks.
+  if (inline) {
+    return (
+      <div className="flex items-center gap-2" role="group" aria-label="Select language">
+        {LOCALES.map((locale) => (
+          <button
+            key={locale}
+            onClick={() => handleLocaleChange(locale)}
+            aria-pressed={locale === currentLocale}
+            className={cn(
+              'flex flex-1 items-center justify-center gap-2 rounded-full border',
+              'min-h-[48px] px-3 text-sm font-medium transition-colors duration-200',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent',
+              locale === currentLocale
+                ? 'border-accent bg-accent/10 text-accent'
+                : 'border-glass-border text-text-secondary hover:text-accent',
+            )}
+            data-testid={`language-option-${locale}`}
+          >
+            <span aria-hidden="true">{LOCALE_FLAGS[locale]}</span>
+            {LOCALE_NATIVE_NAMES[locale]}
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
