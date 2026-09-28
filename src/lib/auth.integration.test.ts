@@ -76,6 +76,25 @@ describe("better-auth email/password integration", () => {
     expect(session?.session.expiresAt).toBeTruthy();
   });
 
+  it("issues a session cookie (no Max-Age) when rememberMe is false", async () => {
+    const { headers } = await auth.api.signInEmail({
+      returnHeaders: true,
+      body: {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+        rememberMe: false,
+      },
+    });
+
+    const sessionCookie = headers
+      .getSetCookie()
+      .find((c) => c.startsWith("better-auth.session_token="));
+
+    expect(sessionCookie).toBeDefined();
+    expect(sessionCookie).not.toMatch(/max-age/i);
+    expect(sessionCookie).not.toMatch(/expires/i);
+  });
+
   it("returns null session without credentials", async () => {
     const session = await auth.api.getSession({ headers: new Headers() });
     expect(session).toBeNull();

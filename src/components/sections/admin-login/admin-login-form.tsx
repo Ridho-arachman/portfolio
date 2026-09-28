@@ -85,6 +85,9 @@ export function AdminLoginForm({ error }: { error?: string }) {
     const payload = {
       email: values.email,
       password: values.password,
+      // Cookie session (tanpa Max-Age/Expires) → admin wajib login ulang
+      // tiap browser ditutup, bukan cookie persisten 7 hari.
+      rememberMe: false,
       ...(captchaToken && { captchaToken }),
     };
 
