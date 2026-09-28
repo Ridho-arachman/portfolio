@@ -113,19 +113,25 @@ Menambah fitur **bukan hanya soal design/tampilan bagus** — kualitas web (perf
 
 ### Baseline terukur (28 Sep 2026, `/en`, mobile 412×823)
 
+Rata-rata dari beberapa run; satu run tidak bisa dipakai menyimpulkan apa pun (lihat catatan noise di bawah).
+
 | Kategori | Skor | Status |
 |---|---|---|
-| Performance | **61** (58–63 antar run) | ❌ di bawah ambang 95 |
+| Performance | **68** (64–70) | ❌ masih di bawah ambang 95 |
 | Accessibility | 100 | ✅ |
 | Best Practices | 100 | ✅ |
 | SEO | 100 | ✅ |
 
-- **Variasi antar-run ±3 poin / ±50ms.** Tiga run berturut-turut pada kode yang sama memberi 58, 63, 61. Satu run tidak bisa dipakai menyimpulkan perubahan kecil — audit minimal 3× sebelum menyimpulkan, dan yang terlihat pada TBT (metrik CPU) lebih stabil daripada Speed Index.
-- Penyebab Performance di bawah ambang: **baseline React/Next**, bukan gambar atau library besar. Chunk terbesar 229 KiB = `react-dom` + implementasi `framer-motion`, 1599ms scripting. `leaflet` dan `recharts` hanya masuk ke `/admin`, bukan halaman publik. Audit menunjukkan nol byte pihak ketiga.
-- Yang sudah baik dan jangan dibongkar: section below-fold sudah `dynamic(..., { ssr: false })`, `optimizePackageImports` dan `removeConsole` aktif di production, home page adalah server component.
-- **Animasi hanya boleh diimpor dari `motion/react`.** `framer-motion` tidak dideklarasi di `package.json` — ia hanya resolve karena `motion` menariknya sebagai dependensi, jadi mengimpornya langsung adalah phantom dependency yang bisa pecah saat `motion` berubah. Memperbaiki 3 file ini menurunkan TBT dari 1760ms ke ~1000ms.
+- **Variasi antar-run ±3 poin / ±200ms TBT.** Run berturut-turut pada kode yang sama pernah memberi 63, 69, 64, 70 Performance. Audit **minimal 3×** sebelum menyimpulkan, lalu bandingkan rata-ratanya dan cek apakah rentang sebelum/sesudah overlap. Changes TBT yang Claims tapi hanya terlihat di satu run kemungkinan besar noise.
+- Penyebab Performance masih di bawah ambang: **baseline React/Next**. Chunk terbesar ~229 KiB = `react-dom` + implementasi `framer-motion`, dan `react-dom` adalah React itu sendiri — tidak bisa dikecilkan tanpa mengurangi kode aplikasi di atasnya.
+- `leaflet` dan `recharts` hanya masuk ke `/admin`. Audit menunjukkan nol byte pihak ketiga, jadi gambar bukan penyebabnya.
+- Yang sudah baik dan jangan dibongkar: section below-fold sudah `dynamic(..., { ssr: false })`, `optimizePackageImports` dan `removeConsole` aktif, `force-dynamic` di semua 9 halaman publik, home page adalah server component, dan `browserslist` sudah dipin ke browser modern.
+- **Animasi hanya boleh diimpor dari `motion/react`.** `framer-motion` tidak dideklarasi di `package.json` — ia hanya resolve karena `motion` menariknya sebagai dependensi, jadi mengimpornya langsung adalah phantom dependency yang bisa pecak saat `motion` berubah. Memperbaiki 3 file ini menurunkan TBT dari 1769ms ke ~1000ms.
+- `motion/react` di halaman publik hanya dipakai 3 file: `hero/hero-content.tsx`, `ui/glass-card.tsx`, `ui/theme-toggle-floating.tsx`. Yang pertama memang butuh. Menghilangkan motion dari `hero-content` akan mengeluarkan library itu dari bundle awal, tapi itu keputusan desain, bukan perbaikan teknis.
 - `forced-reflow-insight` sering melaporkan 0 tanpa subitem: penyebabnya ada di chunk vendor yang sudah minify dan tidak bisa dilacak dari laporan. Jangan mengejar ini tanpa reproduksi lokal.
 - ⚠️ Di Windows, `lighthouse` sering gagal `EPERM` saat `chrome-launcher` menghapus temp profile. Itu artefak file-lock, bukan kegagalan audit — bersihkan `%LOCALAPPDATA%\Temp\lighthouse.*`, tunggu, lalu ulangi. Jangan sampai 3x; setelah itu dokumentasikan sebagai keterbatasan.
+- ⚠️ `SEO 92` hampir selalu berarti `robots.txt timed out` saat audit, bukan bug. Fetch `robots.txt` langsung sebelum memperbaiki apa pun.
+
 
 ---
 
