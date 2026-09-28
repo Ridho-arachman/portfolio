@@ -73,9 +73,15 @@ export function NavCollapseClient() {
       {isMobileMenuOpen && (
         <div
           id="nav-menu"
-          className="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain bg-bg-secondary border-b border-glass-border shadow-lg animate-slide-down"
+          // Tinggi penuh dan `flex-col`: daftar nav yang bergulir, sementara
+          // Unduh CV dan pemilih bahasa ditempel di kaki panel. Keduanya dulu
+          // ikut tergulir, dan di viewport pendek — keyboard terbuka atau HP
+          // landscape — isinya melebihi ruang yang tersedia, jadi pilihan bahasa
+          // berakhir di bawah tepi dengan nol piksel terlihat dan tidak bisa
+          // dipilih. Halaman di belakang tidak bisa menolong karena header `fixed`.
+          className="absolute inset-x-0 top-full flex h-[calc(100dvh-5rem)] flex-col overflow-hidden bg-bg-secondary border-b border-glass-border shadow-lg animate-slide-down"
         >
-          <ul className="container mx-auto px-4 py-4 space-y-1">
+          <ul className="container mx-auto flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-1">
             {NAV_LINK_KEYS.map((key, index) => {
               const path = NAV_LINK_PATHS[key];
               const active = isActive(path);
@@ -97,15 +103,16 @@ export function NavCollapseClient() {
                 </li>
               );
             })}
-
-            <li className="pt-4 mt-2 border-t border-glass-border animate-fade-in-up" style={{ animationDelay: "240ms" }}>
-              <CVDownload />
-            </li>
-
-            <li className="pt-2 animate-fade-in-up" style={{ animationDelay: "280ms" }}>
-              <LanguageSwitcher inline />
-            </li>
           </ul>
+
+          {/* `shrink-0` + `pb` untuk safe area iPhone: kaki panel ini tidak pernah
+              ikut bergulir, jadi Unduh CV dan pilihan bahasa selalu terjangkau. */}
+          <div className="shrink-0 border-t border-glass-border bg-bg-secondary/95 backdrop-blur-xl">
+            <div className="container mx-auto space-y-2 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+              <CVDownload />
+              <LanguageSwitcher inline />
+            </div>
+          </div>
         </div>
       )}
     </>

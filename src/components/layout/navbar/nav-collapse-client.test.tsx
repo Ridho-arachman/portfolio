@@ -95,4 +95,25 @@ describe("NavCollapseClient", () => {
 
     expect(screen.getByRole("link", { name: /projects/i })).toHaveClass("text-accent");
   });
+
+  // Di viewport pendek (keyboard terbuka atau HP landscape) area nav tidak
+  // cukup untuk semua item, dan karena header `fixed` halaman di belakang tidak
+  // bisa menggulirkan panel. Unduh CV dan pemilih bahasa harus di luar area
+  // gulir supaya selalu bisa dipilih tanpa menggulir dulu.
+  it("menempatkan Unduh CV dan pemilih bahasa di luar daftar yang bergulir", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+
+    await user.click(toggle());
+
+    const menu = document.querySelector("#nav-menu")!;
+    const scroller = menu.querySelector("ul")!;
+    const pinned = screen.getByTestId("language-option-id").closest("div.shrink-0");
+
+    expect(pinned, "pemilih bahasa harus berada di blok yang tidak bergulir").not.toBeNull();
+    expect(pinned!.contains(screen.getByTestId("language-option-id"))).toBe(true);
+    // Blok tempelan adalah saudara dari daftar yang bergulir, bukan anaknya.
+    expect(scroller.contains(pinned!)).toBe(false);
+    expect(pinned!.className).toContain("shrink-0");
+  });
 });
