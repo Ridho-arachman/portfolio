@@ -1,11 +1,11 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import {
   cleanupE2EUsers,
   E2E_ADMIN,
   E2E_USER,
   ensureRegularUser,
   loginAsEmail,
-  promoteE2EAdmin,
+  seedAdminViaApi,
 } from "./helpers/admin-auth";
 
 async function loginViaForm(page: Page) {
@@ -14,21 +14,6 @@ async function loginViaForm(page: Page) {
   await page.getByLabel("Password", { exact: true }).fill(E2E_ADMIN.password);
   await page.getByRole("button", { name: "Sign In" }).click();
   await page.waitForURL(/\/admin$/, { timeout: 90_000 });
-}
-
-// Seed ulang user admin sebelum test yang butuh login sesi. Dipakai per-test
-// (bukan beforeAll) karena Playwright beforeAll tidak punya request fixture.
-async function seedAdminViaApi(request: APIRequestContext) {
-  const origin = process.env.BETTER_AUTH_URL || "http://localhost:3005";
-  await request.post(`${origin}/api/auth/sign-up/email`, {
-    headers: { origin },
-    data: {
-      email: E2E_ADMIN.email,
-      password: E2E_ADMIN.password,
-      name: E2E_ADMIN.name,
-    },
-  });
-  await promoteE2EAdmin();
 }
 
 test.beforeEach(async ({ request }) => {

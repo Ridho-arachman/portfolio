@@ -2,7 +2,9 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient({
+// Diekspor supaya spec yang butuh hard-delete di teardown (mis. admin-trash)
+// tidak membangun PrismaClient kedua di file-nya sendiri.
+export const prisma = new PrismaClient({
   adapter: new PrismaPg({
     connectionString:
       process.env.DATABASE_URL ||
@@ -111,6 +113,21 @@ export async function promoteE2EAdmin() {
     where: { email: E2E_ADMIN.email },
     data: { role: "ADMIN" },
   });
+}
+
+// Dipakai per-test (bukan beforeAll) karena Playwright beforeAll tidak punya
+// request fixture. Sign-up yang gagal diabaikan dengan sengaja: user-nya sudah
+// ada dari run sebelumnya dan yang dibutuhkan hanya sesi yang sudah jadi ADMIN.
+export async function seedAdminViaApi(request: APIRequestContext) {
+  await request.post(`${SERVER_ORIGIN}/api/auth/sign-up/email`, {
+    headers: { origin: SERVER_ORIGIN },
+    data: {
+      email: E2E_ADMIN.email,
+      password: E2E_ADMIN.password,
+      name: E2E_ADMIN.name,
+    },
+  });
+  await promoteE2EAdmin();
 }
 
 // Seed user langsung ke DB memakai hash yang sama dengan better-auth
