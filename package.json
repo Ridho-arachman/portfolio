@@ -102,5 +102,11 @@
     "esbuild@0.28.1": true,
     "@prisma/engines@7.9.1": true,
     "prisma@7.9.1": true
-  }
+  },
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 128",
+    "safari >= 16.4"
+  ]
 }
