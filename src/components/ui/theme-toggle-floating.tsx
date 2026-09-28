@@ -17,7 +17,7 @@ export function ThemeToggleFloating() {
   }, []);
 
   if (!mounted) {
-    return <div className="fixed right-6 bottom-6 z-50 w-14 h-20" />;
+    return <div className="fixed right-6 bottom-6 z-40 w-14 h-20" />;
   }
 
   const isDark = resolvedTheme === "dark";
@@ -30,7 +30,12 @@ export function ThemeToggleFloating() {
   };
 
   return (
-    <motion.div className="fixed right-6 bottom-6 z-50">
+    // z-40, bukan z-50: navbar juga z-50 dan header-nya yang lebih dulu di DOM,
+    // jadi dengan z yang sama tombol mengambang ini justru menutupi panel menu
+    // mobile yang terbuka — ujung kanan tombol bahasa tertutup. Di bawah
+    // navbar tapi tetap di atas isi halaman. Dialog tetap di atas semuanya
+    // karena dirender lewat portal dan z-50.
+    <motion.div className="fixed right-6 bottom-6 z-40">
       <motion.button
         onClick={handleToggle}
         disabled={toggling}
