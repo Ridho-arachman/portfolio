@@ -10,6 +10,10 @@ import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+// Tanpa ini halaman bisa dilayani dari cache, sehingga certificate yang baru
+// saja di-trash atau di-purge masih balas 200 di URL detailnya alih-alih 404.
+export const dynamic = 'force-dynamic';
+
 // Helper functions defined FIRST to avoid hoisting issues
 async function getCertificate(slug: string) {
   return prisma.certificate.findFirst({

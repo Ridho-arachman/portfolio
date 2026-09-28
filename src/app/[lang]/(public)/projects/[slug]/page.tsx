@@ -8,6 +8,10 @@ import type { Metadata } from "next";
 import { getMessages } from "@/lib/translations";
 import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 
+// Tanpa ini halaman bisa dilayani dari cache, sehingga project yang baru
+// saja di-trash atau di-purge masih balas 200 di URL detailnya alih-alih 404.
+export const dynamic = 'force-dynamic';
+
 async function fetchProject(slug: string) {
   return prisma.project.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
