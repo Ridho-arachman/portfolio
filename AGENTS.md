@@ -23,11 +23,10 @@ Dokumen ini berisi standar kerja & aturan wajib bagi AI Agent di repository ini.
 - Gunakan Prisma Adapter/parameterized query dan better-auth untuk otentikasi; hindari raw SQL dinamis dan jangan pernah menaruh kredensial di kode.
 - Terapkan prinsip **DRY (Don't Repeat Yourself)**: ekstrak logic yang berulang menjadi utility function, custom hook, atau shared component. Hindari duplikasi kode antar komponen/route. Gunakan composition alih-alih copy-paste.
 - Konsisten dengan pattern yang sudah ada — sebelum menulis kode baru, cek apakah fungsi/hook/component serupa sudah ada di codebase.
-- Sebelum menyelesaikan tugas, validasi sesuai pipeline CI:
-  `npm run lint` (ESLint) → `npx tsc --noEmit` (type checking) → `npm run build` (Next.js build).
+- **Wajib setiap perubahan** (murah, detik-detik, menangkap kelas bug yang paling sering): `npm run lint` → `npx tsc --noEmit`.
+  `npm run build` tidak wajib lokal — build produksi dipegang CI, dan satu build lokal di worktree ini bisa memakan menit.
 - Setelah mengubah `prisma/schema.prisma`, jalankan `npx prisma generate`.
-- Proyek menggunakan **Vitest** (unit & integration) + **Playwright** (E2E). Jalankan sebelum commit:
-  `npm run test:unit` → `npm run test:integration` → `npm run test:e2e`.
+- Test suite dan Lighthouse **tidak wajib lokal** — lihat §6 dan §7. Keduanya tetap berjalan di CI pada setiap push, jadi tidak ada pemeriksaan yang hilang, hanya ditunda.
 
 ---
 
@@ -81,9 +80,9 @@ Aturan ini lahir dari insiden nyata: agent memanggil perintah `grep` yang sama b
 
 ---
 
-## 6. Performance & Lighthouse Quality Gate (WAJIB)
+## 6. Performance & Lighthouse Quality Gate
 
-Menambah fitur **bukan hanya soal design/tampilan bagus** — kualitas web (performance, accessibility, best practices, SEO) harus tetap terjaga. Setiap perubahan UI/fitur yang memengaruhi halaman **WAJIB** diuji dengan Lighthouse.
+Kualitas web tetap dijaga, tapi audit Lighthouse **tidak wajib** untuk setiap perubahan. Kalau dijalankan, standarnya tetap tinggi — jangan menurunkan ambang, hanya boleh jarangarla.
 
 ### Ambang batas minimal
 | Kategori | Target |
@@ -93,10 +92,12 @@ Menambah fitur **bukan hanya soal design/tampilan bagus** — kualitas web (perf
 | Best Practices | ≥ 95 |
 | SEO | ≥ 100 |
 
-### Kapan Lighthouse wajib dijalankan
-- Setiap menambah/mengubah fitur atau komponen yang tampil di halaman publik.
-- Setiap mengubah layout, styling, gambar, font, atau script client-side.
-- Sebelum commit untuk perubahan UI, jalankan Lighthouse pada **mobile dan desktop**.
+### Kapan Lighthouse dijalankan
+- **Tidak wajib untuk setiap perubahan UI.** Audit ini memakan beberapa menit per device dan temuannya sering bukan regresi.
+- Jalankan saat: halaman publik benar-benar berubah tampilannya, ada complaint soal kecepatan, atau sebelum rilis/merge besar.
+- Kalau tidak dijalankan, tulis apa pun di laporan — jangan mengklaim sudah lolos.
+- Kalau Audit skipped, **tetap perbaiki** yang jelas-jelas rusak dan murah: target sentuh < 48px, kontras yang gagal, gambar tanpa dimensi.
+- **Penting:** CI tidak menjalankan Lighthouse, jadi yang dilewati di sini memang tidak terperiksa otomatis. Yang terperiksa otomatis oleh CI hanya Lint, typecheck, build, unit, integration, dan E2E.
 
 ### Cara menjalankan (baseline wajib, agar hasil komparabel)
 - Gunakan **Lighthouse versi terbaru** dengan throttling default (simulate), jangan `--preset=desktop`.
@@ -137,17 +138,20 @@ Rata-rata dari beberapa run; satu run tidak bisa dipakai menyimpulkan apa pun (l
 
 ## 7. Testing Requirements
 
-Setiap fitur baru atau perubahan behavior **WAJIB** disertai test yang sesuai:
+Test **layak ditulis** bila ada logika yang mudah salah diam-diam. Tidak wajib untuk setiap perubahan:
 
-| Tipe | Kapan wajib | Tool | Penamaan file |
+| Tipe | Kapan worth-it | Tool | Penamaan file |
 |---|---|---|---|
-| **Unit test** | Fungsi utilitas, helper, komponen UI isolasi, validasi logika | Vitest | `*.test.ts` / `*.test.tsx` |
-| **Integration test** | API routes, interaksi DB, auth flow, modul yang saling memanggil | Vitest | `*.integration.test.ts` |
-| **E2E test** | User flow kritis: login, signup, form submit, navigasi admin | Playwright | `e2e/*.spec.ts` |
+| **Unit test** | Logika yang mudah salah diam-diam: parsing, validasi, perhitungan, state machine, boundary | Vitest | `*.test.ts` / `*.test.tsx` |
+| **Integration test** | API route yang menyentuh DB, auth flow, cache invalidation, modul yang saling memanggil | Vitest | `*.integration.test.ts` |
+| **E2E test** | User flow yang rusak fatal kalau gagal: login, submit form, alur trash/restore | Playwright | `e2e/*.spec.ts` |
 
-- Jika fitur **tidak memerlukan** test tertentu (misal: pure CSS/style change, config-only), boleh skip dengan justifikasi singkat.
-- Test harus **pass** sebelum commit (termasuk di CI).
-- Jalankan pipeline test lengkap: `npm run test:unit` → `npm run test:integration` → `npm run test:e2e`.
+- **Test tidak wajib untuk setiap perubahan.** Menulis test yang tidak menangkap bug apa pun lebih buruk daripada tidak menulis test — ia hanya menambah rasa aman palsu.
+- Menjalankan test lokal juga opsional. **CI tetap menjalankan ketiganya di setiap push**, jadi test yang ditulis tidak akan menggantung tanpa dijalankan. Yang hilang hanya umpan balik cepat di laptop.
+- Kalau memang menulis test: **wajib lulus** sebelum di-push. Kalau gagal, perbaiki atau hapus — jangan commit test merah.
+- Kalau sebuah test diam-diam jadi tidak menguji apa pun (misal assertion-nya membaca fixture yang salah), itu lebih berbahaya daripada tidak ada test. Kalau tidak yakin sebuah test benar-benar menguji apa yang diklaim, periksa.
+- Test **tidak wajib** untuk: perubahan styling/CSS murni, perubahan copy/teks, pembaruan dependency, config, dan dokumentasi.
+- Kalau sebuah test gagal saat dijalankan, itu informasi yang berharga — jangan dihapus supaya hijau.
 
 ---
 
