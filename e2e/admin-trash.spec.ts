@@ -33,7 +33,10 @@ function projectPayload(project: { title: string; slug: string }) {
     title: project.title,
     slug: project.slug,
     description: "Row yang dibuat oleh spec admin-trash end-to-end.",
-    thumbnail: "https://placeholder.example.com/cover.jpg",
+    // Host harus salah satu yang terdaftar di `images.remotePatterns`
+    // next.config; host lain membuat `next/image` melempar dan halaman detail
+    // balas 500, bukan 404.
+    thumbnail: "https://picsum.photos/seed/e2e-trash/600/400",
     technologies: ["Playwright"],
     gallery: [],
     highlights: [],
