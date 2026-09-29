@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 
 const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+const isProd = process.env.NODE_ENV === "production";
 
 export const clientEnvSchema = z.object({
   NEXT_PUBLIC_SITE_NAME: z.string().default("Ridho.dev"),
@@ -39,7 +40,7 @@ export const serverEnvSchema = z.object({
   BETTER_AUTH_SECRET: isTest ? z.string().optional() : z.string().min(32),
   BETTER_AUTH_URL: isTest ? z.string().optional() : z.url(),
 
-  TURNSTILE_SECRET_KEY: z.string().optional(),
+  TURNSTILE_SECRET_KEY: isProd ? z.string().min(1) : z.string().optional(),
 
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),

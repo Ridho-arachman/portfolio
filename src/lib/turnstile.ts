@@ -1,14 +1,15 @@
 // lib/turnstile.ts
 // Verifikasi token Cloudflare Turnstile secara server-side.
-// Jika TURNSTILE_SECRET_KEY tidak diset, verifikasi dilewati (convenience dev/test).
+// Jika TURNSTILE_SECRET_KEY tidak diset: fail-closed di production, dilewati di dev/test.
 
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 function isTestEnv(): boolean {
   return (
-    process.env.DISABLE_RATE_LIMIT === "true" ||
-    process.env.NODE_ENV === "test"
+    (process.env.DISABLE_RATE_LIMIT === "true" ||
+      process.env.NODE_ENV === "test") &&
+    process.env.NODE_ENV !== "production"
   );
 }
 
@@ -20,6 +21,12 @@ export async function verifyTurnstile(token?: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
   if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[turnstile] TURNSTILE_SECRET_KEY tidak diset — captcha gagal tertutup (fail-closed).",
+      );
+      return false;
+    }
     console.warn(
       "[turnstile] TURNSTILE_SECRET_KEY tidak diset — verifikasi captcha dilewati.",
     );

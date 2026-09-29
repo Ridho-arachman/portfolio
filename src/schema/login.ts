@@ -2,8 +2,8 @@ import { z } from "zod";
 
 // Client-side login form validation.
 export const loginFormSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.email("Please enter a valid email address").max(254),
+  password: z.string().min(8, "Password must be at least 8 characters").max(128),
   captchaToken: z.string().optional(),
 });
 
