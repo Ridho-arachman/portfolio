@@ -32,7 +32,7 @@ const get = () => getRoute();
 const put = (body: unknown) =>
   putRoute(request("http://localhost/api/admin/settings", "PUT", body));
 const reset = (body?: unknown) =>
-  resetRoute(request("http://localhost/api/admin/settings/reset", "POST", body));
+  resetRoute(request("http://localhost/api/admin/settings/reset?confirm=true", "POST", body));
 
 const readRow = () => prisma.siteSettings.findUnique({ where: { id: SITE_SETTINGS_ID } });
 
@@ -173,7 +173,7 @@ describe("POST /api/admin/settings/reset", () => {
     await overrideEverything();
 
     const res = await resetRoute(
-      new Request("http://localhost/api/admin/settings/reset", {
+      new Request("http://localhost/api/admin/settings/reset?confirm=true", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: "{oops",
@@ -208,6 +208,17 @@ describe("POST /api/admin/settings/reset", () => {
 
     expect(res.status).toBe(200);
     expect((await res.json()).data.quickLinks).toEqual([...DEFAULT_QUICK_LINK_KEYS]);
+    expect((await readRow())?.fullName).toBe("Ada Lovelace");
+  });
+
+  it("rejects a reset without confirm=true with 400", async () => {
+    await overrideEverything();
+
+    const res = await resetRoute(
+      request("http://localhost/api/admin/settings/reset", "POST", {}),
+    );
+
+    expect(res.status).toBe(400);
     expect((await readRow())?.fullName).toBe("Ada Lovelace");
   });
 
