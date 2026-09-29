@@ -20,15 +20,14 @@ permissions:
 
 jobs:
   publish:
-    # The version-bump commit this workflow pushes must not trigger
-    # another publish, but the CI pipeline should still run on it.
-    if: "!contains(github.event.head_commit.message, '[skip publish]')"
-    name: Bump patch and publish
+    name: Publish next patch to npm
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📂 Checkout repository
+      - name: 📂 Checkout repository (with tags)
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: 🟢 Setup Node.js with npm registry
         uses: actions/setup-node@v7
@@ -36,11 +35,6 @@ jobs:
           node-version: 24
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
-
-      - name: 🔧 Git identity for version commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: 📦 Install dependencies
         run: npm ci
@@ -51,18 +45,18 @@ jobs:
       - name: 🧠 Typecheck gate (do not publish broken code)
         run: npx tsc --noEmit
 
-      - name: 🔢 Bump patch version ([skip publish] guards this workflow only, so CI still runs on the release commit)
+      # No commit is pushed to main (a bot commit would sit at the repo
+      # HEAD, where GitHub never runs workflows — GITHUB_TOKEN pushes are
+      # suppressed — making CI look absent). The version is derived from
+      # the latest git tag instead, so every main commit stays human and
+      # CI runs on all of them.
+      - name: 🔢 Bump patch from latest tag, publish, push tag only
         run: |
-          npm version patch --no-git-tag-version
-          VERSION=$(node -p "require('./package.json').version")
-          git add package.json
-          git commit -m "chore(release): $VERSION [skip publish]"
-          git tag "v$VERSION"
-
-      - name: 🚀 Publish to npm
-        run: npm publish --access public
+          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$(node -p "require('./package.json').version")")
+          NEXT=$(echo "$LATEST" | sed 's/^v//' | awk -F. '{print $1"."$2"."$3+1}')
+          npm version "$NEXT" --no-git-tag-version
+          npm publish --access public
+          git tag "v$NEXT"
+          git push origin "v$NEXT"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: 🏷️ Push version commit and tag
-        run: git push --follow-tags
