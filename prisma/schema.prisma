@@ -172,7 +172,6 @@ model Skill {
   name        String        @unique // e.g., "React", "PostgreSQL"
   iconName    String? // Nama komponen react-icons (mis. "SiReact", "SiTypescript")
   category    SkillCategory
-  proficiency Int // 1-100 (untuk animasi progress bar di UI)
   order       Int           @default(0)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

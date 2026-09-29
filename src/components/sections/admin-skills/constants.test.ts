@@ -8,7 +8,6 @@ const valid = {
   name: "Next.js",
   iconName: "SiNextdotjs",
   category: "FRONTEND",
-  proficiency: 90,
   order: 1,
 };
 
@@ -27,7 +26,6 @@ describe("skillFormSchema", () => {
     const withoutIcon = {
       name: valid.name,
       category: valid.category,
-      proficiency: valid.proficiency,
       order: valid.order,
     };
     expect(skillFormSchema.safeParse(withoutIcon).success).toBe(true);
@@ -59,21 +57,15 @@ describe("skillFormSchema", () => {
     ).toBe(false);
   });
 
-  it("coerces string numbers and rejects proficiency out of range", () => {
+  it("coerces a string order", () => {
     expect(
-      skillFormSchema.safeParse({ ...valid, proficiency: "85" }).success,
+      skillFormSchema.safeParse({ ...valid, order: "85" }).success,
     ).toBe(true);
-    expect(
-      skillFormSchema.safeParse({ ...valid, proficiency: "0" }).success,
-    ).toBe(false);
-    expect(
-      skillFormSchema.safeParse({ ...valid, proficiency: "101" }).success,
-    ).toBe(false);
   });
 
-  it("rejects a non-integer proficiency", () => {
+  it("rejects a non-integer order", () => {
     expect(
-      skillFormSchema.safeParse({ ...valid, proficiency: 85.5 }).success,
+      skillFormSchema.safeParse({ ...valid, order: 85.5 }).success,
     ).toBe(false);
   });
 

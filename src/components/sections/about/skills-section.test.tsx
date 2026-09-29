@@ -33,7 +33,6 @@ function skill(overrides: Partial<AdminSkill> = {}): AdminSkill {
     name: "React",
     iconName: null,
     category: "FRONTEND",
-    proficiency: 90,
     order: 0,
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01",
@@ -50,15 +49,6 @@ describe("SkillsSection", () => {
     const { container } = render(<SkillsSection />);
 
     expect(container).toBeEmptyDOMElement();
-  });
-
-  it("never renders a proficiency percentage", () => {
-    skillsMock.value = [skill({ name: "React", proficiency: 90 })];
-    const { container } = render(<SkillsSection />);
-
-    expect(screen.getByText("React")).toBeInTheDocument();
-    expect(screen.queryByText("90")).not.toBeInTheDocument();
-    expect(container.querySelector("[data-proficiency]")).toBeNull();
   });
 
   it("labels each group with the translated category name", () => {

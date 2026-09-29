@@ -51,21 +51,19 @@ describe("POST /api/admin/skills", () => {
     const res = await post({
       name: `${prefix} React`,
       category: "FRONTEND",
-      proficiency: 90,
       order: 1,
     });
 
     expect(res.status).toBe(201);
     const row = await prisma.skill.findUnique({ where: { name: `${prefix} React` } });
-    expect(row?.proficiency).toBe(90);
     expect(row?.category).toBe("FRONTEND");
+    expect(row?.order).toBe(1);
   });
 
   it("maps a duplicate name (P2002) to a 409 conflict", async () => {
     const res = await post({
       name: `${prefix} React`,
       category: "FRONTEND",
-      proficiency: 50,
       order: 2,
     });
 
@@ -74,11 +72,9 @@ describe("POST /api/admin/skills", () => {
     expect(json.error).toContain("trashed Skill");
   });
 
-  it("rejects out-of-range proficiency with 400", async () => {
+  it("rejects a payload without a category with 400", async () => {
     const res = await post({
       name: `${prefix} Bad`,
-      category: "FRONTEND",
-      proficiency: 101,
       order: 0,
     });
     expect(res.status).toBe(400);
@@ -86,23 +82,23 @@ describe("POST /api/admin/skills", () => {
 });
 
 describe("/api/admin/skills/[id]", () => {
-  it("updates proficiency via PUT", async () => {
+  it("updates the order via PUT", async () => {
     const skill = await prisma.skill.create({
-      data: { name: `${prefix} Editable`, category: "BACKEND", proficiency: 40, order: 3 },
+      data: { name: `${prefix} Editable`, category: "BACKEND", order: 3 },
     });
 
     const res = await updateRoute(
       new Request(`http://localhost/api/admin/skills/${skill.id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ proficiency: 75 }),
+        body: JSON.stringify({ order: 75 }),
       }),
       { params: Promise.resolve({ id: skill.id }) },
     );
 
     expect(res.status).toBe(200);
     const row = await prisma.skill.findUnique({ where: { id: skill.id } });
-    expect(row?.proficiency).toBe(75);
+    expect(row?.order).toBe(75);
   });
 
   it("returns 404 for an unknown id on DELETE", async () => {

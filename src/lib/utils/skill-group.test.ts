@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 import { groupSkillsByCategory } from "./skill-group";
 
 const SKILLS = [
-  { name: "PostgreSQL", category: "DATABASE", proficiency: 80, order: 1 },
-  { name: "React", category: "FRONTEND", proficiency: 90, order: 2 },
-  { name: "Next.js", category: "FRONTEND", proficiency: 85, order: 1 },
-  { name: "Communication", category: "SOFT_SKILL", proficiency: 75, order: 1 },
+  { name: "PostgreSQL", category: "DATABASE", order: 1 },
+  { name: "React", category: "FRONTEND", order: 2 },
+  { name: "Next.js", category: "FRONTEND", order: 1 },
+  { name: "Communication", category: "SOFT_SKILL", order: 1 },
 ] as const;
 
 describe("groupSkillsByCategory", () => {
@@ -39,10 +39,11 @@ describe("groupSkillsByCategory", () => {
     expect(groups.map((group) => group.category)).not.toContain("BACKEND");
   });
 
-  it("keeps every field of the original skill so the UI can read proficiency", () => {
+  it("keeps every field of the original skill by passing the object through", () => {
     const react = groupSkillsByCategory(SKILLS)[0].skills[1];
 
-    expect(react.proficiency).toBe(90);
+    expect(react).toBe(SKILLS[1]);
+    expect(react.order).toBe(2);
   });
 
   it("does not mutate the input array", () => {

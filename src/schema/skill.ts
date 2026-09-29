@@ -16,11 +16,6 @@ export const skillFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   iconName: z.string().optional(),
   category: z.enum(SKILL_CATEGORY_VALUES),
-  proficiency: z.coerce
-    .number()
-    .int("Proficiency must be a whole number")
-    .min(1, "Proficiency must be at least 1")
-    .max(100, "Proficiency must be at most 100"),
   order: z.coerce.number().int("Order must be a whole number").min(0),
 });
 
@@ -31,7 +26,6 @@ export const skillCreateSchema = z.object({
   name: z.string().min(1),
   iconName: z.string().optional(),
   category: z.enum(SKILL_CATEGORY_VALUES),
-  proficiency: z.number().min(1).max(100),
   order: z.number(),
 });
 
@@ -42,7 +36,6 @@ export const skillUpdateSchema = z.object({
   name: z.string().min(1).optional(),
   iconName: z.string().optional(),
   category: z.enum(SKILL_CATEGORY_VALUES).optional(),
-  proficiency: z.number().min(1).max(100).optional(),
   order: z.number().optional(),
 });
 

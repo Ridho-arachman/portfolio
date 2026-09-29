@@ -5,7 +5,6 @@ export interface AdminSkill {
   name: string;
   iconName?: string | null;
   category: (typeof SKILL_CATEGORY_VALUES)[number];
-  proficiency: number;
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -49,8 +48,6 @@ export const ADMIN_SKILLS = {
   fieldIconName: "Icon Name (optional)",
   fieldIconNamePlaceholder: "SiNextdotjs",
   fieldCategory: "Category",
-  fieldProficiency: "Proficiency",
-  fieldProficiencyHint: "1-100, used for progress indicators.",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
 } as const;

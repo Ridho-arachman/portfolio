@@ -14,7 +14,6 @@ function mapFormToCreate(data: Omit<AdminSkill, "id" | "createdAt" | "updatedAt"
     name: data.name,
     iconName: data.iconName ?? undefined,
     category: data.category,
-    proficiency: data.proficiency,
     order: data.order,
   };
 }
@@ -24,7 +23,6 @@ function mapFormToUpdate(data: Omit<AdminSkill, "id" | "createdAt" | "updatedAt"
     name: data.name,
     iconName: data.iconName ?? undefined,
     category: data.category,
-    proficiency: data.proficiency,
     order: data.order,
   };
 }

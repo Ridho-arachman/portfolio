@@ -275,7 +275,6 @@ export interface SkillBase {
   name: string;
   iconName: string | null;
   category: SkillCategory;
-  proficiency: number;
   order: number;
   createdAt: string;
   updatedAt: string;

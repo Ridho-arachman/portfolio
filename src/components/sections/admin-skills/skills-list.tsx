@@ -158,7 +158,7 @@ export function SkillsList() {
                         </span>
                       </div>
                       <p className="truncate font-mono text-xs text-text-muted">
-                        #{skill.order} · {skill.proficiency}/100
+                        #{skill.order}
                       </p>
                     </div>
 

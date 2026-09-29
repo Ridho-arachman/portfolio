@@ -36,14 +36,12 @@ export function SkillForm({
           name: initialData.name,
           iconName: initialData.iconName ?? "",
           category: initialData.category,
-          proficiency: initialData.proficiency,
           order: initialData.order,
         }
       : {
           name: "",
           iconName: "",
           category: "FRONTEND",
-          proficiency: 80,
           order: 0,
         },
   });
@@ -55,7 +53,6 @@ export function SkillForm({
       // saat field dibersihkan (API memetakan "" -> null).
       iconName: values.iconName ?? "",
       category: values.category,
-      proficiency: values.proficiency,
       order: values.order,
     };
 
@@ -134,29 +131,6 @@ export function SkillForm({
                   {errors.category && (
                     <p className="text-xs text-destructive">
                       {errors.category.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="proficiency">
-                    {ADMIN_SKILLS.fieldProficiency}
-                  </Label>
-                  <Input
-                    id="proficiency"
-                    type="number"
-                    min={1}
-                    max={100}
-                    aria-invalid={errors.proficiency ? true : undefined}
-                    {...register("proficiency")}
-                  />
-                  {errors.proficiency ? (
-                    <p className="text-xs text-destructive">
-                      {errors.proficiency.message}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-text-muted">
-                      {ADMIN_SKILLS.fieldProficiencyHint}
                     </p>
                   )}
                 </div>

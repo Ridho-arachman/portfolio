@@ -393,7 +393,6 @@ const otherEntities = [
         data: {
           name: `${prefix} Skill Extra`,
           category: "BACKEND",
-          proficiency: 50,
         },
       }),
     remove: (id: string) =>

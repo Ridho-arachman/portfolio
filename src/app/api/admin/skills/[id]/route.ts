@@ -59,9 +59,6 @@ export async function PUT(
         ...(data.name !== undefined && { name: data.name }),
         ...(data.iconName !== undefined && { iconName: data.iconName || null }),
         ...(data.category !== undefined && { category: data.category }),
-        ...(data.proficiency !== undefined && {
-          proficiency: data.proficiency,
-        }),
         ...(data.order !== undefined && { order: data.order }),
       },
     });

@@ -280,27 +280,25 @@ async function main() {
   // 5. Create Skills
   await prisma.skill.createMany({
     data: [
-      { name: "React", category: "FRONTEND", proficiency: 90, order: 1 },
-      { name: "Next.js", category: "FRONTEND", proficiency: 85, order: 2 },
-      { name: "TypeScript", category: "FRONTEND", proficiency: 85, order: 3 },
+      { name: "React", category: "FRONTEND", order: 1 },
+      { name: "Next.js", category: "FRONTEND", order: 2 },
+      { name: "TypeScript", category: "FRONTEND", order: 3 },
       {
         name: "Tailwind CSS",
         category: "FRONTEND",
-        proficiency: 90,
         order: 4,
       },
-      { name: "Node.js", category: "BACKEND", proficiency: 80, order: 1 },
-      { name: "Python", category: "BACKEND", proficiency: 70, order: 2 },
+      { name: "Node.js", category: "BACKEND", order: 1 },
+      { name: "Python", category: "BACKEND", order: 2 },
       {
         name: "PostgreSQL",
         category: "DATABASE",
-        proficiency: 75,
         order: 1,
       },
-      { name: "MongoDB", category: "DATABASE", proficiency: 70, order: 2 },
-      { name: "Docker", category: "DEVOPS_TOOLS", proficiency: 70, order: 1 },
-      { name: "Git", category: "DEVOPS_TOOLS", proficiency: 85, order: 2 },
-      { name: "AWS", category: "DEVOPS_TOOLS", proficiency: 65, order: 3 },
+      { name: "MongoDB", category: "DATABASE", order: 2 },
+      { name: "Docker", category: "DEVOPS_TOOLS", order: 1 },
+      { name: "Git", category: "DEVOPS_TOOLS", order: 2 },
+      { name: "AWS", category: "DEVOPS_TOOLS", order: 3 },
     ],
   });
 

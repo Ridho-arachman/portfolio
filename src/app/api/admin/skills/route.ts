@@ -63,7 +63,6 @@ export async function POST(req: Request) {
         name: data.name,
         iconName: data.iconName || null,
         category: data.category,
-        proficiency: data.proficiency,
         order: data.order,
       },
     });

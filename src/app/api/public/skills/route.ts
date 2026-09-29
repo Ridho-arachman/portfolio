@@ -14,7 +14,6 @@ export async function GET() {
         name: true,
         iconName: true,
         category: true,
-        proficiency: true,
       },
     });
 
