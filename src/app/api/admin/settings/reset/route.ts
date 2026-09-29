@@ -16,6 +16,10 @@ export async function POST(req: Request) {
       return errorResponse("RATE_LIMITED", 429, rate.headers);
     }
 
+    if (new URL(req.url).searchParams.get("confirm") !== "true") {
+      return errorResponse("confirm=true is required to reset settings", 400);
+    }
+
     // Body opsional: `{}` (atau tanpa body) berarti reset semua. JSON rusak
     // ditolak 400, bukan diam-diam jadi reset semua di endpoint destruktif.
     let body: unknown = {};

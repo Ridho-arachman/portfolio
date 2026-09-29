@@ -48,15 +48,38 @@ export async function PUT(
     }
 
     const data = parsed.data;
-    const updateData: Record<string, unknown> = { ...data };
 
-    if (data.slug) updateData.slug = data.slug;
-    if (data.startDate) updateData.startDate = new Date(data.startDate);
-    if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : null;
+    const existing = await prisma.experience.findUnique({ where: { id, ...notDeleted } });
+    if (!existing) {
+      return errorResponse("Experience not found", 404);
+    }
 
     const experience = await prisma.experience.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...(data.slug !== undefined && { slug: data.slug }),
+        ...(data.title !== undefined && { title: data.title }),
+        ...(data.company !== undefined && { company: data.company }),
+        ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
+        ...(data.thumbnail !== undefined && { thumbnail: data.thumbnail }),
+        ...(data.type !== undefined && { type: data.type }),
+        ...(data.location !== undefined && { location: data.location }),
+        ...(data.startDate !== undefined && {
+          startDate: new Date(data.startDate),
+        }),
+        ...(data.endDate !== undefined && {
+          endDate: data.endDate ? new Date(data.endDate) : null,
+        }),
+        ...(data.isCurrent !== undefined && { isCurrent: data.isCurrent }),
+        ...(data.isPublished !== undefined && {
+          isPublished: data.isPublished,
+        }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
+        ...(data.gallery !== undefined && { gallery: data.gallery }),
+        ...(data.order !== undefined && { order: data.order }),
+      },
     });
 
     revalidatePath("/experience");
