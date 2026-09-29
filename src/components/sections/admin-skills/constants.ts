@@ -47,6 +47,11 @@ export const ADMIN_SKILLS = {
   fieldNamePlaceholder: "e.g. Next.js",
   fieldIconName: "Icon Name (optional)",
   fieldIconNamePlaceholder: "SiNextdotjs",
+  fieldIconNameHint: "Empty falls back to matching the skill name.",
+  fieldIconNameOk: "Renders on the public site.",
+  fieldIconNameUncurated:
+    "Valid Simple Icons name, but not in the public map yet. Add it to ICON_MAP or it will not render.",
+  fieldIconNameInvalid: "Not a Simple Icons name.",
   fieldCategory: "Category",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",

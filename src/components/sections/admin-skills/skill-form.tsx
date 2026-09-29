@@ -3,10 +3,12 @@
 import { ArrowLeft, Loader2, Save, Wrench } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isKnownIconName, loadAllIconNames } from "@/lib/icon-resolver";
 import { zodResolver } from "@/lib/zod-resolver";
 import { skillFormSchema, type SkillFormValues } from "@/schema/skill";
 import { ADMIN_SKILLS, SKILL_CATEGORIES, type AdminSkill } from "./constants";
@@ -27,6 +29,7 @@ export function SkillForm({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<SkillFormValues>({
     resolver: zodResolver(skillFormSchema),
@@ -45,6 +48,39 @@ export function SkillForm({
           order: 0,
         },
   });
+
+  const [allIconNames, setAllIconNames] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+
+  useEffect(() => {
+    let active = true;
+    void loadAllIconNames().then((names) => {
+      if (active) setAllIconNames(names);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const iconName = useWatch({ control, name: "iconName" })?.trim() ?? "";
+  const isCurated = isKnownIconName(iconName);
+  const isValidButUncurated =
+    !isCurated && allIconNames.size > 0 && allIconNames.has(iconName);
+  const iconHint = !iconName
+    ? ADMIN_SKILLS.fieldIconNameHint
+    : isCurated
+      ? ADMIN_SKILLS.fieldIconNameOk
+      : isValidButUncurated
+        ? ADMIN_SKILLS.fieldIconNameUncurated
+        : ADMIN_SKILLS.fieldIconNameInvalid;
+  const iconHintClass = !iconName
+    ? "text-text-muted"
+    : isCurated
+      ? "text-accent"
+      : isValidButUncurated
+        ? "text-text-secondary"
+        : "text-destructive";
 
   const handleFormSubmit = (values: SkillFormValues) => {
     const payload = {
@@ -142,11 +178,19 @@ export function SkillForm({
                     type="text"
                     placeholder={ADMIN_SKILLS.fieldIconNamePlaceholder}
                     aria-invalid={errors.iconName ? true : undefined}
+                    aria-describedby="iconName-hint"
                     {...register("iconName")}
                   />
-                  {errors.iconName && (
+                  {errors.iconName ? (
                     <p className="text-xs text-destructive">
                       {errors.iconName.message}
+                    </p>
+                  ) : (
+                    <p
+                      id="iconName-hint"
+                      className={`text-xs ${iconHintClass}`}
+                    >
+                      {iconHint}
                     </p>
                   )}
                 </div>

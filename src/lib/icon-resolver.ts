@@ -7,13 +7,17 @@ import {
   SiFramer,
   SiGit,
   SiGithub,
+  SiGo,
   SiGraphql,
   SiLaravel,
   SiMongodb,
   SiMysql,
   SiNestjs,
   SiNextdotjs,
+  SiNginx,
   SiNodedotjs,
+  SiOpencode,
+  SiPhp,
   SiPostgresql,
   SiPython,
   SiPrisma,
@@ -59,6 +63,10 @@ const ICON_MAP: Record<string, IconType> = {
   SiExpress,
   SiFigma,
   SiVuedotjs,
+  SiGo,
+  SiNginx,
+  SiOpencode,
+  SiPhp,
 };
 
 /** Spellings that don't match a Simple Icons name once normalized. */
@@ -68,6 +76,7 @@ const ALIASES: Record<string, string> = {
   reactjs: "react",
   postgres: "postgresql",
   tailwind: "tailwindcss",
+  golang: "go",
 };
 
 const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -94,4 +103,18 @@ export function resolveIconForSkill(skill: {
   iconName?: string | null;
 }): IconType | null {
   return (skill.iconName ? resolveIcon(skill.iconName) : null) ?? resolveIcon(skill.name);
+}
+
+export const isKnownIconName = (iconName: string) => resolveIcon(iconName) !== null;
+
+/**
+ * Every Simple Icons export name, loaded on demand. The full `react-icons/si`
+ * module is ~1.9MB gzipped, so this is a dynamic import: it is only ever called
+ * from the admin skill form and never lands in a public page bundle.
+ */
+export async function loadAllIconNames(): Promise<ReadonlySet<string>> {
+  const si = await import("react-icons/si");
+  return new Set(
+    Object.keys(si).filter((key) => key.startsWith("Si") && key !== "SiIcons"),
+  );
 }
