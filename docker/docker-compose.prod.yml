@@ -8,7 +8,7 @@ services:
       # setiap request query Supabase (TTFB +700ms) dan respons no-store
       # (bfcache diblokir). Isi via .env di VPS; fallback menjamin deploy tetap jalan.
       args:
-        DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres}
+        DATABASE_URL: ${DATABASE_URL:-}
         BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
         BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://ridhoarachman.dev}
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:korekapi123@db.wdllwnwyiwyhndodbkur.supabase.co:5432/postgres}
+      - DATABASE_URL=${DATABASE_URL:-}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-https://ridhoarachman.dev}
       - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
