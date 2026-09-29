@@ -33,10 +33,11 @@ export const auth = betterAuth({
     minPasswordLength: 8,
   },
 
+  // Security: tanpa trustedProviders, auto-link OAuth same-email butuh email
+  // terverifikasi di kedua sisi — jangan tambah provider ke sini.
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["email-password", "google", "github"],
     },
   },
 
