@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { applyRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/utils/client-ip";
 
 export const dynamic = "force-dynamic";
 
-interface VisitPayload {
-  path: string;
-  timezone?: string;
-  language?: string;
-  sessionId?: string;
-}
+const visitBodySchema = z
+  .object({
+    path: z.string().min(1).max(500).startsWith("/"),
+    timezone: z.string().max(100).optional(),
+    language: z.string().max(100).optional(),
+    sessionId: z.string().max(100).optional(),
+  })
+  .strict();
 
 const TIMEZONE_COUNTRY: Record<string, { country: string; code: string; region: string; city?: string; lat?: number; lng?: number }> = {
   "Asia/Jakarta":       { country: "Indonesia", code: "id", region: "Southeast Asia", city: "Jakarta", lat: -6.2, lng: 106.845 },
@@ -61,8 +64,24 @@ function resolveLocation(timezone?: string): { country: string; code: string; re
   return { country: "Others", code: "oth", region: "Others" };
 }
 
+function isAllowedOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+
+  try {
+    const originUrl = new URL(origin);
+    return originUrl.host === request.headers.get("host");
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "FORBIDDEN_ORIGIN" }, { status: 403 });
+    }
+
     const ip = getClientIp(new Headers(request.headers));
     const rate = await applyRateLimit("api", ip);
     if (!rate.allowed) {
@@ -72,12 +91,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const body: VisitPayload = await request.json();
-    const { path, timezone, sessionId } = body;
-
-    if (!path) {
-      return NextResponse.json({ error: "path is required" }, { status: 400 });
+    const parsed = visitBodySchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid visit payload" }, { status: 400 });
     }
+    const { path, timezone, sessionId } = parsed.data;
 
     const location = resolveLocation(timezone);
     const userAgent = request.headers.get("user-agent")?.slice(0, 500) || null;

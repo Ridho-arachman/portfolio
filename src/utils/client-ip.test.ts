@@ -6,17 +6,25 @@ function headersWith(entries: Record<string, string>) {
 }
 
 describe("getClientIp", () => {
-  it("prefers the first x-forwarded-for entry", () => {
+  it("prefers the last valid x-forwarded-for entry (closest proxy)", () => {
     const headers = headersWith({
       "x-forwarded-for": "203.0.113.7, 70.41.3.18",
     });
-    expect(getClientIp(headers)).toBe("203.0.113.7");
+    // Entri pertama mudah dipalsukan client; entri terakhir ditulis proxy tepercaya.
+    expect(getClientIp(headers)).toBe("70.41.3.18");
   });
 
-  it("trims whitespace in x-forwarded-for entries", () => {
+  it("trims whitespace and picks the last valid x-forwarded-for entry", () => {
     expect(getClientIp(headersWith({ "x-forwarded-for": " 198.51.100.2 , 10.0.0.1" }))).toBe(
-      "198.51.100.2",
+      "10.0.0.1",
     );
+  });
+
+  it("skips invalid x-forwarded-for entries", () => {
+    expect(getClientIp(headersWith({ "x-forwarded-for": "evil, 203.0.113.7" }))).toBe(
+      "203.0.113.7",
+    );
+    expect(getClientIp(headersWith({ "x-forwarded-for": "evil" }))).toBe("unknown");
   });
 
   it("falls back to cf-connecting-ip", () => {

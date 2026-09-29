@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
+import { errorResponseFrom } from "@/lib/api-helpers";
 import { getClientIp } from "@/utils/client-ip";
 import {
   uploadImage,
@@ -10,6 +11,16 @@ import {
 } from "@/lib/supabase-storage";
 
 export const dynamic = "force-dynamic";
+
+const ENTITY_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+const ENTITY_TYPES = ["projects", "experience", "certificates"] as const;
+const DELETE_PREFIXES = ["projects/", "experience/", "certificates/"];
+
+function isAllowedDeletePath(path: string): boolean {
+  if (path.includes("..") || path.includes("\\")) return false;
+  const normalized = path.replace(/^\/+/, "");
+  return DELETE_PREFIXES.some((p) => normalized.startsWith(p));
+}
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +50,14 @@ export async function POST(request: Request) {
       );
     }
 
+    if (
+      !ENTITY_TYPES.includes(entityType as (typeof ENTITY_TYPES)[number]) ||
+      typeof entityId !== "string" ||
+      !ENTITY_ID_RE.test(entityId)
+    ) {
+      return NextResponse.json({ error: "Invalid entityType or entityId" }, { status: 400 });
+    }
+
     const validation = validateImageFile(file);
     if (!validation.valid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -49,14 +68,22 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url, path }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponseFrom(error, "Upload failed");
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     await requireAdminSession();
+
+    const ip = getClientIp(new Headers(request.headers));
+    const rate = await applyRateLimit("upload", ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "RATE_LIMITED" },
+        { status: 429, headers: rate.headers },
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const path = searchParams.get("path");
@@ -65,11 +92,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing path parameter" }, { status: 400 });
     }
 
-    await deleteImage(path);
+    if (!isAllowedDeletePath(path)) {
+      return NextResponse.json({ error: "Invalid path" }, { status: 400 });
+    }
+
+    await deleteImage(path.replace(/^\/+/, ""));
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Delete failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponseFrom(error, "Delete failed");
   }
 }
