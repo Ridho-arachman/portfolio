@@ -47,13 +47,13 @@ jobs:
 
       # No commit is pushed to main (a bot commit would sit at the repo
       # HEAD, where GitHub never runs workflows — GITHUB_TOKEN pushes are
-      # suppressed — making CI look absent). The version is derived from
-      # the latest git tag instead, so every main commit stays human and
-      # CI runs on all of them.
-      - name: 🔢 Bump patch from latest tag, publish, push tag only
+      # suppressed — making CI look absent). The next version comes from
+      # the npm registry itself, so every main commit stays human and CI
+      # runs on all of them.
+      - name: 🔢 Bump patch from registry, publish, push tag only
         run: |
-          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$(node -p "require('./package.json').version")")
-          NEXT=$(echo "$LATEST" | sed 's/^v//' | awk -F. '{print $1"."$2"."$3+1}')
+          LATEST=$(npm view ridho-arachman-portfolio version 2>/dev/null || node -p "require('./package.json').version")
+          NEXT=$(echo "$LATEST" | awk -F. '{print $1"."$2"."$3+1}')
           npm version "$NEXT" --no-git-tag-version
           npm publish --access public
           git tag "v$NEXT"
