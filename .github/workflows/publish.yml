@@ -45,6 +45,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🗄️ Generate Prisma Client (no DB needed)
+        run: npx prisma generate
+
       - name: 🧠 Typecheck gate (do not publish broken code)
         run: npx tsc --noEmit
 
