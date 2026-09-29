@@ -2,7 +2,7 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
 import { LOCALES, isValidLocale, type Locale } from "@/lib/i18n";
-import { resolveMessages, translationPatchSchema } from "@/lib/translations";
+import { resolveMessages, translationPatchSchema, translationPutSchema } from "@/lib/translations";
 import type { Messages } from "@/lib/translation-types";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -77,12 +77,18 @@ export async function PUT(req: Request) {
       return errorResponse(`Unsupported locale, expected one of: ${LOCALES.join(", ")}`, 400);
     }
 
-    const parsed = translationPatchSchema.safeParse(await req.json());
+    const parsed = translationPutSchema.safeParse(await req.json());
     if (!parsed.success) {
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
     const patch = parsed.data.values;
+    // Hanya bandingkan bila ada dan valid ISO; selain itu last-write-wins.
+    const rawExpected = parsed.data.expectedUpdatedAt;
+    const expectedTime =
+      typeof rawExpected === "string" && !Number.isNaN(Date.parse(rawExpected))
+        ? Date.parse(rawExpected)
+        : null;
 
     // Validasi ke dokumen bawaan SEBELUM menulis: `resolveMessages` melempar
     // ZodError untuk key yang tidak ada di dokumen, dan itu kesalahan input
@@ -99,12 +105,34 @@ export async function PUT(req: Request) {
 
     // PUT = ganti patch, bukan merge: editor sudah menerima `patch` mentah dari
     // GET dan mengirimkannya utuh, jadi ia juga bisa menghapus override dengan
-    // tidak mengirim key itu.
-    await prisma.translation.upsert({
-      where: { locale },
-      create: { locale, values: patch },
-      update: { values: patch },
+    // tidak mengirim key itu. Baca-tulis dalam satu transaksi supaya cek
+    // expectedUpdatedAt dan upsert tidak terinterupsi tulis lain.
+    const stale = await prisma.$transaction(async (tx) => {
+      const current = await tx.translation.findUnique({
+        where: { locale },
+        select: { updatedAt: true },
+      });
+      if (
+        expectedTime !== null &&
+        current &&
+        current.updatedAt.getTime() !== expectedTime
+      ) {
+        return true;
+      }
+      await tx.translation.upsert({
+        where: { locale },
+        create: { locale, values: patch },
+        update: { values: patch },
+      });
+      return false;
     });
+
+    if (stale) {
+      return errorResponse(
+        "Translation changed since you loaded it, reload and try again",
+        409,
+      );
+    }
 
     revalidateTag("translations", { expire: 0 });
 

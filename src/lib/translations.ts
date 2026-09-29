@@ -34,6 +34,17 @@ export const translationPatchSchema = z.object({
 
 export type TranslationPatchValues = z.infer<typeof translationPatchSchema>;
 
+/**
+ * Body PUT /api/admin/translations. `expectedUpdatedAt` opsional untuk
+ * optimistic concurrency: ISO timestamp dari data yang dibaca klien.
+ * Absen atau tidak valid → last-write-wins; basi → 409 di route.
+ */
+export const translationPutSchema = translationPatchSchema.extend({
+  expectedUpdatedAt: z.string().optional(),
+});
+
+export type TranslationPutBody = z.infer<typeof translationPutSchema>;
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
