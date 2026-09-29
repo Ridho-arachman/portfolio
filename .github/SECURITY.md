@@ -30,6 +30,8 @@ You should receive a response within **48 hours**. We will work with you to unde
 - Rate limiting is atomic (DB transaction) and keyed by validated client IP.
 - Public API returns explicit selects only — no internal columns (`deletedAt`, ordering, timestamps).
 
+## Scope
+
 This policy applies to vulnerabilities found in:
 
 - The portfolio web application
