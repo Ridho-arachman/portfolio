@@ -9,7 +9,6 @@ import { SiGithub, SiGoogle } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MagneticButton } from "@/components/ui/magnetic-button";
 import { TurnstileWidget } from "@/components/ui/turnstile";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@/lib/zod-resolver";
@@ -254,10 +253,11 @@ export function AdminLoginForm({ error }: { error?: string }) {
       )}
 
       <motion.div variants={itemVariants} initial={prefersReducedMotion ? undefined : "hidden"} animate={prefersReducedMotion ? undefined : "visible"} className="group">
-        <MagneticButton
+        <Button
           type="submit"
+          size="lg"
           disabled={isSubmitting || socialLoading !== null}
-          className="w-full rounded-full bg-accent border-transparent text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)]"
+          className="h-12 w-full rounded-full bg-accent border-transparent text-base text-bg-primary font-semibold hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(167,139,250,0.4)]"
         >
           {isSubmitting ? (
             <>
@@ -270,7 +270,7 @@ export function AdminLoginForm({ error }: { error?: string }) {
               <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </>
           )}
-        </MagneticButton>
+        </Button>
       </motion.div>
     </motion.form>
   );
