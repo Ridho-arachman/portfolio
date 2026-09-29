@@ -1,6 +1,6 @@
 {
   "name": "ridho-arachman-portfolio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Personal portfolio web app (Next.js). Published automatically on every push to main.",
   "homepage": "https://ridho-arachman.vercel.app",
   "repository": {
