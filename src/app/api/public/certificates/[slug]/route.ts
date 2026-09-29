@@ -13,6 +13,22 @@ export async function GET(
 
     const certificate = await prisma.certificate.findFirst({
       where: { slug, isPublished: true, ...notDeleted },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        issuer: true,
+        logoUrl: true,
+        thumbnail: true,
+        gallery: true,
+        credentialId: true,
+        credentialUrl: true,
+        issueDate: true,
+        expiryDate: true,
+        skills: true,
+        summary: true,
+        isPublished: true,
+      },
     });
 
     if (!certificate) {

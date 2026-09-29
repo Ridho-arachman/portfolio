@@ -13,6 +13,22 @@ export async function GET(
 
     const experience = await prisma.experience.findFirst({
       where: { slug, isPublished: true, ...notDeleted },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        company: true,
+        logoUrl: true,
+        thumbnail: true,
+        type: true,
+        location: true,
+        startDate: true,
+        endDate: true,
+        isCurrent: true,
+        description: true,
+        gallery: true,
+        isPublished: true,
+      },
     });
 
     if (!experience) {

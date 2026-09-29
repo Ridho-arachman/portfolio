@@ -9,6 +9,13 @@ export async function GET() {
     const skills = await prisma.skill.findMany({
       where: notDeleted,
       orderBy: [{ category: "asc" }, { order: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        iconName: true,
+        category: true,
+        proficiency: true,
+      },
     });
 
     return successResponse(skills);

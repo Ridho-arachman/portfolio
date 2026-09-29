@@ -9,6 +9,12 @@ export async function GET() {
     const categories = await prisma.category.findMany({
       where: notDeleted,
       orderBy: { order: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+      },
     });
 
     return successResponse(categories);

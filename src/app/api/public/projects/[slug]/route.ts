@@ -13,8 +13,23 @@ export async function GET(
 
     const project = await prisma.project.findFirst({
       where: { slug, isPublished: true, ...notDeleted },
-      // `include: { category: true }` menarik `deletedAt` ke respons. Insiden 86d09b0.
-      include: {
+      // Select eksplisit: `select: true`/`include` penuh menarik kolom internal
+      // (`deletedAt`, `order`, `createdAt`, `updatedAt`) ke respons. Insiden 86d09b0.
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        description: true,
+        thumbnail: true,
+        liveUrl: true,
+        repoUrl: true,
+        technologies: true,
+        gallery: true,
+        role: true,
+        year: true,
+        highlights: true,
+        isPublished: true,
+        categoryId: true,
         category: {
           where: notDeleted,
           select: {
@@ -22,7 +37,6 @@ export async function GET(
             name: true,
             slug: true,
             description: true,
-            order: true,
           },
         },
       },
