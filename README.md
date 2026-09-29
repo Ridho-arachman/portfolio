@@ -6,11 +6,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
 [![Prisma](https://img.shields.io/badge/Prisma-7.10-2D3748?logo=prisma)](https://www.prisma.io)
+[![npm](https://img.shields.io/npm/v/ridho-arachman-portfolio?logo=npm&color=cb3837)](https://www.npmjs.com/package/ridho-arachman-portfolio)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A full-stack developer portfolio built with Next.js 16, featuring an admin dashboard, CMS-like content management, visitor analytics, and secure authentication.
 
 **Live:** https://ridho-arachman.vercel.app
+**npm:** https://www.npmjs.com/package/ridho-arachman-portfolio
 
 ## Tech Stack
 
