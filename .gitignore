@@ -75,3 +75,6 @@ graphify-out/
 
 # strix autonomous pentest artifacts (contain PoC payloads, never commit)
 strix_runs/
+
+# worktree settings dir (holds a full repo copy + .env, never commit)
+.wt-settings/
