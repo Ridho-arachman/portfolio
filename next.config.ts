@@ -9,7 +9,7 @@ function securityHeaders(isProduction: boolean) {
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
+        "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.picsum.photos https://*.supabase.co https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
         "font-src 'self' data:",
         "connect-src 'self' https://challenges.cloudflare.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org ws: wss:",
         "frame-src 'self' https://challenges.cloudflare.com",
