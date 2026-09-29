@@ -22,7 +22,13 @@ Include:
 
 You should receive a response within **48 hours**. We will work with you to understand and address the issue before any public disclosure.
 
-## Scope
+## Enforced Controls
+
+- Cloudflare Turnstile is fail-closed in production (`TURNSTILE_SECRET_KEY` is required at boot; CI/build uses the official test keys).
+- Test bypasses (`DISABLE_RATE_LIMIT`, empty captcha) are ignored when `NODE_ENV=production`.
+- Admin API requires an `ADMIN` session; destructive actions (purge, settings reset) need explicit confirmation and emit a JSON audit line to stdout.
+- Rate limiting is atomic (DB transaction) and keyed by validated client IP.
+- Public API returns explicit selects only — no internal columns (`deletedAt`, ordering, timestamps).
 
 This policy applies to vulnerabilities found in:
 
