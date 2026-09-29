@@ -7,6 +7,7 @@ import prisma from "./prisma";
 export interface RateLimitResult {
   allowed: boolean;
   retryAfter?: number;
+  remaining: number;
 }
 
 export interface RateLimitConfig {
@@ -20,7 +21,10 @@ export interface RateLimitConfig {
  * Used in test environment and for emergency disable.
  */
 function isRateLimitDisabled(): boolean {
-  return process.env.DISABLE_RATE_LIMIT === "true";
+  return (
+    process.env.DISABLE_RATE_LIMIT === "true" &&
+    process.env.NODE_ENV !== "production"
+  );
 }
 
 export async function consumeRateLimit(
@@ -29,43 +33,52 @@ export async function consumeRateLimit(
   windowSeconds: number,
 ): Promise<RateLimitResult> {
   if (isRateLimitDisabled()) {
-    return { allowed: true };
+    return { allowed: true, remaining: max };
   }
   const now = Date.now();
   const windowMs = windowSeconds * 1000;
+  const windowStart = now - windowMs;
 
-  const row = await prisma.rateLimit.findUnique({ where: { key } });
-
-  if (!row) {
-    await prisma.rateLimit.create({
-      data: { key, count: 1, lastRequest: now },
-    });
-    return { allowed: true };
-  }
-
-  const lastRequest = Number(row.lastRequest);
-
-  // Jendela sudah lewat -> reset hitungan.
-  if (now - lastRequest > windowMs) {
-    await prisma.rateLimit.update({
+  // Atomik: satu transaksi, increment bersyarat — tanpa findUnique-then-update.
+  // upsert menutup balapan create; updateMany bersyarat menutup burst paralel.
+  return prisma.$transaction(async (tx) => {
+    await tx.rateLimit.upsert({
       where: { key },
+      create: { key, count: 0, lastRequest: now },
+      update: {},
+    });
+
+    // Jendela sudah lewat -> reset hitungan.
+    const reset = await tx.rateLimit.updateMany({
+      where: { key, lastRequest: { lte: windowStart } },
       data: { count: 1, lastRequest: now },
     });
-    return { allowed: true };
-  }
+    if (reset.count === 1) {
+      return { allowed: true, remaining: Math.max(0, max - 1) };
+    }
 
-  if (row.count >= max) {
+    // Dalam jendela: tambah hanya bila masih di bawah max.
+    const incremented = await tx.rateLimit.updateMany({
+      where: { key, count: { lt: max } },
+      data: { count: { increment: 1 }, lastRequest: now },
+    });
+    if (incremented.count === 1) {
+      const row = await tx.rateLimit.findUnique({ where: { key } });
+      const count = row?.count ?? 1;
+      return { allowed: true, remaining: Math.max(0, max - count) };
+    }
+
+    const row = await tx.rateLimit.findUnique({ where: { key } });
+    const lastRequest = Number(row?.lastRequest ?? now);
     return {
       allowed: false,
-      retryAfter: Math.ceil((lastRequest + windowMs - now) / 1000),
+      retryAfter: Math.max(
+        0,
+        Math.ceil((lastRequest + windowMs - now) / 1000),
+      ),
+      remaining: 0,
     };
-  }
-
-  await prisma.rateLimit.update({
-    where: { key },
-    data: { count: { increment: 1 }, lastRequest: now },
   });
-  return { allowed: true };
 }
 
 /**
@@ -121,7 +134,7 @@ export async function applyRateLimit(...args: PresetParams) {
     ...result,
     headers: {
       "X-RateLimit-Limit": String(config.max),
-      "X-RateLimit-Remaining": String(result.allowed ? config.max - 1 : 0),
+      "X-RateLimit-Remaining": String(result.remaining),
       "X-RateLimit-Reset": String(Math.ceil(Date.now() / 1000) + (result.retryAfter ?? config.windowSeconds)),
       ...(result.retryAfter ? { "X-Retry-After": String(result.retryAfter) } : {}),
     },
