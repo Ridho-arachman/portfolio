@@ -20,9 +20,9 @@ permissions:
 
 jobs:
   publish:
-    # The version-bump commit this workflow pushes itself must not
-    # trigger another publish (infinite loop guard).
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    # The version-bump commit this workflow pushes must not trigger
+    # another publish, but the CI pipeline should still run on it.
+    if: "!contains(github.event.head_commit.message, '[skip publish]')"
     name: Bump patch and publish
     runs-on: ubuntu-latest
 
@@ -51,12 +51,12 @@ jobs:
       - name: 🧠 Typecheck gate (do not publish broken code)
         run: npx tsc --noEmit
 
-      - name: 🔢 Bump patch version ([skip ci] avoids re-trigger)
+      - name: 🔢 Bump patch version ([skip publish] guards this workflow only, so CI still runs on the release commit)
         run: |
           npm version patch --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
           git add package.json
-          git commit -m "chore(release): $VERSION [skip ci]"
+          git commit -m "chore(release): $VERSION [skip publish]"
           git tag "v$VERSION"
 
       - name: 🚀 Publish to npm
