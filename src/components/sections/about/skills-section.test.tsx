@@ -52,12 +52,13 @@ describe("SkillsSection", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("shows the proficiency stored for each skill", () => {
+  it("never renders a proficiency percentage", () => {
     skillsMock.value = [skill({ name: "React", proficiency: 90 })];
-    render(<SkillsSection />);
+    const { container } = render(<SkillsSection />);
 
     expect(screen.getByText("React")).toBeInTheDocument();
-    expect(screen.getByText("90")).toBeInTheDocument();
+    expect(screen.queryByText("90")).not.toBeInTheDocument();
+    expect(container.querySelector("[data-proficiency]")).toBeNull();
   });
 
   it("labels each group with the translated category name", () => {
@@ -71,22 +72,14 @@ describe("SkillsSection", () => {
     expect(screen.getByRole("heading", { name: "Database" })).toBeInTheDocument();
   });
 
-  it("draws the icon only when iconName resolves", () => {
+  it("falls back to the skill name when iconName is missing or invalid", () => {
     skillsMock.value = [
-      skill({ id: "skill-1", name: "React", iconName: "SiReact" }),
-      skill({ id: "skill-2", name: "Zod", iconName: "NotAnIcon" }),
+      skill({ id: "skill-1", name: "React", iconName: null }),
+      skill({ id: "skill-2", name: "Next.js", iconName: null }),
+      skill({ id: "skill-3", name: "Unknown Thing", iconName: "NotAnIcon" }),
     ];
     const { container } = render(<SkillsSection />);
 
-    expect(container.querySelectorAll("svg")).toHaveLength(1);
-  });
-
-  it("keeps the proficiency bar width in sync with the stored value", () => {
-    skillsMock.value = [skill({ proficiency: 40 })];
-    const { container } = render(<SkillsSection />);
-
-    expect(container.querySelector("[data-proficiency]")).toHaveStyle({
-      width: "40%",
-    });
+    expect(container.querySelectorAll("svg")).toHaveLength(2);
   });
 });

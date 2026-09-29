@@ -3,40 +3,23 @@
 import { createElement, useMemo } from "react";
 import { usePublicSkills } from "@/hooks/use-skills";
 import { useTranslation } from "@/hooks/use-translation";
-import { resolveIcon } from "@/lib/icon-resolver";
+import { resolveIconForSkill } from "@/lib/icon-resolver";
 import { groupSkillsByCategory } from "@/lib/utils/skill-group";
 import type { AdminSkill } from "@/components/sections/admin-skills/constants";
 
-function SkillRow({ skill }: { skill: AdminSkill }) {
-  const icon = skill.iconName ? resolveIcon(skill.iconName) : null;
+function SkillChip({ skill }: { skill: AdminSkill }) {
+  const icon = resolveIconForSkill(skill);
 
   return (
-    <li>
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <span className="flex items-center gap-2 min-w-0 text-sm font-medium text-text-primary">
-          {icon
-            ? createElement(icon, {
-                size: 16,
-                "aria-hidden": true,
-                className: "shrink-0 text-text-secondary",
-              })
-            : null}
-          <span className="truncate">{skill.name}</span>
-        </span>
-        <span className="shrink-0 font-mono tabular-nums text-xs text-text-muted">
-          {skill.proficiency}
-        </span>
-      </div>
-      <div
-        aria-hidden="true"
-        className="h-1 w-full overflow-hidden rounded-full bg-bg-tertiary"
-      >
-        <div
-          data-proficiency
-          className="h-full rounded-full bg-accent"
-          style={{ width: `${skill.proficiency}%` }}
-        />
-      </div>
+    <li className="flex items-center gap-2.5 rounded-xl border border-glass-border bg-bg-primary/50 px-3.5 py-2.5 text-sm font-medium text-text-primary transition-colors hover:border-accent/40 hover:text-accent">
+      {icon
+        ? createElement(icon, {
+            size: 18,
+            "aria-hidden": true,
+            className: "shrink-0 text-text-secondary",
+          })
+        : null}
+      <span className="truncate">{skill.name}</span>
     </li>
   );
 }
@@ -67,9 +50,9 @@ export function SkillsSection() {
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-wider text-accent">
               {t.skills.categories[group.category]}
             </h3>
-            <ul className="space-y-4">
+            <ul className="flex flex-wrap gap-2.5">
               {group.skills.map((item) => (
-                <SkillRow key={item.id} skill={item} />
+                <SkillChip key={item.id} skill={item} />
               ))}
             </ul>
           </div>

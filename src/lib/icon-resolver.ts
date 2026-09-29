@@ -15,6 +15,7 @@ import {
   SiNextdotjs,
   SiNodedotjs,
   SiPostgresql,
+  SiPython,
   SiPrisma,
   SiReact,
   SiRedis,
@@ -38,6 +39,7 @@ const ICON_MAP: Record<string, IconType> = {
   SiTailwindcss,
   SiPrisma,
   SiPostgresql,
+  SiPython,
   SiSupabase,
   SiFramer,
   SiZod,
@@ -59,16 +61,37 @@ const ICON_MAP: Record<string, IconType> = {
   SiVuedotjs,
 };
 
+/** Spellings that don't match a Simple Icons name once normalized. */
+const ALIASES: Record<string, string> = {
+  nextjs: "nextdotjs",
+  nodejs: "nodedotjs",
+  reactjs: "react",
+  postgres: "postgresql",
+  tailwind: "tailwindcss",
+};
+
+const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const LOOKUP = new Map(
+  Object.entries(ICON_MAP).flatMap(([key, component]) => [
+    [key.slice(2).toLowerCase(), component],
+    [key.toLowerCase(), component],
+  ]),
+);
+
 /**
- * Resolve an iconName string (e.g. "SiReact") to a react-icons component.
- * Supports both prefixed ("SiReact") and unprefixed ("React") names.
- * Returns null if the name isn't in the lookup map.
+ * Resolve an icon name (e.g. "SiReact", "Next.js", "node js") to a
+ * react-icons component. Returns null if the name isn't in the lookup map.
  */
 export function resolveIcon(iconName: string): IconType | null {
-  if (ICON_MAP[iconName]) return ICON_MAP[iconName];
-  const unprefixed = iconName.replace(/^Si/, "");
-  for (const [key, component] of Object.entries(ICON_MAP)) {
-    if (key.replace(/^Si/, "") === unprefixed) return component;
-  }
-  return null;
+  const key = normalize(iconName);
+  return LOOKUP.get(key) ?? LOOKUP.get(ALIASES[key] ?? "") ?? null;
+}
+
+/** Explicit iconName wins; otherwise match the skill name so logos still show. */
+export function resolveIconForSkill(skill: {
+  name: string;
+  iconName?: string | null;
+}): IconType | null {
+  return (skill.iconName ? resolveIcon(skill.iconName) : null) ?? resolveIcon(skill.name);
 }
