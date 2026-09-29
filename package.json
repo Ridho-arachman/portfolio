@@ -1,7 +1,7 @@
 {
-  "name": "portfolio ridho",
+  "name": "ridho-arachman-portfolio",
   "version": "0.1.0",
-  "private": true,
+  "description": "Personal portfolio web app (Next.js). Published automatically on every push to main.",
   "type": "module",
   "scripts": {
     "dev": "next dev",

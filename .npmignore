@@ -1,0 +1,18 @@
+# Never publish secrets, local env, or build outputs to npm.
+# (npm also falls back to .gitignore when .npmignore is absent;
+# this file makes the exclusion explicit and auditable.)
+.env*
+*.pem
+.vercel/
+.next/
+out/
+coverage/
+test-results/
+playwright-report/
+docker/
+e2e/
+documents/
+graphify-out/
+strix_runs/
+*.log
+nul
