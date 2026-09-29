@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { slugRegex } from "./project";
 
 // Client-side form validation for the admin experience form.
 export const experienceFormSchema = z.object({
@@ -6,9 +7,10 @@ export const experienceFormSchema = z.object({
   slug: z
     .string()
     .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      slugRegex,
       "Slug: lowercase letters, numbers and hyphens only (e.g. my-role)",
-    ),
+    )
+    .max(120, "Slug must be at most 120 characters"),
   company: z.string().min(2, "Company must be at least 2 characters"),
   type: z.enum(["WORK", "ORGANIZATION", "FREELANCE", "EDUCATION", "CERTIFICATION"]),
   period: z.string().min(2, "Period must be at least 2 characters"),
@@ -33,7 +35,11 @@ export type ExperienceFormValues = z.infer<typeof experienceFormSchema>;
 
 // Server-side payload accepted by POST /api/admin/experience.
 export const experienceCreateSchema = z.object({
-  slug: z.string().optional(),
+  slug: z
+    .string()
+    .regex(slugRegex, "Slug: lowercase letters, numbers and hyphens only")
+    .max(120, "Slug must be at most 120 characters")
+    .optional(),
   title: z.string().min(3),
   company: z.string().min(2),
   logoUrl: z.string().optional(),
@@ -52,14 +58,18 @@ export const experienceCreateSchema = z.object({
   description: z.array(z.string()),
   gallery: z.array(z.string()),
   isPublished: z.boolean().default(true),
-  order: z.number(),
+  order: z.number().int("Order must be a whole number").min(0),
 });
 
 export type ExperienceCreateValues = z.infer<typeof experienceCreateSchema>;
 
 // Server-side payload accepted by PUT /api/admin/experience/[id].
 export const experienceUpdateSchema = z.object({
-  slug: z.string().optional(),
+  slug: z
+    .string()
+    .regex(slugRegex, "Slug: lowercase letters, numbers and hyphens only")
+    .max(120, "Slug must be at most 120 characters")
+    .optional(),
   title: z.string().min(3).optional(),
   company: z.string().min(2).optional(),
   logoUrl: z.string().optional(),
@@ -74,7 +84,7 @@ export const experienceUpdateSchema = z.object({
   isPublished: z.boolean().optional(),
   description: z.array(z.string()).optional(),
   gallery: z.array(z.string()).optional(),
-  order: z.number().optional(),
+  order: z.number().int("Order must be a whole number").min(0).optional(),
 });
 
 export type ExperienceUpdateValues = z.infer<typeof experienceUpdateSchema>;
