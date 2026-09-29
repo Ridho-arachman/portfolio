@@ -28,6 +28,15 @@ function formatDate(d: Date): string {
   return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+export function formatExperiencePeriod(
+  startDate: Date | string,
+  endDate: Date | string | null | undefined,
+  isCurrent: boolean,
+): string {
+  const end = isCurrent || !endDate ? "Present" : formatDate(new Date(endDate));
+  return `${formatDate(new Date(startDate))} - ${end}`;
+}
+
 export interface MappedExperience {
   id: string;
   slug: string;
@@ -45,11 +54,7 @@ export interface MappedExperience {
 }
 
 export function mapExperience(exp: PrismaExperience): MappedExperience {
-  const startDate = new Date(exp.startDate);
-  const endDate = exp.endDate ? new Date(exp.endDate) : null;
-
-  const periodStart = formatDate(startDate);
-  const periodEnd = exp.isCurrent ? "Present" : endDate ? formatDate(endDate) : "Present";
+  const period = formatExperiencePeriod(exp.startDate, exp.endDate, exp.isCurrent);
 
   return {
     id: exp.id,
@@ -58,7 +63,7 @@ export function mapExperience(exp: PrismaExperience): MappedExperience {
     role: exp.title,
     company: exp.company,
     type: TYPE_MAP[exp.type] ?? "WORK",
-    period: `${periodStart} - ${periodEnd}`,
+    period,
     location: exp.location,
     thumbnail: exp.thumbnail,
     gallery: exp.gallery,

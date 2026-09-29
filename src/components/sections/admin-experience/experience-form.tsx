@@ -18,6 +18,7 @@ import {
   type ExperienceFormValues,
 } from "@/schema/experience";
 import { slugify } from "@/utils/slug";
+import { formatExperiencePeriod } from "@/lib/utils/experience-mapper";
 import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
@@ -49,11 +50,15 @@ export function ExperienceForm({
     mode: "onTouched",
     defaultValues: initialData
       ? {
-          role: initialData.role,
+          role: initialData.title,
           slug: initialData.slug,
           company: initialData.company,
           type: initialData.type,
-          period: initialData.period,
+          period: formatExperiencePeriod(
+            initialData.startDate,
+            initialData.endDate,
+            initialData.isCurrent,
+          ),
           location: initialData.location,
           thumbnail: initialData.thumbnail ?? "",
           logoUrl: initialData.logoUrl ?? "",

@@ -76,10 +76,8 @@ export interface ExperienceBase {
   id: string;
   slug: string;
   title: string;
-  role: string;
   company: string;
   type: ExperienceType;
-  period: string;
   location: string;
   thumbnail: string | null;
   logoUrl: string | null;
@@ -87,7 +85,7 @@ export interface ExperienceBase {
   description: string[];
   isPublished: boolean;
   order: number;
-  startDate: string | null;
+  startDate: string;
   endDate: string | null;
   isCurrent: boolean;
   createdAt: string;

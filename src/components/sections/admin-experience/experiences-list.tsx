@@ -18,6 +18,7 @@ import {
   useDeleteExperience,
 } from "@/hooks/use-experience";
 import { usePagination } from "@/hooks/use-pagination";
+import { formatExperiencePeriod } from "@/lib/utils/experience-mapper";
 import { Pagination } from "@/components/ui/pagination";
 import {
   ADMIN_EXPERIENCE,
@@ -135,7 +136,7 @@ export function ExperiencesList() {
                   <div className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/5 sm:px-5">
                     <Image
                       src={experience.thumbnail ?? ""}
-                      alt={experience.role}
+                      alt={experience.title}
                       width={320}
                       height={224}
                       unoptimized
@@ -145,7 +146,7 @@ export function ExperiencesList() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate text-sm font-medium">
-                          {experience.role}
+                          {experience.title}
                         </p>
                         <span
                           className={cn(
@@ -160,7 +161,13 @@ export function ExperiencesList() {
                         {experience.company} · {experience.location}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-text-muted">
-                        <span>{experience.period}</span>
+                        <span>
+                          {formatExperiencePeriod(
+                            experience.startDate,
+                            experience.endDate,
+                            experience.isCurrent,
+                          )}
+                        </span>
                         <span>
                           {experience.description.length}{" "}
                           {experience.description.length === 1
