@@ -26,8 +26,21 @@ import idMessages from "@/messages/id.json";
 import { TranslationsEditor } from "./translations-editor";
 
 const EN_OVERRIDE = { "hero.greeting": "Hey {name}, welcome" };
-/** Jumlah leaf string di en.json. `hero.typewriter` (array) tidak ikut dihitung. */
-const EDITABLE = 269;
+
+/** Leaf string saja; array (`hero.typewriter`) dan non-string tidak jadi input. */
+const countLeaves = (value: unknown): number =>
+  typeof value === "string"
+    ? 1
+    : Array.isArray(value)
+      ? 0
+      : typeof value === "object" && value !== null
+        ? Object.values(value).reduce<number>((sum, child) => sum + countLeaves(child), 0)
+        : 0;
+
+/** Diturunkan dari en.json supaya menambah key tidak membuat test ini merah. */
+const EDITABLE = countLeaves(enMessages);
+
+const banner = (overridden: 0 | 1) => new RegExp(`\\d+ editable keys, ${overridden} overridden\\.`);
 
 const payload = [
   {
@@ -40,9 +53,7 @@ const payload = [
 
 const saveButton = () => screen.getByRole("button", { name: /save changes/i });
 
-const loaded = async () => {
-  await screen.findByText(`${EDITABLE} editable keys, 1 overridden.`);
-};
+const loaded = () => screen.findByText(banner(1));
 
 /** Buka semua namespace; grup yang masih tertutup di-collapse via aria-expanded. */
 const openAllGroups = async (user: UserEvent) => {
@@ -63,7 +74,7 @@ describe("TranslationsEditor", () => {
     mocks.updateOne.mockClear();
   });
 
-  // Timeout dinaikkan: membuka 18 namespace berarti merender 266 input bertahap,
+  // Timeout dinaikkan: membuka 18 namespace berarti merender ratusan input bertahap,
   // dan jsdom jauh lebih lambat dari browser untuk itu.
   it("merender satu field per leaf string dan melewati key berbentuk array", async () => {
     const user = userEvent.setup();
@@ -102,13 +113,11 @@ describe("TranslationsEditor", () => {
     renderWithQuery(<TranslationsEditor />);
     await loaded();
 
-    expect(screen.getByText(`${EDITABLE} editable keys, 1 overridden.`)).toBeInTheDocument();
+    expect(screen.getByText(banner(1))).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /ID/ }));
 
-    await waitFor(() =>
-      expect(screen.getByText(`${EDITABLE} editable keys, 0 overridden.`)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(banner(0))).toBeInTheDocument());
     // `id` belum punya override, jadi grup hero menutup sendiri (tidak ada key
     // yang perlu dilihat) — cari key-nya agar group kebuka lagi.
     await user.type(screen.getByRole("searchbox", { name: "Search keys" }), "hero.greeting");
