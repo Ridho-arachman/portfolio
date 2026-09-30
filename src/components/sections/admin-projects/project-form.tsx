@@ -53,6 +53,7 @@ export function ProjectForm({
           gallery: initialData.gallery ?? [],
           liveUrl: initialData.liveUrl ?? "",
           repoUrl: initialData.repoUrl ?? "",
+          npmUrl: initialData.npmUrl ?? "",
           technologies: initialData.technologies.join(", "),
           isPublished: initialData.isPublished,
           order: initialData.order,
@@ -65,6 +66,7 @@ export function ProjectForm({
           gallery: [],
           liveUrl: "",
           repoUrl: "",
+          npmUrl: "",
           technologies: "",
           isPublished: true,
           order: 0,
@@ -93,6 +95,7 @@ export function ProjectForm({
       gallery: gallery,
       liveUrl: values.liveUrl || null,
       repoUrl: values.repoUrl || null,
+      npmUrl: values.npmUrl || null,
       technologies: values.technologies
         .split(",")
         .map((tag) => tag.trim())
@@ -275,6 +278,22 @@ export function ProjectForm({
                   {errors.repoUrl && (
                     <p className="text-xs text-destructive">
                       {errors.repoUrl.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="npmUrl">{ADMIN_PROJECTS.fieldNpmUrl}</Label>
+                  <Input
+                    id="npmUrl"
+                    type="url"
+                    placeholder={ADMIN_PROJECTS.fieldNpmUrlPlaceholder}
+                    aria-invalid={errors.npmUrl ? true : undefined}
+                    {...register("npmUrl")}
+                  />
+                  {errors.npmUrl && (
+                    <p className="text-xs text-destructive">
+                      {errors.npmUrl.message}
                     </p>
                   )}
                 </div>

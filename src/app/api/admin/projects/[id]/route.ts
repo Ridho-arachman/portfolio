@@ -84,6 +84,7 @@ export async function PUT(
         ...(data.thumbnail !== undefined && { thumbnail: data.thumbnail }),
         ...(data.liveUrl !== undefined && { liveUrl: data.liveUrl || null }),
         ...(data.repoUrl !== undefined && { repoUrl: data.repoUrl || null }),
+        ...(data.npmUrl !== undefined && { npmUrl: data.npmUrl || null }),
         ...(data.technologies !== undefined && {
           technologies: data.technologies,
         }),

@@ -69,6 +69,7 @@ export async function POST(req: Request) {
         thumbnail: data.thumbnail,
         liveUrl: data.liveUrl || null,
         repoUrl: data.repoUrl || null,
+        npmUrl: data.npmUrl || null,
         technologies: data.technologies,
         gallery: data.gallery,
         role: data.role || null,

@@ -51,6 +51,7 @@ export async function GET(req: Request) {
           thumbnail: true,
           liveUrl: true,
           repoUrl: true,
+          npmUrl: true,
           technologies: true,
           gallery: true,
           role: true,

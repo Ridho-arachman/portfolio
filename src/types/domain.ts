@@ -137,6 +137,7 @@ export interface ProjectBase {
   gallery: string[];
   liveUrl: string | null;
   repoUrl: string | null;
+  npmUrl: string | null;
   technologies: string[];
   role: string | null;
   year: string | null;
@@ -176,6 +177,7 @@ export interface DbProject {
   technologies: string[];
   liveUrl: string | null;
   repoUrl: string | null;
+  npmUrl: string | null;
   gallery: string[];
   role: string | null;
   year: string | null;

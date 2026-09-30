@@ -23,6 +23,7 @@ export async function GET(
         thumbnail: true,
         liveUrl: true,
         repoUrl: true,
+        npmUrl: true,
         technologies: true,
         gallery: true,
         role: true,

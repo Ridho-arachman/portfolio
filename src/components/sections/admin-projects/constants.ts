@@ -37,6 +37,8 @@ export const ADMIN_PROJECTS = {
   fieldLiveUrlPlaceholder: "https://example.com",
   fieldRepoUrl: "Repository URL (optional)",
   fieldRepoUrlPlaceholder: "https://github.com/user/repo",
+  fieldNpmUrl: "npm URL (optional)",
+  fieldNpmUrlPlaceholder: "https://www.npmjs.com/package/user-repo",
   fieldTechnologies: "Technologies",
   fieldTechnologiesPlaceholder: "Comma separated: Next.js, Tailwind, Prisma",
   fieldGallery: "Gallery Images",
