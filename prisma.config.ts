@@ -9,6 +9,8 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // `migrate deploy` butuh advisory lock; PgBouncer transaction pooler
+    // (DATABASE_URL, 6543) tidak bisa ambilnya sehingga deploy hang.
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });

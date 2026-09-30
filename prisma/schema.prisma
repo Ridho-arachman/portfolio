@@ -132,6 +132,11 @@ model Project {
   order        Int       @default(0) // Untuk sorting manual di admin
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  // Override copy per locale: { "id": { "title": "...", "highlights": ["..."] } }.
+  // Kolom di atas (title/description/role/highlights) adalah konten DEFAULT_LOCALE
+  // (en). Key yang absen atau kosong berarti "warisi kolom base" — lihat
+  // src/lib/localized-content.ts. Verified lewat zod di trust boundary admin.
+  translations Json?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
@@ -189,7 +194,6 @@ model Experience {
   slug        String         @unique // URL friendly: /experience/frontend-dev-intern
   title       String // e.g., "Frontend Developer Intern", "Ketua Himpunan"
   company     String // e.g., "PT Tech Startup", "Himpunan Mahasiswa SI"
-  logoUrl     String? // URL logo perusahaan/organisasi (opsional)
   thumbnail   String? // URL gambar cover experience
   type        ExperienceType // Kategori pengalaman
   location    String // e.g., "Jakarta, Indonesia" atau "Remote"
@@ -200,6 +204,10 @@ model Experience {
   gallery     String[] // Array of image URLs untuk gallery detail
   isPublished Boolean        @default(true) // Published/Draft toggle
   order       Int            @default(0) // Untuk sorting manual di Admin Dashboard
+  // Override copy per locale, shape { "id": { "title", "description": [] } }.
+  // `company`/`location` sengaja tidak ada di sini: itu proper noun, bukan copy.
+  // Base = DEFAULT_LOCALE. Resolver: src/lib/localized-content.ts
+  translations Json?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
@@ -245,7 +253,6 @@ model Certificate {
   slug          String    @unique // URL friendly: /certificates/aws-cloud-practitioner
   title         String // e.g., "AWS Certified Cloud Practitioner"
   issuer        String // e.g., "Amazon Web Services"
-  logoUrl       String? // URL logo issuer (opsional)
   thumbnail     String? // URL gambar cover sertifikat
   gallery       String[] // Array of image URLs untuk gallery detail
   credentialId  String? // Nomor kredensial sertifikat (opsional)
@@ -254,6 +261,10 @@ model Certificate {
   expiryDate    DateTime? // Nullable = berlaku seumur hidup / no expiration
   skills        String[] // Skill yang tervalidasi: ["Cloud", "AWS"]
   summary       String[] // Bullet points pencapaian / detail sertifikat
+  // Override copy per locale, shape { "id": { "title", "summary": [] } }.
+  // `issuer`/`skills` tidak ada di sini: proper noun dan istilah teknis.
+  // Base = DEFAULT_LOCALE. Resolver: src/lib/localized-content.ts
+  translations Json?
   order         Int       @default(0) // Untuk sorting manual di Admin Dashboard
   isPublished   Boolean   @default(true)
   createdAt     DateTime  @default(now())
@@ -341,5 +352,4 @@ enum ExperienceType {
   ORGANIZATION // Organisasi Kampus / Himpunan / BEM
   FREELANCE // Proyek Lepas
   EDUCATION // Pendidikan Formal / Bootcamp / Kursus
-  CERTIFICATION // Sertifikasi Profesional
 }
