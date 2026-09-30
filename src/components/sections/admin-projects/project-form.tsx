@@ -18,6 +18,7 @@ import {
   projectFormSchema,
   type ProjectFormValues,
 } from "@/schema/project";
+import { idOverrides } from "@/schema/content-translations";
 import { ADMIN_PROJECTS, type AdminProject } from "./constants";
 import { slugify } from "@/utils/slug";
 
@@ -57,6 +58,8 @@ export function ProjectForm({
           technologies: initialData.technologies.join(", "),
           isPublished: initialData.isPublished,
           order: initialData.order,
+          idTitle: initialData.translations?.id?.title ?? "",
+          idDescription: initialData.translations?.id?.description ?? "",
         }
       : {
           title: "",
@@ -70,6 +73,8 @@ export function ProjectForm({
           technologies: "",
           isPublished: true,
           order: 0,
+          idTitle: "",
+          idDescription: "",
         },
   });
 
@@ -106,6 +111,10 @@ export function ProjectForm({
       year: null,
       highlights: [],
       categoryId: null,
+      translations: idOverrides({
+        title: values.idTitle ?? "",
+        description: values.idDescription ?? "",
+      }),
     };
 
     onSubmit(payload);
@@ -220,6 +229,40 @@ export function ProjectForm({
                       {errors.description.message}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-4 rounded-2xl border border-dashed border-glass-border p-4 sm:col-span-2">
+                  <div>
+                    <p className="text-sm font-medium">
+                      {ADMIN_PROJECTS.idSectionLabel}
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      {ADMIN_PROJECTS.idSectionNote}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idTitle">
+                      {ADMIN_PROJECTS.fieldIdTitle}
+                    </Label>
+                    <Input
+                      id="idTitle"
+                      placeholder={ADMIN_PROJECTS.fieldIdTitlePlaceholder}
+                      {...register("idTitle")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idDescription">
+                      {ADMIN_PROJECTS.fieldIdDescription}
+                    </Label>
+                    <Textarea
+                      id="idDescription"
+                      rows={4}
+                      placeholder={ADMIN_PROJECTS.fieldIdDescriptionPlaceholder}
+                      {...register("idDescription")}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">

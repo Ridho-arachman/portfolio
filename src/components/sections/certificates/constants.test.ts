@@ -16,7 +16,6 @@ function cachedCert(issueDate: string, expiryDate: string | null = null) {
     issuer: "Amazon Web Services",
     credentialId: null,
     credentialUrl: null,
-    logoUrl: null,
     thumbnail: null,
     gallery: [],
     skills: [],
@@ -28,6 +27,7 @@ function cachedCert(issueDate: string, expiryDate: string | null = null) {
     deletedAt: null,
     createdAt: ISO_ISSUE,
     updatedAt: ISO_ISSUE,
+    translations: null,
   };
 }
 

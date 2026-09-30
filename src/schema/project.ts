@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { projectTranslationsSchema } from "./content-translations";
 
 // Single shared slug pattern — source of truth for client + server schemas.
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -22,6 +23,8 @@ export const projectFormSchema = z.object({
   gallery: z.array(z.string()),
   isPublished: z.boolean(),
   order: z.coerce.number().int("Order must be a whole number").min(0),
+  idTitle: z.string().optional(),
+  idDescription: z.string().optional(),
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
@@ -47,6 +50,7 @@ export const projectUpdateSchema = z.object({
   isPublished: z.boolean().optional(),
   order: z.number().int("Order must be a whole number").min(0).optional(),
   categoryId: z.string().optional(),
+  translations: projectTranslationsSchema.optional(),
 });
 
 export type ProjectUpdateValues = z.infer<typeof projectUpdateSchema>;
@@ -72,6 +76,7 @@ export const projectCreateSchema = z.object({
   isPublished: z.boolean(),
   order: z.number().int("Order must be a whole number").min(0),
   categoryId: z.string().optional(),
+  translations: projectTranslationsSchema.optional(),
 });
 
 export type ProjectCreateValues = z.infer<typeof projectCreateSchema>;

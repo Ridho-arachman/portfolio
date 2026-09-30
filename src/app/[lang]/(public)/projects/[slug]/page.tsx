@@ -6,6 +6,7 @@ import type { Project } from "@/components/sections/projects/constants";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getMessages } from "@/lib/translations";
+import { localizeProject } from "@/lib/localized-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 
 // Tanpa ini halaman bisa dilayani dari cache, sehingga project yang baru
@@ -60,9 +61,11 @@ export async function generateMetadata({
     return { title: messages.projectDetail.notFound };
   }
 
+  const localized = localizeProject(project, locale);
+
   return {
-    title: project.title,
-    description: project.description.slice(0, 155),
+    title: localized.title,
+    description: localized.description.slice(0, 155),
     openGraph: {
       images: project.thumbnail ? [project.thumbnail] : [],
     },
@@ -72,7 +75,8 @@ export async function generateMetadata({
 export default async function ProjectDetailPage({
   params,
 }: { params: Promise<{ lang: string; slug: string }> }) {
-  const { slug } = await params;
+  const { lang, slug } = await params;
+  const locale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
 
   const [dbProject, allDbProjects] = await Promise.all([
     fetchProject(slug),
@@ -83,8 +87,8 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
-  const project = mapDbProjectToProject(dbProject);
-  const allProjects = allDbProjects.map(mapDbProjectToProject);
+  const project = mapDbProjectToProject(dbProject, locale);
+  const allProjects = allDbProjects.map((p) => mapDbProjectToProject(p, locale));
   const { prev, next } = getAdjacentProjects(allProjects, slug);
 
   return <ProjectDetailPageContent project={project} prev={prev} next={next} />;

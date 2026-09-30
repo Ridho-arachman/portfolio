@@ -1,3 +1,5 @@
+import { localizeProject } from "@/lib/localized-content";
+import type { Locale } from "@/lib/i18n";
 import type { Project } from "./constants";
 
 interface DbProject {
@@ -20,21 +22,27 @@ interface DbProject {
   categoryId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  translations?: unknown;
 }
 
-export function mapDbProjectToProject(dbProject: DbProject): Project {
+export function mapDbProjectToProject(
+  dbProject: DbProject,
+  locale: Locale,
+): Project {
+  const localized = localizeProject(dbProject, locale);
+
   return {
     id: Number(dbProject.id),
     slug: dbProject.slug,
-    title: dbProject.title,
-    description: dbProject.description,
+    title: localized.title,
+    description: localized.description,
     image: dbProject.thumbnail,
     tags: dbProject.technologies,
     link: `/projects/${dbProject.slug}`,
-    role: dbProject.role ?? undefined,
+    role: localized.role ?? undefined,
     year: dbProject.year ?? undefined,
     gallery: dbProject.gallery,
-    highlights: dbProject.highlights,
+    highlights: localized.highlights,
     liveUrl: dbProject.liveUrl ?? undefined,
     repoUrl: dbProject.repoUrl ?? undefined,
     npmUrl: dbProject.npmUrl ?? undefined,

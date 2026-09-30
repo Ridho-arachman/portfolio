@@ -1,4 +1,5 @@
 import { revalidatePath, revalidateTag } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { notDeleted, trashedOnly, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
@@ -71,7 +72,6 @@ export async function POST(req: Request) {
         slug,
         title: data.title,
         issuer: data.issuer,
-        logoUrl: data.logoUrl || null,
         thumbnail: data.thumbnail || null,
         gallery: data.gallery ?? [],
         credentialId: data.credentialId || null,
@@ -82,6 +82,7 @@ export async function POST(req: Request) {
         summary: data.summary,
         isPublished: data.isPublished,
         order: data.order,
+        translations: data.translations ?? Prisma.DbNull,
       },
     });
 

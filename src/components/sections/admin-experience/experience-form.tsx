@@ -61,11 +61,13 @@ export function ExperienceForm({
           ),
           location: initialData.location,
           thumbnail: initialData.thumbnail ?? "",
-          logoUrl: initialData.logoUrl ?? "",
           gallery: initialData.gallery ?? [],
           description: initialData.description.join("\n"),
           isPublished: initialData.isPublished,
           order: initialData.order,
+          idTitle: initialData.translations?.id?.title ?? "",
+          idDescription:
+            initialData.translations?.id?.description?.join("\n") ?? "",
         }
       : {
           role: "",
@@ -75,17 +77,17 @@ export function ExperienceForm({
           period: "",
           location: "",
           thumbnail: "",
-          logoUrl: "",
           gallery: [],
           description: "",
           isPublished: true,
           order: 0,
+          idTitle: "",
+          idDescription: "",
         },
   });
 
   const role = watch("role");
   const thumbnail = watch("thumbnail");
-  const logoUrl = watch("logoUrl") ?? "";
   const gallery = watch("gallery") ?? [];
   const isPublished = watch("isPublished");
 
@@ -219,22 +221,6 @@ export function ExperienceForm({
         </div>
 
         <div className="sm:col-span-2">
-          <Label htmlFor="logoUrl">{ADMIN_EXPERIENCE.form.logoUrlLabel}</Label>
-          <ImageUpload
-            value={logoUrl}
-            onChange={(url) => setValue("logoUrl", url)}
-            onRemove={() => setValue("logoUrl", "")}
-            entityType="experience"
-            entityId={entityId}
-            label={ADMIN_EXPERIENCE.form.logoUrlLabel}
-            placeholder={ADMIN_EXPERIENCE.form.logoUrlPlaceholder}
-          />
-          {errors.logoUrl && (
-            <p className="mt-1 text-sm text-destructive">{errors.logoUrl.message}</p>
-          )}
-        </div>
-
-        <div className="sm:col-span-2">
           <MultiImageUpload
             value={gallery}
             onChange={(urls) => setValue("gallery", urls)}
@@ -257,6 +243,36 @@ export function ExperienceForm({
           {errors.description && (
             <p className="mt-1 text-sm text-destructive">{errors.description.message}</p>
           )}
+        </div>
+
+        <div className="sm:col-span-2 flex flex-col gap-4 rounded-2xl border border-dashed border-glass-border p-4">
+          <div>
+            <p className="text-sm font-medium">{ADMIN_EXPERIENCE.form.idSectionLabel}</p>
+            <p className="text-sm text-text-muted">
+              {ADMIN_EXPERIENCE.form.idSectionNote}
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="idTitle">{ADMIN_EXPERIENCE.form.idTitleLabel}</Label>
+            <Input
+              id="idTitle"
+              placeholder={ADMIN_EXPERIENCE.form.idTitlePlaceholder}
+              {...register("idTitle")}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="idDescription">
+              {ADMIN_EXPERIENCE.form.idDescriptionLabel}
+            </Label>
+            <Textarea
+              id="idDescription"
+              placeholder={ADMIN_EXPERIENCE.form.idDescriptionPlaceholder}
+              {...register("idDescription")}
+              rows={4}
+            />
+          </div>
         </div>
 
         <div className="sm:col-span-2">

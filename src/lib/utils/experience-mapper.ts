@@ -1,4 +1,6 @@
 import { type Experience as PrismaExperience } from "@/generated/prisma/client";
+import { localizeExperience } from "@/lib/localized-content";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 import { type ExperienceType } from "@/types/domain";
 
 const TYPE_MAP: Record<string, ExperienceType> = {
@@ -7,7 +9,6 @@ const TYPE_MAP: Record<string, ExperienceType> = {
   ORGANIZATION: "ORGANIZATION",
   FREELANCE: "FREELANCE",
   EDUCATION: "EDUCATION",
-  CERTIFICATION: "CERTIFICATION",
 };
 
 const MONTHS = [
@@ -54,26 +55,33 @@ export interface MappedExperience {
   order: number;
 }
 
-export function mapExperience(exp: PrismaExperience): MappedExperience {
+export function mapExperience(
+  exp: PrismaExperience,
+  locale: Locale = DEFAULT_LOCALE,
+): MappedExperience {
   const period = formatExperiencePeriod(exp.startDate, exp.endDate, exp.isCurrent);
+  const localized = localizeExperience(exp, locale);
 
   return {
     id: exp.id,
     slug: exp.slug,
-    title: exp.title,
-    role: exp.title,
+    title: localized.title,
+    role: localized.title,
     company: exp.company,
     type: TYPE_MAP[exp.type] ?? "WORK",
     period,
     location: exp.location,
     thumbnail: exp.thumbnail,
     gallery: exp.gallery,
-    description: exp.description,
+    description: localized.description,
     isPublished: exp.isPublished,
     order: exp.order,
   };
 }
 
-export function mapExperiences(exps: PrismaExperience[]): MappedExperience[] {
-  return exps.map((exp) => mapExperience(exp));
+export function mapExperiences(
+  exps: PrismaExperience[],
+  locale: Locale = DEFAULT_LOCALE,
+): MappedExperience[] {
+  return exps.map((exp) => mapExperience(exp, locale));
 }

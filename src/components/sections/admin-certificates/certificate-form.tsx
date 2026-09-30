@@ -18,6 +18,7 @@ import {
   type CertificateFormValues,
   type CertificateCreateValues,
 } from "@/schema/certificate";
+import { idOverrides } from "@/schema/content-translations";
 import { ADMIN_CERTIFICATES, type AdminCertificate } from "./constants";
 import { slugify } from "@/utils/slug";
 
@@ -54,12 +55,13 @@ export function CertificateForm({
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
           thumbnail: initialData.thumbnail ?? "",
-          logoUrl: initialData.logoUrl ?? "",
           gallery: initialData.gallery ?? [],
           skills: initialData.skills.join(", "),
           summary: initialData.summary.join("\n"),
           isPublished: initialData.isPublished,
           order: initialData.order,
+          idTitle: initialData.translations?.id?.title ?? "",
+          idSummary: initialData.translations?.id?.summary?.join("\n") ?? "",
         }
       : {
           title: "",
@@ -70,19 +72,19 @@ export function CertificateForm({
           credentialId: "",
           credentialUrl: "",
           thumbnail: "",
-          logoUrl: "",
           gallery: [],
           skills: "",
           summary: "",
           isPublished: true,
           order: 0,
+          idTitle: "",
+          idSummary: "",
         },
   });
 
   const titleValue = useWatch({ control, name: "title" });
   const isPublished = useWatch({ control, name: "isPublished" });
   const thumbnail = watch("thumbnail");
-  const logoUrl = watch("logoUrl") ?? "";
   const gallery = watch("gallery") ?? [];
 
   useEffect(() => {
@@ -103,7 +105,6 @@ export function CertificateForm({
       credentialId: values.credentialId || undefined,
       credentialUrl: values.credentialUrl || undefined,
       thumbnail: values.thumbnail,
-      logoUrl: values.logoUrl,
       gallery: gallery,
       skills: values.skills
         .split(",")
@@ -115,6 +116,13 @@ export function CertificateForm({
         .filter(Boolean),
       isPublished: values.isPublished,
       order: values.order,
+      translations: idOverrides({
+        title: values.idTitle ?? "",
+        summary: (values.idSummary ?? "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
+      }),
     };
 
     onSubmit(payload);
@@ -288,23 +296,6 @@ export function CertificateForm({
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
-                  <ImageUpload
-                    value={logoUrl}
-                    onChange={(url) => setValue("logoUrl", url)}
-                    onRemove={() => setValue("logoUrl", "")}
-                    entityType="certificates"
-                    entityId={entityId}
-                    label={ADMIN_CERTIFICATES.fieldLogoUrl}
-                    placeholder={ADMIN_CERTIFICATES.fieldLogoUrlPlaceholder}
-                  />
-                  {errors.logoUrl && (
-                    <p className="text-xs text-destructive">
-                      {errors.logoUrl.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2 sm:col-span-2">
                   <MultiImageUpload
                     value={gallery}
                     onChange={(urls) => setValue("gallery", urls)}
@@ -344,6 +335,40 @@ export function CertificateForm({
                       {ADMIN_CERTIFICATES.fieldSummaryHint}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-4 rounded-2xl border border-dashed border-glass-border p-4 sm:col-span-2">
+                  <div>
+                    <p className="text-sm font-medium">
+                      {ADMIN_CERTIFICATES.idSectionLabel}
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      {ADMIN_CERTIFICATES.idSectionNote}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idTitle">
+                      {ADMIN_CERTIFICATES.fieldIdTitle}
+                    </Label>
+                    <Input
+                      id="idTitle"
+                      placeholder={ADMIN_CERTIFICATES.fieldIdTitlePlaceholder}
+                      {...register("idTitle")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idSummary">
+                      {ADMIN_CERTIFICATES.fieldIdSummary}
+                    </Label>
+                    <Textarea
+                      id="idSummary"
+                      rows={4}
+                      placeholder={ADMIN_CERTIFICATES.fieldIdSummaryPlaceholder}
+                      {...register("idSummary")}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">

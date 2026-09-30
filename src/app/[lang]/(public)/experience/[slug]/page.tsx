@@ -5,6 +5,7 @@ import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getMessages } from "@/lib/translations";
+import { localizeExperience } from "@/lib/localized-content";
 import { isValidLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 
 interface ExperienceDetailPageProps {
@@ -31,19 +32,21 @@ export async function generateMetadata({
   const messages = await getMessages(locale);
   const experience = await prisma.experience.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
-    select: { title: true, company: true },
+    select: { title: true, company: true, translations: true },
   });
 
   if (!experience) {
     return { title: messages.experienceDetail.notFound };
   }
 
+  const localized = localizeExperience(experience, locale);
+
   return {
-    title: `${experience.title} — ${experience.company}`,
+    title: `${localized.title} — ${experience.company}`,
     description:
       locale === "id"
-        ? `Detail pengalaman ${experience.title} di ${experience.company}.`
-        : `Details of the ${experience.title} experience at ${experience.company}.`,
+        ? `Detail pengalaman ${localized.title} di ${experience.company}.`
+        : `Details of the ${localized.title} experience at ${experience.company}.`,
   };
 }
 
@@ -52,7 +55,8 @@ export const dynamic = 'force-dynamic';
 export default async function ExperienceDetailPage({
   params,
 }: ExperienceDetailPageProps) {
-  const { slug } = await params;
+  const { slug, lang } = await params;
+  const locale: Locale = isValidLocale(lang) ? lang : DEFAULT_LOCALE;
 
   const rawExperience = await prisma.experience.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
@@ -62,13 +66,13 @@ export default async function ExperienceDetailPage({
     notFound();
   }
 
-  const exp = mapExperience(rawExperience);
+  const exp = mapExperience(rawExperience, locale);
 
   const allRaw = await prisma.experience.findMany({
     where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
   });
-  const allMapped = mapExperiences(allRaw);
+  const allMapped = mapExperiences(allRaw, locale);
 
   const index = allMapped.findIndex((e) => e.slug === slug);
   const prev = index > 0 ? allMapped[index - 1] : null;

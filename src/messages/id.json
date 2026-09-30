@@ -256,6 +256,33 @@
     "successDesc": "Terima kasih telah menghubungi. Saya akan membalas secepat mungkin.",
     "sendAnother": "Kirim Pesan Lain"
   },
+  "faq": {
+    "metaTitle": "Tanya PortoBot | Ridho Arachman",
+    "metaDescription": "Tanyakan apa saja tentang project, skill, pengalaman kerja, dan sertifikat Ridho Arachman lewat PortoBot.",
+    "intro": "Halo, saya PortoBot. Saya menjawab pertanyaan tentang {name} — project, skill, pengalaman, dan sertifikat di situs ini. Di luar itu saya tidak bisa membantu, jadi silakan bertanya.",
+    "fallback": "Saya hanya bisa menjawab pertanyaan tentang {name} — project, skill, pengalaman kerja, sertifikat, dan kontak-nya. Untuk hal lain, bisa menghubungi langsung di {contact}.",
+    "present": "Sekarang",
+    "none": "Belum ada yang dipublikasikan di sana.",
+    "suggestions": {
+      "identity": "Siapa {name}?",
+      "skills": "Skill dan teknologi apa yang dia pakai?",
+      "projects": "Project apa saja yang pernah dibuat?",
+      "experience": "Pengalaman kerjanya seperti apa?",
+      "certificates": "Sertifikat apa yang dimiliki?",
+      "contact": "Bagaimana cara menghubungi?"
+    },
+    "answers": {
+      "identity": "{name} — {title}, berdomisili di {location}.\n\n{bio}",
+      "skills": "Ini yang dipakai {name}:\n{groups}",
+      "projects": "{name} punya {count} project yang dipublikasikan:\n{items}\n\nTanya salah satu untuk melihat detail lengkapnya.",
+      "project": "{title} ({year})\n{role} · {tech}\n\n{description}\n\n{url}",
+      "experience": "Ini rekam jejak {name}:\n{items}",
+      "certificates": "Sertifikat yang dimiliki {name}:\n{items}",
+      "education": "{name} punya gelar {degree} bidang {major}.",
+      "contact": "Bisa menghubungi {name} di:\n{links}\n\nBerdomisili di {location} dan {responseTime}.",
+      "availability": "{name} sedang {status}."
+    }
+  },
   "footer": {
     "tagline": "Membangun pengalaman web imersif dan berperforma tinggi.",
     "license": "MIT",

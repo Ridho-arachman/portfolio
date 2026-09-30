@@ -1,5 +1,6 @@
 import type { Certificate } from "@/generated/prisma/client";
 import type { Locale } from "@/lib/i18n";
+import { localizeCertificate } from "@/lib/localized-content";
 
 export interface CertificateListData {
   id: number;
@@ -67,10 +68,12 @@ export function mapCertificateToData(
   locale: Locale,
   labels: CertificatePeriodLabels,
 ): CertificateListData {
+  const localized = localizeCertificate(cert, locale);
+
   return {
     id: Number(cert.id) || 0,
     slug: cert.slug,
-    title: cert.title,
+    title: localized.title,
     issuer: cert.issuer,
     credentialId: cert.credentialId ?? undefined,
     credentialUrl: cert.credentialUrl ?? undefined,
@@ -79,6 +82,6 @@ export function mapCertificateToData(
     thumbnail: cert.thumbnail ?? "",
     gallery: cert.gallery,
     skills: cert.skills,
-    summary: cert.summary,
+    summary: localized.summary,
   };
 }

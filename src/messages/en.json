@@ -256,6 +256,33 @@
     "successDesc": "Thank you for reaching out. I'll get back to you as soon as possible.",
     "sendAnother": "Send Another Message"
   },
+  "faq": {
+    "metaTitle": "Ask PortoBot | Ridho Arachman",
+    "metaDescription": "Ask PortoBot about Ridho Arachman's projects, skills, work experience, certifications, and how to get in touch.",
+    "intro": "Hi, I'm PortoBot. I answer questions about {name} — the projects, skills, experience and certifications on this site. I don't cover anything beyond that, so feel free to ask.",
+    "fallback": "I can only answer questions about {name} — his projects, skills, work experience, certifications and contact details. For anything else, reach him directly at {contact}.",
+    "present": "Present",
+    "none": "Nothing is published there yet.",
+    "suggestions": {
+      "identity": "Who is {name}?",
+      "skills": "What skills and tech does he use?",
+      "projects": "What projects has he built?",
+      "experience": "What is his work experience?",
+      "certificates": "What certifications does he have?",
+      "contact": "How can I get in touch?"
+    },
+    "answers": {
+      "identity": "{name} — {title}, based in {location}.\n\n{bio}",
+      "skills": "Here's what {name} works with:\n{groups}",
+      "projects": "{name} has published {count} projects:\n{items}\n\nAsk me about any one of them for the full detail.",
+      "project": "{title} ({year})\n{role} · {tech}\n\n{description}\n\n{url}",
+      "experience": "Here's {name}'s track record:\n{items}",
+      "certificates": "{name} holds these certifications:\n{items}",
+      "education": "{name} holds a {degree} in {major}.",
+      "contact": "You can reach {name} here:\n{links}\n\nHe's based in {location} and {responseTime}.",
+      "availability": "{name} is {status}."
+    }
+  },
   "footer": {
     "tagline": "Building immersive, high-performance web experiences.",
     "license": "MIT",

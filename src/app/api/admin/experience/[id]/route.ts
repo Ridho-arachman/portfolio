@@ -1,4 +1,5 @@
 import { revalidatePath, revalidateTag } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { experienceUpdateSchema } from "@/schema/experience";
@@ -60,7 +61,6 @@ export async function PUT(
         ...(data.slug !== undefined && { slug: data.slug }),
         ...(data.title !== undefined && { title: data.title }),
         ...(data.company !== undefined && { company: data.company }),
-        ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
         ...(data.thumbnail !== undefined && { thumbnail: data.thumbnail }),
         ...(data.type !== undefined && { type: data.type }),
         ...(data.location !== undefined && { location: data.location }),
@@ -79,6 +79,9 @@ export async function PUT(
         }),
         ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.order !== undefined && { order: data.order }),
+        ...(data.translations !== undefined && {
+          translations: data.translations ?? Prisma.DbNull,
+        }),
       },
     });
 

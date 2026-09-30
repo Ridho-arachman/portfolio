@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { slugRegex } from "./project";
+import { experienceTranslationsSchema } from "./content-translations";
 
 // Client-side form validation for the admin experience form.
 export const experienceFormSchema = z.object({
@@ -18,13 +19,11 @@ export const experienceFormSchema = z.object({
     "ORGANIZATION",
     "FREELANCE",
     "EDUCATION",
-    "CERTIFICATION",
   ]),
   period: z.string().min(2, "Period must be at least 2 characters"),
   location: z.string().min(2, "Location must be at least 2 characters"),
   thumbnail: z.url("Enter a valid image URL"),
   gallery: z.array(z.string()),
-  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
   description: z
     .string()
     .refine(
@@ -36,6 +35,8 @@ export const experienceFormSchema = z.object({
     ),
   isPublished: z.boolean().default(true),
   order: z.number().int().min(0),
+  idTitle: z.string().optional(),
+  idDescription: z.string().optional(),
 });
 
 export type ExperienceFormValues = z.infer<typeof experienceFormSchema>;
@@ -49,7 +50,6 @@ export const experienceCreateSchema = z.object({
     .optional(),
   title: z.string().min(3),
   company: z.string().min(2),
-  logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
   type: z.enum([
     "WORK",
@@ -57,7 +57,6 @@ export const experienceCreateSchema = z.object({
     "ORGANIZATION",
     "FREELANCE",
     "EDUCATION",
-    "CERTIFICATION",
   ]),
   location: z.string(),
   startDate: z.string(),
@@ -67,6 +66,7 @@ export const experienceCreateSchema = z.object({
   gallery: z.array(z.string()),
   isPublished: z.boolean().default(true),
   order: z.number().int("Order must be a whole number").min(0),
+  translations: experienceTranslationsSchema.optional(),
 });
 
 export type ExperienceCreateValues = z.infer<typeof experienceCreateSchema>;
@@ -80,7 +80,6 @@ export const experienceUpdateSchema = z.object({
     .optional(),
   title: z.string().min(3).optional(),
   company: z.string().min(2).optional(),
-  logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
   type: z
     .enum([
@@ -89,7 +88,6 @@ export const experienceUpdateSchema = z.object({
       "ORGANIZATION",
       "FREELANCE",
       "EDUCATION",
-      "CERTIFICATION",
     ])
     .optional(),
   location: z.string().optional(),
@@ -100,6 +98,7 @@ export const experienceUpdateSchema = z.object({
   description: z.array(z.string()).optional(),
   gallery: z.array(z.string()).optional(),
   order: z.number().int("Order must be a whole number").min(0).optional(),
+  translations: experienceTranslationsSchema.optional(),
 });
 
 export type ExperienceUpdateValues = z.infer<typeof experienceUpdateSchema>;

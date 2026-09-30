@@ -22,7 +22,6 @@ export async function GET(req: Request) {
           slug: true,
           title: true,
           issuer: true,
-          logoUrl: true,
           thumbnail: true,
           gallery: true,
           credentialId: true,

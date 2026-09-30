@@ -6,6 +6,7 @@ import {
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
+import { localizeCertificate } from "@/lib/localized-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -58,9 +59,10 @@ export async function generateMetadata({
   const messages = await getMessages(validLocale);
   const cert = await getCertificate(slug);
   if (!cert) return { title: messages.certificateDetail.notFound };
+  const localized = localizeCertificate(cert, validLocale);
   return {
-    title: cert.title,
-    description: cert.summary.join(" ").slice(0, 155),
+    title: localized.title,
+    description: localized.summary.join(" ").slice(0, 155),
     openGraph: {
       images: cert.thumbnail ? [cert.thumbnail] : [],
     },

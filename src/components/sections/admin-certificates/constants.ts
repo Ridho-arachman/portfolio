@@ -38,8 +38,6 @@ export const ADMIN_CERTIFICATES = {
   fieldCredentialUrlPlaceholder: "https://www.credly.com/",
   fieldThumbnail: "Thumbnail URL",
   fieldThumbnailPlaceholder: "https://images.example.com/cover.jpg",
-  fieldLogoUrl: "Logo URL",
-  fieldLogoUrlPlaceholder: "https://example.com/logo.png",
   fieldGallery: "Gallery Images",
   fieldGalleryPlaceholder: "Upload images to show in the certificate gallery",
   fieldSkills: "Skills",
@@ -51,4 +49,11 @@ export const ADMIN_CERTIFICATES = {
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
+  idSectionLabel: "Bahasa Indonesia (opsional)",
+  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  fieldIdTitle: "Title (ID)",
+  fieldIdTitlePlaceholder: "e.g. AWS Certified Cloud Practitioner",
+  fieldIdSummary: "Summary (ID, satu poin per baris)",
+  fieldIdSummaryPlaceholder:
+    "Satu poin per baris.\nIni tampil di halaman detail sertifikat.",
 } as const;

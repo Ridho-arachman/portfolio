@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { slugRegex } from "./project";
+import { certificateTranslationsSchema } from "./content-translations";
 
 // Client-side form validation for the admin certificate form.
 export const certificateFormSchema = z.object({
@@ -17,7 +18,6 @@ export const certificateFormSchema = z.object({
   credentialId: z.union([z.string().min(1), z.literal("")]).optional(),
   credentialUrl: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   thumbnail: z.url("Enter a valid image URL"),
-  logoUrl: z.url("Enter a valid image URL").optional().or(z.literal("")),
   gallery: z.array(z.string()),
   skills: z.string(),
   summary: z
@@ -28,6 +28,8 @@ export const certificateFormSchema = z.object({
     ),
   isPublished: z.boolean(),
   order: z.coerce.number().int("Order must be a whole number").min(0),
+  idTitle: z.string().optional(),
+  idSummary: z.string().optional(),
 });
 
 export type CertificateFormValues = z.infer<typeof certificateFormSchema>;
@@ -41,7 +43,6 @@ export const certificateCreateSchema = z.object({
     .optional(),
   title: z.string().min(3),
   issuer: z.string().min(2),
-  logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
   gallery: z.array(z.string()).optional(),
   credentialId: z.string().optional(),
@@ -52,6 +53,7 @@ export const certificateCreateSchema = z.object({
   summary: z.array(z.string()),
   isPublished: z.boolean(),
   order: z.number().int("Order must be a whole number").min(0),
+  translations: certificateTranslationsSchema.optional(),
 });
 
 export type CertificateCreateValues = z.infer<typeof certificateCreateSchema>;
@@ -65,7 +67,6 @@ export const certificateUpdateSchema = z.object({
     .optional(),
   title: z.string().min(3).optional(),
   issuer: z.string().min(2).optional(),
-  logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
   gallery: z.array(z.string()).optional(),
   credentialId: z.string().optional(),
@@ -76,6 +77,7 @@ export const certificateUpdateSchema = z.object({
   summary: z.array(z.string()).optional(),
   isPublished: z.boolean().optional(),
   order: z.number().int("Order must be a whole number").min(0).optional(),
+  translations: certificateTranslationsSchema.optional(),
 });
 
 export type CertificateUpdateValues = z.infer<typeof certificateUpdateSchema>;

@@ -3,6 +3,12 @@
  * Feature modules re-export from here to avoid duplication.
  */
 
+import type {
+  CertificateTranslations,
+  ExperienceTranslations,
+  ProjectTranslations,
+} from "@/schema/content-translations";
+
 // ============================================================================
 // Locale & i18n
 // ============================================================================
@@ -50,8 +56,7 @@ export type ExperienceType =
   | "INTERNSHIP"
   | "ORGANIZATION"
   | "FREELANCE"
-  | "EDUCATION"
-  | "CERTIFICATION";
+  | "EDUCATION";
 
 // Base experience shape (matches Prisma Experience model)
 export interface ExperienceBase {
@@ -62,7 +67,6 @@ export interface ExperienceBase {
   type: ExperienceType;
   location: string;
   thumbnail: string | null;
-  logoUrl: string | null;
   gallery: string[];
   description: string[];
   isPublished: boolean;
@@ -72,6 +76,7 @@ export interface ExperienceBase {
   isCurrent: boolean;
   createdAt: string;
   updatedAt: string;
+  translations: ExperienceTranslations | null;
 }
 
 // Public-facing experience (subset for public pages)
@@ -147,6 +152,7 @@ export interface ProjectBase {
   categoryId: string | null;
   createdAt: string;
   updatedAt: string;
+  translations: ProjectTranslations | null;
 }
 
 // Public-facing project (subset for public pages)
@@ -199,7 +205,6 @@ export interface CertificateBase {
   slug: string;
   title: string;
   issuer: string;
-  logoUrl: string | null;
   thumbnail: string | null;
   gallery: string[];
   credentialId: string | null;
@@ -213,6 +218,7 @@ export interface CertificateBase {
   createdAt: string;
   updatedAt: string;
   period?: string; // Computed field for display
+  translations: CertificateTranslations | null;
 }
 
 // Public-facing certificate (subset for public pages)

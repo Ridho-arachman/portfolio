@@ -46,4 +46,10 @@ export const ADMIN_PROJECTS = {
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
+  idSectionLabel: "Bahasa Indonesia (opsional)",
+  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  fieldIdTitle: "Title (ID)",
+  fieldIdTitlePlaceholder: "e.g. Platform Portfolio Web3",
+  fieldIdDescription: "Description (ID)",
+  fieldIdDescriptionPlaceholder: "Deskripsi singkat yang tampil di kartu proyek.",
 } as const;

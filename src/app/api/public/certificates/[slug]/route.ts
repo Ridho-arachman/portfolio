@@ -18,7 +18,6 @@ export async function GET(
         slug: true,
         title: true,
         issuer: true,
-        logoUrl: true,
         thumbnail: true,
         gallery: true,
         credentialId: true,

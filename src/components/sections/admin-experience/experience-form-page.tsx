@@ -10,8 +10,11 @@ import {
   useUpdateExperience,
 } from "@/hooks/use-experience";
 import type { ExperienceFormValues, ExperienceCreateValues, ExperienceUpdateValues } from "@/schema/experience";
+import { idOverrides } from "@/schema/content-translations";
 import { ADMIN_EXPERIENCE } from "./constants";
 import { ExperienceForm } from "./experience-form";
+
+const idLines = (value?: string) => value?.split("\n").map((l) => l.trim()).filter(Boolean) ?? [];
 
 function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
   const [startDate, endDate] = values.period.split(" - ").map(s => s.trim());
@@ -24,7 +27,6 @@ function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
     type: values.type,
     location: values.location,
     thumbnail: values.thumbnail,
-    logoUrl: values.logoUrl || undefined,
     gallery: values.gallery,
     startDate: isCurrent ? new Date().toISOString().split("T")[0] : startDate,
     endDate: isCurrent ? undefined : endDate,
@@ -32,6 +34,10 @@ function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
     description: values.description.split("\n").filter(Boolean),
     isPublished: values.isPublished,
     order: values.order,
+    translations: idOverrides({
+      title: values.idTitle ?? "",
+      description: idLines(values.idDescription),
+    }),
   };
 }
 
@@ -46,7 +52,6 @@ function mapFormToUpdate(values: ExperienceFormValues): ExperienceUpdateValues {
     type: values.type,
     location: values.location,
     thumbnail: values.thumbnail,
-    logoUrl: values.logoUrl || undefined,
     gallery: values.gallery,
     startDate: isCurrent ? new Date().toISOString().split("T")[0] : startDate,
     endDate: isCurrent ? undefined : endDate,
@@ -54,6 +59,10 @@ function mapFormToUpdate(values: ExperienceFormValues): ExperienceUpdateValues {
     description: values.description.split("\n").filter(Boolean),
     isPublished: values.isPublished,
     order: values.order,
+    translations: idOverrides({
+      title: values.idTitle ?? "",
+      description: idLines(values.idDescription),
+    }),
   };
 }
 

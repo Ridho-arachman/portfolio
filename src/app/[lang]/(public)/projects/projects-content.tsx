@@ -24,6 +24,8 @@ interface ProjectsPageContentProps {
     gallery: string[];
     categoryId: string | null;
     category: { id: string; name: string } | null;
+    // Ada di payload client supaya mapDbProjectToProject bisa melokalisasi tanpa fetch ulang.
+    translations?: unknown;
   }[];
 }
 
@@ -31,7 +33,7 @@ const FILTER_CHIP_BASE =
   "rounded-full border px-5 min-h-[48px] text-sm font-semibold transition-colors duration-300";
 
 export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [page, setPage] = useState(1);
   const [categoryId, setCategoryId] = useState<string | null>(null);
 
@@ -125,7 +127,7 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
                   {visible.map((project, index) => (
                     <ProjectCard
                       key={project.id}
-                      project={mapDbProjectToProject(project)}
+                      project={mapDbProjectToProject(project, locale)}
                       index={index}
                     />
                   ))}

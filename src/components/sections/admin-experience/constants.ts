@@ -26,11 +26,6 @@ export const EXPERIENCE_TYPES = [
     label: "Education",
     badgeClass: "bg-emerald-500/10 text-emerald-400",
   },
-  {
-    value: "CERTIFICATION",
-    label: "Certification",
-    badgeClass: "bg-violet-500/10 text-violet-400",
-  },
 ] as const;
 
 export { type AdminExperience, type ExperienceType };
@@ -69,8 +64,6 @@ export const ADMIN_EXPERIENCE = {
     locationPlaceholder: "e.g. Jakarta, Indonesia",
     thumbnailLabel: "Thumbnail URL",
     thumbnailPlaceholder: "https://example.com/image.jpg",
-    logoUrlLabel: "Logo URL",
-    logoUrlPlaceholder: "https://example.com/logo.png",
     galleryLabel: "Gallery Images",
     galleryPlaceholder: "Upload images to show in the experience gallery",
     descriptionLabel: "Description (one bullet per line)",
@@ -79,6 +72,12 @@ export const ADMIN_EXPERIENCE = {
     isPublishedDescription: "Visible on public site when enabled",
     orderLabel: "Display Order",
     orderPlaceholder: "0",
+    idSectionLabel: "Bahasa Indonesia (opsional)",
+    idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+    idTitleLabel: "Role (ID)",
+    idTitlePlaceholder: "e.g. Frontend Developer",
+    idDescriptionLabel: "Description (ID, satu poin per baris)",
+    idDescriptionPlaceholder: "Memimpin tim frontend\nMembangun dashboard dengan React",
     submitCreate: "Create Experience",
     submitUpdate: "Save Changes",
     backToList: "Back to List",
