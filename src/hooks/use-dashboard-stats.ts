@@ -9,13 +9,26 @@ interface DashboardStats {
   unreadMessages: number;
 }
 
-export function useDashboardStats() {
+export interface DashboardStatsRange {
+  from?: string;
+  to?: string;
+}
+
+export function useDashboardStats(range: DashboardStatsRange = {}) {
+  const { from = "", to = "" } = range;
   return useQuery<DashboardStats>({
-    queryKey: ["admin-dashboard-stats"],
+    queryKey: ["admin-dashboard-stats", from, to],
     queryFn: async () => {
-      const res = await fetch("/api/admin/dashboard-stats", {
-        credentials: "include",
-      });
+      const params = new URLSearchParams();
+      if (from) params.set("from", from);
+      if (to) params.set("to", to);
+      const qs = params.toString();
+      const res = await fetch(
+        `/api/admin/dashboard-stats${qs ? `?${qs}` : ""}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) throw new Error("Failed to fetch dashboard stats");
       const json = await res.json();
       return json.data;

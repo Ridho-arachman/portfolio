@@ -34,6 +34,7 @@ export function useUpdateMessageStatus() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-messages"] });
       qc.invalidateQueries({ queryKey: ["admin-message"] });
+      qc.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
       toast.success("Message status updated");
     },
     onError: (error: Error) => {
@@ -49,6 +50,7 @@ export function useDeleteMessage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-messages"] });
       qc.invalidateQueries({ queryKey: ["admin-message"] });
+      qc.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
       toast.success("Message deleted successfully");
     },
     onError: (error: Error) => {

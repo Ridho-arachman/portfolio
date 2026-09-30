@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth-client";
 import { useAdminSidebar } from "./admin-sidebar-context";
+import { AdminUnreadBadge } from "./admin-unread-badge";
 import {
   ADMIN_DASHBOARD,
   ADMIN_NAV_LINKS,
@@ -127,6 +128,7 @@ export function AdminMobileSidebar() {
                   >
                     <Icon className="h-5 w-5" />
                     <span className="flex-1">{link.label}</span>
+                    {link.href === "/admin/messages" && <AdminUnreadBadge />}
                   </Link>
                 );
               })}

@@ -40,8 +40,10 @@ test("admin login offers a back link and a theme toggle", async ({ page }) => {
   await expect(back).toBeVisible();
   await expect(back).toHaveAttribute("href", "/");
 
+  // `role="radio"`, bukan `button`: toggle tema kini jadi satu segmen dalam
+  // radiogroup kontrol mengambang (Tema | PortoBot), bukan tombol berdiri sendiri.
   await expect(
-    page.getByRole("button", { name: "Toggle theme" }),
+    page.getByRole("radio", { name: "Toggle theme" }),
   ).toBeVisible();
 });
 

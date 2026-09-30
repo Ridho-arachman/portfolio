@@ -15,6 +15,7 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }));
 
+import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { GET as publicProjectsList } from "@/app/api/public/projects/route";
@@ -263,7 +264,9 @@ describe("dashboard-stats", () => {
     expect(unfilteredNew).toBeGreaterThan(filteredNew);
     expect(filteredNew).toBeGreaterThanOrEqual(1);
 
-    const json = await (await dashboardStats()).json();
+    const json = await (
+      await dashboardStats(new NextRequest("http://localhost/api/admin/dashboard-stats"))
+    ).json();
 
     expect(json.data.unreadMessages).toBe(filteredNew);
     expect(json.data.unreadMessages).toBeLessThan(unfilteredNew);

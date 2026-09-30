@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { Variants } from "motion/react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth-client";
+import { AdminUnreadBadge } from "./admin-unread-badge";
 import {
   ADMIN_DASHBOARD,
   ADMIN_NAV_LINKS,
@@ -102,6 +103,7 @@ export function AdminSidebar() {
               >
                 <Icon className="h-4 w-4" />
                 <span className="flex-1">{link.label}</span>
+                {link.href === "/admin/messages" && <AdminUnreadBadge />}
               </Link>
             </m.div>
           );
