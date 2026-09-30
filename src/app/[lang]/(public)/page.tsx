@@ -4,6 +4,7 @@ import { mapDbProjectToProject } from "@/components/sections/projects/map-projec
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
+import { localizeCertificate } from "@/lib/localized-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
 import { Metadata } from "next";
@@ -71,20 +72,24 @@ export default async function Home({ params }: HomePageProps) {
 
   return (
     <HomePageContent
-      projects={projects.map(mapDbProjectToProject)}
-      certificates={certificates.map((c) => ({
-        id: Number(c.id),
-        slug: c.slug,
-        title: c.title,
-        issuer: c.issuer,
-        credentialId: c.credentialId ?? undefined,
-        issueDate: new Date(c.issueDate).toISOString(),
-        period: (() => { const issued = `${messages.certificates.issuedOn} ${monthYear.format(new Date(c.issueDate))}`; if (!c.expiryDate) return issued; return `${issued} · ${messages.certificates.expiresOn} ${monthYear.format(new Date(c.expiryDate))}`; })(),
-        thumbnail: c.thumbnail ?? "",
-        gallery: c.gallery,
-        skills: c.skills,
-        summary: c.summary,
-      }))}
+      projects={projects.map((p) => mapDbProjectToProject(p, validLocale))}
+      certificates={certificates.map((c) => {
+        const localized = localizeCertificate(c, validLocale);
+
+        return {
+          id: Number(c.id),
+          slug: c.slug,
+          title: localized.title,
+          issuer: c.issuer,
+          credentialId: c.credentialId ?? undefined,
+          issueDate: new Date(c.issueDate).toISOString(),
+          period: (() => { const issued = `${messages.certificates.issuedOn} ${monthYear.format(new Date(c.issueDate))}`; if (!c.expiryDate) return issued; return `${issued} · ${messages.certificates.expiresOn} ${monthYear.format(new Date(c.expiryDate))}`; })(),
+          thumbnail: c.thumbnail ?? "",
+          gallery: c.gallery,
+          skills: c.skills,
+          summary: localized.summary,
+        };
+      })}
     >
       <HeroSection locale={validLocale} />
     </HomePageContent>

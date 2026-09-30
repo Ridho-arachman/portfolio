@@ -1,6 +1,6 @@
 import { NuqsAdapterLoader } from "@/components/providers/nuqs-adapter-loader";
 import { MotionProvider } from "@/components/providers/motion-provider";
-import { ThemeToggleFloating } from "@/components/ui/theme-toggle-floating";
+import { FloatingSwitcher } from "@/components/ui/floating-switcher";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { getSiteSettings } from "@/lib/settings";
 import type { Metadata, Viewport } from "next";
@@ -135,7 +135,7 @@ export default async function RootLayout({
           <MotionProvider>
             <NuqsAdapterLoader>{children}</NuqsAdapterLoader>
           </MotionProvider>
-          <ThemeToggleFloating />
+          <FloatingSwitcher />
         </ThemeProvider>
       </body>
     </html>
