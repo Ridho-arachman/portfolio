@@ -87,6 +87,7 @@ export function ExperienceForm({
   const thumbnail = watch("thumbnail");
   const logoUrl = watch("logoUrl") ?? "";
   const gallery = watch("gallery") ?? [];
+  const isPublished = watch("isPublished");
 
   useEffect(() => {
     if (!slugTouched.current && role) {
@@ -263,7 +264,10 @@ export function ExperienceForm({
             <Label htmlFor="isPublished">{ADMIN_EXPERIENCE.form.isPublishedLabel}</Label>
             <Switch
               id="isPublished"
-              {...register("isPublished")}
+              checked={isPublished}
+              onCheckedChange={(checked) =>
+                setValue("isPublished", checked, { shouldValidate: true })
+              }
               aria-invalid={errors.isPublished ? "true" : "false"}
             />
           </div>
