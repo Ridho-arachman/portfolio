@@ -7,6 +7,11 @@ import {
 export const EXPERIENCE_TYPES = [
   { value: "WORK", label: "Work", badgeClass: "bg-accent-muted text-accent" },
   {
+    value: "INTERNSHIP",
+    label: "Internship",
+    badgeClass: "bg-rose-500/10 text-rose-400",
+  },
+  {
     value: "ORGANIZATION",
     label: "Organization",
     badgeClass: "bg-sky-500/10 text-sky-400",

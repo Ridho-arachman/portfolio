@@ -12,7 +12,14 @@ export const experienceFormSchema = z.object({
     )
     .max(120, "Slug must be at most 120 characters"),
   company: z.string().min(2, "Company must be at least 2 characters"),
-  type: z.enum(["WORK", "ORGANIZATION", "FREELANCE", "EDUCATION", "CERTIFICATION"]),
+  type: z.enum([
+    "WORK",
+    "INTERNSHIP",
+    "ORGANIZATION",
+    "FREELANCE",
+    "EDUCATION",
+    "CERTIFICATION",
+  ]),
   period: z.string().min(2, "Period must be at least 2 characters"),
   location: z.string().min(2, "Location must be at least 2 characters"),
   thumbnail: z.url("Enter a valid image URL"),
@@ -46,6 +53,7 @@ export const experienceCreateSchema = z.object({
   thumbnail: z.string().optional(),
   type: z.enum([
     "WORK",
+    "INTERNSHIP",
     "ORGANIZATION",
     "FREELANCE",
     "EDUCATION",
@@ -75,7 +83,14 @@ export const experienceUpdateSchema = z.object({
   logoUrl: z.string().optional(),
   thumbnail: z.string().optional(),
   type: z
-    .enum(["WORK", "ORGANIZATION", "FREELANCE", "EDUCATION", "CERTIFICATION"])
+    .enum([
+      "WORK",
+      "INTERNSHIP",
+      "ORGANIZATION",
+      "FREELANCE",
+      "EDUCATION",
+      "CERTIFICATION",
+    ])
     .optional(),
   location: z.string().optional(),
   startDate: z.string().optional(),

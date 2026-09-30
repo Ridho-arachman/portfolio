@@ -3,6 +3,7 @@ import { type ExperienceType } from "@/types/domain";
 
 const TYPE_MAP: Record<string, ExperienceType> = {
   WORK: "WORK",
+  INTERNSHIP: "INTERNSHIP",
   ORGANIZATION: "ORGANIZATION",
   FREELANCE: "FREELANCE",
   EDUCATION: "EDUCATION",

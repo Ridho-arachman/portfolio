@@ -45,31 +45,13 @@ export const SKILL_CATEGORIES = [
 // Experience
 // ============================================================================
 
-export type ExperienceType = "WORK" | "ORGANIZATION" | "FREELANCE" | "EDUCATION" | "CERTIFICATION";
-
-export const EXPERIENCE_TYPES = [
-  { value: "WORK", label: "Work", badgeClass: "bg-accent-muted text-accent" },
-  {
-    value: "ORGANIZATION",
-    label: "Organization",
-    badgeClass: "bg-sky-500/10 text-sky-400",
-  },
-  {
-    value: "FREELANCE",
-    label: "Freelance",
-    badgeClass: "bg-amber-500/10 text-amber-400",
-  },
-  {
-    value: "EDUCATION",
-    label: "Education",
-    badgeClass: "bg-emerald-500/10 text-emerald-400",
-  },
-  {
-    value: "CERTIFICATION",
-    label: "Certification",
-    badgeClass: "bg-violet-500/10 text-violet-400",
-  },
-] as const;
+export type ExperienceType =
+  | "WORK"
+  | "INTERNSHIP"
+  | "ORGANIZATION"
+  | "FREELANCE"
+  | "EDUCATION"
+  | "CERTIFICATION";
 
 // Base experience shape (matches Prisma Experience model)
 export interface ExperienceBase {

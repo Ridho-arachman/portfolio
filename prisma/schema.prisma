@@ -335,7 +335,8 @@ enum SkillCategory {
 }
 
 enum ExperienceType {
-  WORK // Pekerjaan / Magang
+  WORK // Pekerjaan
+  INTERNSHIP // Magang
   ORGANIZATION // Organisasi Kampus / Himpunan / BEM
   FREELANCE // Proyek Lepas
   EDUCATION // Pendidikan Formal / Bootcamp / Kursus
