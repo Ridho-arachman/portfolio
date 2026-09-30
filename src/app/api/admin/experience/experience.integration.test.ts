@@ -80,7 +80,7 @@ describe("POST /api/admin/experience", () => {
   });
 
   it("rejects an invalid type with 400", async () => {
-    const res = await post(validBody({ type: "INTERNSHIP" }));
+    const res = await post(validBody({ type: "NOT_A_TYPE" }));
     expect(res.status).toBe(400);
   });
 
