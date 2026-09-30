@@ -9,6 +9,9 @@ export const PROJECT_DETAIL = {
   highlightsTitleKey: "highlights",
   stackTitleKey: "tech",
   galleryTitleKey: "gallery",
+  liveDemoKey: "liveDemo",
+  repoKey: "repository",
+  npmKey: "npmPackage",
   prevLabelKey: "prev",
   nextLabelKey: "next",
 } as const;

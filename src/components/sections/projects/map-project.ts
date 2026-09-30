@@ -11,6 +11,7 @@ interface DbProject {
   // Optional fields that may not exist in all Prisma schemas
   liveUrl?: string | null;
   repoUrl?: string | null;
+  npmUrl?: string | null;
   role?: string | null;
   year?: string | null;
   highlights?: string[];
@@ -34,5 +35,8 @@ export function mapDbProjectToProject(dbProject: DbProject): Project {
     year: dbProject.year ?? undefined,
     gallery: dbProject.gallery,
     highlights: dbProject.highlights,
+    liveUrl: dbProject.liveUrl ?? undefined,
+    repoUrl: dbProject.repoUrl ?? undefined,
+    npmUrl: dbProject.npmUrl ?? undefined,
   };
 }

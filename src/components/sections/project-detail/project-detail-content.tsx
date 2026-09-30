@@ -1,8 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Rocket, Sparkles } from "lucide-react";
+import { ExternalLink, Package, Rocket, Sparkles } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 import * as m from "motion/react-m";
 import { useReducedMotion } from "motion/react";
 import type { Project } from "./constants";
@@ -20,6 +22,24 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
   const highlights = project?.highlights ?? [];
   const tags = project?.tags ?? [];
   const prefersReducedMotion = useReducedMotion();
+
+  const links = [
+    {
+      href: project?.liveUrl,
+      label: t.projectDetail[PROJECT_DETAIL.liveDemoKey],
+      Icon: ExternalLink,
+    },
+    {
+      href: project?.repoUrl,
+      label: t.projectDetail[PROJECT_DETAIL.repoKey],
+      Icon: SiGithub,
+    },
+    {
+      href: project?.npmUrl,
+      label: t.projectDetail[PROJECT_DETAIL.npmKey],
+      Icon: Package,
+    },
+  ].filter((link) => Boolean(link.href));
 
   return (
     <div className="space-y-10">
@@ -41,6 +61,33 @@ export function ProjectDetailContent({ project }: ProjectDetailContentProps) {
           </CardContent>
         </Card>
       </m.div>
+
+      {links.length > 0 && (
+        <m.div
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 30 }}
+          whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={prefersReducedMotion ? undefined : { duration: 0.6, delay: 0.1 }}
+        >
+          <div className="flex flex-wrap gap-3">
+            {links.map(({ href, label, Icon }) => (
+              <Button
+                key={label}
+                nativeButton={false}
+                render={
+                  <a href={href} target="_blank" rel="noopener noreferrer" />
+                }
+                variant="outline"
+                size="lg"
+                className="min-h-[48px] gap-2 rounded-full border-accent/30 bg-accent/10 px-5 font-semibold text-accent transition-all duration-300 hover:bg-accent hover:text-bg-primary"
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </m.div>
+      )}
 
       {highlights.length > 0 && (
         <m.div

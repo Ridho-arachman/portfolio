@@ -10,6 +10,9 @@ export interface Project {
   year?: string;
   gallery?: string[];
   highlights?: string[];
+  liveUrl?: string;
+  repoUrl?: string;
+  npmUrl?: string;
 }
 
 export interface ProjectCardProps {

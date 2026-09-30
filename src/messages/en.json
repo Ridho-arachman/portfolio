@@ -143,6 +143,9 @@
     "highlights": "Project Highlights",
     "tech": "Technologies",
     "gallery": "Gallery",
+    "liveDemo": "Live Demo",
+    "repository": "Repository",
+    "npmPackage": "npm Package",
     "prev": "Previous Project",
     "next": "Next Project",
     "notFound": "Not Found"

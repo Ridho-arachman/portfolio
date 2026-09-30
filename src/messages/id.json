@@ -143,6 +143,9 @@
     "highlights": "Sorotan Proyek",
     "tech": "Teknologi",
     "gallery": "Galeri",
+    "liveDemo": "Demo Langsung",
+    "repository": "Repositori",
+    "npmPackage": "Paket npm",
     "prev": "Proyek Sebelumnya",
     "next": "Proyek Selanjutnya",
     "notFound": "Tidak Ditemukan"
