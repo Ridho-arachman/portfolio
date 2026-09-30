@@ -27,7 +27,7 @@ import { TranslationsEditor } from "./translations-editor";
 
 const EN_OVERRIDE = { "hero.greeting": "Hey {name}, welcome" };
 /** Jumlah leaf string di en.json. `hero.typewriter` (array) tidak ikut dihitung. */
-const EDITABLE = 266;
+const EDITABLE = 269;
 
 const payload = [
   {
