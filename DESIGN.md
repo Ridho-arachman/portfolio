@@ -125,6 +125,7 @@ Jangan membuat token baru tanpa kebutuhan nyata.
 ### Font stack (dari globals.css — tanpa custom web font)
 - **Sans (UI & body):** `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial`
 - **Mono (code, metadata, angka admin, statistik):** `"JetBrains Mono", "Fira Code"`
+- **Display (kepalaan sinematik):** `font-display` → Anton 400, satu-satunya web font di repo. **Pengecualian yang disetujui untuk `/about` saja** — dimuat di `src/components/sections/about/cinematic/font.ts` sebagai variabel, bukan lewat root layout, jadi tidak menambah bobot font ke halaman lain. Body copy dan navigasi tetap Sans. Kalau suatu saat `/about` dirombak, hapus variabelnya sekalian.
 
 ### Skala (wajib ditiru)
 | Konteks | Kelas | Catatan |

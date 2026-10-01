@@ -177,9 +177,25 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  /* ASCEND — re-exported so Tailwind generates text-ascend-*, bg-ascend-* */
+  --color-ascend-bg: var(--color-ascend-bg);
+  --color-ascend-bg-2: var(--color-ascend-bg-2);
+  --color-ascend-ink: var(--color-ascend-ink);
+  --color-ascend-muted: var(--color-ascend-muted);
+  --color-ascend-muted-2: var(--color-ascend-muted-2);
+  --color-ascend-line: var(--color-ascend-line);
+  --color-ascend-line-strong: var(--color-ascend-line-strong);
+  --color-ascend-accent: var(--color-ascend-accent);
+  --color-ascend-accent-2: var(--color-ascend-accent-2);
+  --color-ascend-accent-ink: var(--color-ascend-accent-ink);
+  --color-ascend-glass: var(--color-ascend-glass);
+  --color-ascend-glass-2: var(--color-ascend-glass-2);
+
   /* Typography - Geist font family (Phase 1) */
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
+  /* Pengecualian DESIGN.md 3: hanya /about, hanya heading (cinematic/font.ts) */
+  --font-display: var(--font-display), "Arial Narrow", system-ui, sans-serif;
 
   /* Border Radius */
   --radius-sm: 0.375rem;
@@ -192,6 +208,26 @@
   --parallax-slow: var(--parallax-speed-slow);
   --parallax-medium: var(--parallax-speed-medium);
   --parallax-fast: var(--parallax-speed-fast);
+
+  /* --- ASCEND (home page deep-space theme) --- */
+  /* Namespaced `--color-ascend-*` so it can never collide with the violet
+     `--color-accent` system. Scoped to .ascend-theme (home page only). */
+  --color-ascend-bg: #04060f;
+  --color-ascend-bg-2: #060a18;
+  --color-ascend-ink: #f3f6ff;
+  --color-ascend-muted: #9aa6c4;
+  --color-ascend-muted-2: #6b7796;
+  --color-ascend-line: rgba(150, 175, 230, 0.12);
+  --color-ascend-line-strong: rgba(150, 175, 230, 0.22);
+  --color-ascend-accent: #a78bfa;
+  --color-ascend-accent-2: #8b5cf6;
+  --color-ascend-accent-ink: #050505;
+  --ascend-accent-rgb: 167, 139, 250;
+  --color-ascend-glass: rgba(9, 13, 30, 0.74);
+  --color-ascend-glass-2: rgba(9, 13, 30, 0.9);
+  --ascend-radius: 18px;
+  --ascend-radius-lg: 26px;
+  --ascend-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.85);
 
   /* Glassmorphism (Phase 2) */
   --glass-blur: var(--glass-blur);
@@ -617,4 +653,283 @@
       transform: none !important;
     }
   }
+
+  .ascend-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================
+ * 9. ASCEND THEME (home page, deep-space)
+ * ============================================ */
+/* WebGL planet canvas sits at z-index 0 and must never eat pointer/scroll. */
+.planet-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ascend-theme {
+  color: var(--color-ascend-ink);
+}
+
+/* Background hidup pada elemen yang sama dengan canvas, supaya tidak menutupi
+   scene. Kalau ditaruh di wrapper berposition, background opak menutup canvas
+   fixed di bawahnya regardless z-index. */
+.ascend-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-ascend-bg);
+}
+
+.ascend-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.22, 0.7, 0.2, 1);
+  transition-delay: var(--rd, 0ms);
+  will-change: opacity, transform;
+}
+
+.ascend-reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+.ascend-hero-title {
+  font-size: clamp(34px, 5.2vw, 62px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  max-width: 15ch;
+  text-shadow: 0 2px 50px rgba(0, 0, 0, 0.55);
+}
+
+.ascend-hero-title em {
+  font-style: normal;
+  background: linear-gradient(180deg, var(--color-ascend-accent), var(--color-ascend-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ascend-section-title {
+  font-size: clamp(30px, 4.4vw, 50px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+}
+
+.ascend-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ascend-accent);
+}
+
+.ascend-card {
+  position: relative;
+  background: var(--color-ascend-glass);
+  border: 1px solid var(--color-ascend-line);
+  border-radius: var(--ascend-radius);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.ascend-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(var(--ascend-accent-rgb), 0.08), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.ascend-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-ascend-line-strong);
+  background: var(--color-ascend-glass-2);
+}
+
+.ascend-card:hover::before {
+  opacity: 1;
+}
+
+.ascend-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.25s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ascend-btn:focus-visible {
+  outline: 2px solid var(--color-ascend-accent);
+  outline-offset: 2px;
+}
+
+.ascend-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.ascend-btn-primary {
+  color: var(--color-ascend-accent-ink);
+  background: linear-gradient(180deg, var(--color-ascend-accent), var(--color-ascend-accent-2));
+  box-shadow:
+    0 10px 30px -8px rgba(var(--ascend-accent-rgb), 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.ascend-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px -8px rgba(var(--ascend-accent-rgb), 0.7);
+}
+
+.ascend-btn-outline {
+  color: var(--color-ascend-ink);
+  background: rgba(8, 12, 28, 0.55);
+  border-color: var(--color-ascend-line-strong);
+  backdrop-filter: blur(14px);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9);
+}
+
+.ascend-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-2px);
+}
+
+/* Gradient border on the dashboard mock. */
+.ascend-dashboard {
+  position: relative;
+  background: var(--color-ascend-glass-2);
+  border: 1px solid var(--color-ascend-line-strong);
+  border-radius: var(--ascend-radius-lg);
+  box-shadow: var(--ascend-shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ascend-dashboard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(160deg, rgba(var(--ascend-accent-rgb), 0.35), transparent 40%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.ascend-dash-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-ascend-accent-2), var(--color-ascend-accent));
+  width: 0;
+  transition: width 0.9s cubic-bezier(0.22, 0.7, 0.2, 1);
+  transition-delay: 0.3s;
+}
+
+.ascend-dashboard.in .ascend-dash-fill {
+  width: var(--w);
+}
+
+.ascend-stat-value {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 800;
+  background: linear-gradient(180deg, #fff, var(--color-ascend-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ascend-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 5vw, 56px);
+  animation: ascend-marquee 38s linear infinite;
+}
+
+@keyframes ascend-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes ascend-bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ascend-marquee-track {
+    animation: none;
+  }
+  .ascend-dash-fill {
+    width: var(--w);
+    transition: none;
+  }
+  [data-reveal] {
+    animation: none !important;
+  }
+}
+
+/* Navbar + Footer sit in the layout, outside `ascend-theme`, so they would keep
+   a light background above the deep-space hero. Only the surface + text tokens
+   are re-pointed here — `--color-accent` is deliberately left alone so the
+   chrome keeps the site's violet. Placed after `.dark` so it wins on source
+   order when both classes sit on <html>. */
+.ascend-chrome {
+  --color-bg-primary: #04060f;
+  --color-bg-secondary: #080d1e;
+  --color-bg-tertiary: #101830;
+  --color-text-primary: #f3f6ff;
+  --color-text-secondary: #9aa6c4;
+  --color-text-muted: #7d8aab;
+  --color-glass-bg: rgba(12, 18, 38, 0.55);
+  --color-glass-border: rgba(150, 175, 230, 0.16);
+  --color-glass-hover: rgba(16, 24, 48, 0.72);
+  --color-glass-highlight: rgba(150, 175, 230, 0.14);
+  --color-grid-line: rgba(150, 175, 230, 0.07);
 }

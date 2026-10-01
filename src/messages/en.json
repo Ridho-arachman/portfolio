@@ -94,7 +94,19 @@
     "badgeAvailable": "Available for Hire",
     "badgeOpen": "Open to Full-time & Freelance",
     "heroTitleA": "About",
-    "heroTitleAccent": "Me"
+    "heroTitleAccent": "Me",
+    "cinematic": {
+      "roles": "Builder|Engineer|Problem Solver|Lifelong Learner",
+      "scrollCue": "Scroll",
+      "storyEyebrow": "Background",
+      "storyTitle": "Curiosity first, production second.",
+      "venturesEyebrow": "Selected Work",
+      "venturesTitle": "Things I shipped and kept running.",
+      "impactEyebrow": "By the numbers",
+      "impactTitle": "Measured, not claimed.",
+      "experienceEyebrow": "Experience",
+      "experienceTitle": "Places that taught me the most."
+    }
   },
   "skills": {
     "categories": {
@@ -104,6 +116,54 @@
       "DEVOPS_TOOLS": "DevOps & Tools",
       "SOFT_SKILL": "Soft Skill"
     }
+  },
+  "capabilities": {
+    "eyebrow": "Everything in orbit",
+    "title": "One place for the whole portfolio",
+    "description": "Six sections, one system. Every part of this site is a real, maintained page — not a placeholder.",
+    "projects": {
+      "title": "Selected projects",
+      "description": "Case studies with live demos, source, tech stacks and the problems each one solved."
+    },
+    "experience": {
+      "title": "Professional experience",
+      "description": "Roles, responsibilities and measurable impact, with the technology used in each."
+    },
+    "certificates": {
+      "title": "Verified certificates",
+      "description": "Professional credentials with issuer, issue date and a verifiable credential ID."
+    },
+    "skills": {
+      "title": "Technical skills",
+      "description": "Grouped by frontend, backend, database and DevOps — plus the soft skills that make them usable."
+    },
+    "about": {
+      "title": "Background & philosophy",
+      "description": "An E-Business Information Systems graduate writing about clean code, performance and UX."
+    },
+    "contact": {
+      "title": "Direct contact",
+      "description": "A working form with Turnstile protection, plus email, GitHub, LinkedIn and X."
+    }
+  },
+  "showcase": {
+    "eyebrow": "Built for momentum",
+    "title": "See the whole picture at once",
+    "description": "Every project, certificate and credential rendered from the same database that powers the rest of the site. No hardcoded numbers.",
+    "cta": "Explore the projects",
+    "dashboardTitle": "Portfolio · live",
+    "live": "Live",
+    "labels": {
+      "projects": "Projects",
+      "certificates": "Certificates",
+      "experience": "Roles",
+      "skills": "Skills"
+    },
+    "statsProjects": "Published projects",
+    "statsCertificates": "Certificates earned",
+    "statsExperience": "Professional roles",
+    "statsSkills": "Skills tracked",
+    "copyright": "Built among the stars."
   },
   "coreValues": {
     "title": "My Core Philosophy",

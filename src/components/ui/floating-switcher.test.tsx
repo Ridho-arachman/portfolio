@@ -1,14 +1,16 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Navbar } from "@/components/layout/navbar/navbar";
 import { PublicContentProvider } from "@/components/providers/public-content-provider";
 import { FloatingSwitcher } from "./floating-switcher";
 import { testMessages, testSiteSettings } from "@/test-fixtures/public-content";
 
+const mockPathname = vi.hoisted(() => ({ current: "/en/projects" }));
+
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/en",
+  usePathname: () => mockPathname.current,
   useParams: () => ({ lang: "en" }),
   useRouter: () => ({ push: vi.fn() }),
 }));
@@ -39,6 +41,11 @@ function zOf(el: Element): number {
   const plain = cls.match(/\bz-(\d+)\b/);
   return plain ? Number(plain[1]) : 0;
 }
+
+beforeEach(() => {
+  mockPathname.current = "/en/projects";
+  toggleTheme.mockClear();
+});
 
 async function renderSwitcher() {
   const result = render(
@@ -123,5 +130,29 @@ describe("dua segmen pada kontrol mengambang", () => {
     // mengganti tema tanpa sengaja.
     expect(toggleTheme).not.toHaveBeenCalled();
     expect(bot).toHaveAttribute("aria-checked", "true");
+  });
+});
+
+describe("home yang fixed-dark", () => {
+  it("tidak merender kontrol tema maupun PortoBot di sana", async () => {
+    mockPathname.current = "/en";
+
+    const { container } = render(
+      <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+        <Navbar />
+        <FloatingSwitcher />
+      </PublicContentProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => resolve(undefined)),
+      );
+    });
+
+    expect(container.querySelector("div.fixed.right-6.bottom-6")).toBeNull();
+    expect(
+      screen.queryByRole("radiogroup", { name: "Site controls" }),
+    ).not.toBeInTheDocument();
   });
 });

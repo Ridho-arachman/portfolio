@@ -29,10 +29,10 @@ export function AboutContent({}: AboutContentProps) {
             <item.icon className="w-5 h-5 text-accent mt-1 shrink-0" />
             <div>
               <p className="text-sm font-semibold text-text-primary">
-                {t.about[item.titleKey as keyof typeof t.about]}
+                {t.about[item.titleKey]}
               </p>
               <p className="text-xs text-text-muted">
-                {t.about[item.descKey as keyof typeof t.about]}
+                {t.about[item.descKey]}
               </p>
             </div>
           </div>

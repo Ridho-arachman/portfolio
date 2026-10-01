@@ -9,9 +9,13 @@ function securityHeaders(isProduction: boolean) {
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.picsum.photos https://*.supabase.co https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
+        "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.picsum.photos https://*.supabase.co https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://api.getlayers.ai",
         "font-src 'self' data:",
-        "connect-src 'self' https://challenges.cloudflare.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org ws: wss:",
+        // api.getlayers.ai = bucket aset WebGL planet di home page.
+        // www.gstatic.com = decoder DRACO (Web Worker dimuat via blob worker,
+        // jadi perlu di sini supaya worker boleh dibuat).
+        "connect-src 'self' blob: https://challenges.cloudflare.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://api.getlayers.ai https://www.gstatic.com ws: wss:",
+        "worker-src 'self' blob:",
         "frame-src 'self' https://challenges.cloudflare.com",
         "object-src 'none'",
         "base-uri 'self'",

@@ -48,6 +48,20 @@ const getCertificates = unstable_cache(
   { revalidate: 60, tags: ["certificates"] }
 );
 
+const getCounts = unstable_cache(
+  async () => {
+    const [projects, certificates, experience, skills] = await Promise.all([
+      prisma.project.count({ where: { isPublished: true, ...notDeleted } }),
+      prisma.certificate.count({ where: { isPublished: true, ...notDeleted } }),
+      prisma.experience.count({ where: { isPublished: true, ...notDeleted } }),
+      prisma.skill.count({ where: notDeleted }),
+    ]);
+    return { projects, certificates, experience, skills };
+  },
+  ["home-counts"],
+  { revalidate: 60, tags: ["projects", "certificates"] }
+);
+
 const getProjects = unstable_cache(
   async () =>
     prisma.project.findMany({
@@ -59,19 +73,37 @@ const getProjects = unstable_cache(
   { revalidate: 60, tags: ["projects"] }
 );
 
+// Above the fold, so skills are fetched server-side like every other home-page
+// datum. Do NOT move this to `usePublicSkills`: the home page renders inside
+// `PublicProviders` (no QueryClientProvider) to keep react-query off the
+// critical path. See public-providers.tsx.
+const getSkills = unstable_cache(
+  async () =>
+    prisma.skill.findMany({
+      where: notDeleted,
+      orderBy: [{ category: "asc" }, { order: "asc" }],
+      select: { id: true, name: true, iconName: true },
+    }),
+  ["home-skills"],
+  { revalidate: 3600, tags: ["skills"] }
+);
+
 export default async function Home({ params }: HomePageProps) {
   const resolvedParams = await params;
   const locale = resolvedParams.lang as Locale;
   const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
   const messages = await getMessages(validLocale);
   const monthYear = new Intl.DateTimeFormat(validLocale, { month: "short", year: "numeric" });
-  const [certificates, projects] = await Promise.all([
+  const [certificates, projects, counts, skills] = await Promise.all([
     getCertificates(),
     getProjects(),
+    getCounts(),
+    getSkills(),
   ]);
 
   return (
     <HomePageContent
+      counts={counts}
       projects={projects.map((p) => mapDbProjectToProject(p, validLocale))}
       certificates={certificates.map((c) => {
         const localized = localizeCertificate(c, validLocale);
@@ -91,7 +123,7 @@ export default async function Home({ params }: HomePageProps) {
         };
       })}
     >
-      <HeroSection locale={validLocale} />
+      <HeroSection locale={validLocale} skills={skills} />
     </HomePageContent>
   );
 }

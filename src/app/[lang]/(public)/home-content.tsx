@@ -4,6 +4,15 @@ import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { LazySection } from "@/components/ui/lazy-section";
 import { PublicProviders } from "@/lib/public-providers";
+import { RevealObserver } from "@/components/sections/ascend/reveal-observer";
+import { SmoothScroll } from "@/components/sections/ascend/smooth-scroll";
+import { CapabilitiesSection } from "@/components/sections/ascend/capabilities-section";
+import {
+  ShowcaseSection,
+  type PortfolioCounts,
+} from "@/components/sections/ascend/showcase-section";
+import { CtaSection } from "@/components/sections/ascend/cta-section";
+import { PlanetCanvas } from "@/components/sections/planet/planet-canvas";
 import type { Project } from "@/components/sections/projects/constants";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
 
@@ -93,19 +102,35 @@ interface HomePageContentProps {
   children: ReactNode;
   projects: Project[];
   certificates: CertificateListData[];
+  counts: PortfolioCounts;
 }
 
 export function HomePageContent({
   children,
   projects,
   certificates,
+  counts,
 }: HomePageContentProps) {
   return (
-    <PublicProviders>
-      {children}
-      <LazySection placeholder={<BelowFoldSkeleton />} rootMargin="0px 0px -200px 0px">
-        <BelowFoldSections projects={projects} certificates={certificates} />
-      </LazySection>
-    </PublicProviders>
+    <>
+      <div className="ascend-theme relative min-h-screen">
+        <div className="ascend-backdrop" />
+        <PlanetCanvas />
+        <PublicProviders>
+          {children}
+          <CapabilitiesSection />
+          <ShowcaseSection counts={counts} />
+          <LazySection
+            placeholder={<BelowFoldSkeleton />}
+            rootMargin="0px 0px -200px 0px"
+          >
+            <BelowFoldSections projects={projects} certificates={certificates} />
+          </LazySection>
+          <CtaSection />
+          <SmoothScroll />
+          <RevealObserver />
+        </PublicProviders>
+      </div>
+    </>
   );
 }

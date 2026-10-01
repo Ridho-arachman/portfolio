@@ -1,31 +1,131 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Providers } from "@/lib/providers";
-import { AboutHeroSection } from "@/components/sections/about-hero";
-import { AboutSection } from "@/components/sections/about";
-import { LazySection } from "@/components/ui/lazy-section";
-import type { MappedExperience } from "@/lib/utils/experience-mapper";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
-const ExperienceSection = dynamic(
-  () => import("@/components/sections/experience").then((m) => m.ExperienceSection),
-  { ssr: false, loading: () => <div className="min-h-[70vh]" aria-hidden /> },
-);
+import { useTranslation } from "@/hooks/use-translation";
+import { useSiteSettings } from "@/components/providers/public-content-provider";
+import { LazySection } from "@/components/ui/lazy-section";
+import { displayFont } from "@/components/sections/about/cinematic/font";
+import { CinematicHero } from "@/components/sections/about/cinematic/hero";
+import { CinematicMarquee } from "@/components/sections/about/cinematic/marquee";
+import { CinematicStory } from "@/components/sections/about/cinematic/story";
+import { CinematicVentures } from "@/components/sections/about/cinematic/ventures";
+import { CinematicImpact } from "@/components/sections/about/cinematic/impact";
+import { CinematicExperience } from "@/components/sections/about/cinematic/experience";
+import type { MappedExperience } from "@/lib/utils/experience-mapper";
+import type { Project } from "@/components/sections/projects/constants";
 
 interface AboutPageContentProps {
   experiences: MappedExperience[];
+  projects: Project[];
+  skillNames: string[];
+  counts: {
+    projects: number;
+    certificates: number;
+    experience: number;
+    skills: number;
+  };
 }
 
-export function AboutPageContent({ experiences }: AboutPageContentProps) {
+export function AboutPageContent({
+  experiences,
+  projects,
+  skillNames,
+  counts,
+}: AboutPageContentProps) {
+  const { t } = useTranslation();
+  const { fullName, bio, contactEmail } = useSiteSettings();
+  const c = t.about.cinematic;
+
+  const principles = [
+    {
+      title: t.coreValues.performanceFirst,
+      description: t.coreValues.performanceFirstDesc,
+    },
+    { title: t.coreValues.typeSafe, description: t.coreValues.typeSafeDesc },
+    {
+      title: t.coreValues.userCentric,
+      description: t.coreValues.userCentricDesc,
+    },
+    {
+      title: t.coreValues.continuousLearning,
+      description: t.coreValues.continuousLearningDesc,
+    },
+  ];
+
+  const stats = [
+    { value: String(counts.projects), label: t.showcase.statsProjects },
+    { value: String(counts.certificates), label: t.showcase.statsCertificates },
+    { value: String(counts.experience), label: t.showcase.statsExperience },
+    { value: String(counts.skills), label: t.showcase.statsSkills },
+  ];
+
   return (
-    <Providers>
-      <div className="flex flex-col min-h-screen overflow-x-hidden">
-        <AboutHeroSection />
-        <AboutSection />
-        <LazySection placeholder={<div className="min-h-[70vh]" aria-hidden />}>
-          <ExperienceSection experiences={experiences} />
-        </LazySection>
-      </div>
-    </Providers>
+    <div
+      className={`${displayFont.variable} flex min-h-screen flex-col overflow-x-hidden`}
+    >
+      <CinematicHero
+        fullName={fullName}
+        roles={c.roles.split("|").map((role) => role.trim())}
+        bio={bio}
+        scrollCue={c.scrollCue}
+      />
+
+      <CinematicMarquee label={t.about.marquee} items={skillNames} />
+
+      <CinematicStory
+        eyebrow={c.storyEyebrow}
+        title={c.storyTitle}
+        body={t.about.description}
+        principles={principles}
+      />
+
+      <LazySection placeholder={<div className="min-h-[70vh]" aria-hidden />}>
+        <CinematicVentures
+          eyebrow={c.venturesEyebrow}
+          title={c.venturesTitle}
+          countLabel={`${String(projects.length).padStart(2, "0")} / ${t.projects.title}`}
+          viewLabel={t.projects.viewProject}
+          ventures={projects.map((project) => ({
+            slug: project.slug,
+            title: project.title,
+            description: project.description ?? "",
+            image: project.image,
+            tags: project.tags,
+            year: project.year,
+          }))}
+        />
+      </LazySection>
+
+      <CinematicImpact
+        eyebrow={c.impactEyebrow}
+        title={c.impactTitle}
+        stats={stats}
+      />
+
+      <section className="px-6 pb-20 md:pb-32 lg:px-12">
+        <div className="container mx-auto">
+          <Link
+            href={`mailto:${contactEmail}`}
+            className="inline-flex min-h-12 items-center gap-2 break-all text-2xl font-semibold tracking-tight transition-[color,transform] duration-300 hover:translate-x-3 hover:text-accent sm:gap-3 sm:text-5xl"
+          >
+            {contactEmail}
+            <ArrowUpRight
+              aria-hidden
+              className="size-[0.7em] shrink-0 text-accent"
+            />
+          </Link>
+        </div>
+      </section>
+
+      <LazySection placeholder={<div className="min-h-[70vh]" aria-hidden />}>
+        <CinematicExperience
+          eyebrow={c.experienceEyebrow}
+          title={c.experienceTitle}
+          experiences={experiences}
+        />
+      </LazySection>
+    </div>
   );
 }

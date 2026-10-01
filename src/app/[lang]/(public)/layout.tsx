@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/layout/navbar/navbar';
 import { Footer } from '@/components/layout/footer/footer';
+import { AscendChrome } from '@/components/sections/ascend/ascend-chrome';
 import { PublicContentProvider } from '@/components/providers/public-content-provider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { Locale, DEFAULT_LOCALE, isValidLocale } from '@/lib/i18n';
@@ -33,6 +34,7 @@ export default async function PublicLayout({
       settings={settings}
     >
       <Navbar />
+        <AscendChrome />
         <StructuredData settings={settings} />
       <main id="main-content" role="main" className="min-h-screen pt-20">
         {children}

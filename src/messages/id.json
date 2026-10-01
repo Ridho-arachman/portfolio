@@ -72,7 +72,7 @@
   "about": {
     "title": "Tentang Saya",
     "subtitle": "Kenali saya lebih dekat",
-    "description": "Saya adalah lulusan Sistem Informasi dengan spesialisasi E-Business, bersemangat menciptakan pengalaman digital yang luar biasa. Perjalanan saya di teknologi dimulai dari rasa ingin tahu tentang cara kerja web, dan telah berkembang menjadi karir yang berfokus pada membangun aplikasi yang scalable, performant, dan berorientasi pengguna.",
+    "description": "Saya lulusan Sistem Informasi dengan spesialisasi E-Business. Penasaran saya pada web mulai dari hal paling dasar: cara kerjanya. Lama-lama berubah jadi karier — membangun aplikasi yang cepat, rapi, dan enak dipakai.",
     "skills": "Keterampilan Teknis",
     "interests": "Minat",
     "education": "Pendidikan",
@@ -94,7 +94,19 @@
     "badgeAvailable": "Tersedia untuk Direkrut",
     "badgeOpen": "Terbuka untuk Full-time & Freelance",
     "heroTitleA": "Tentang",
-    "heroTitleAccent": "Saya"
+    "heroTitleAccent": "Saya",
+    "cinematic": {
+      "roles": "Pembangun|Programmer|Pemecah Masalah|Terus Belajar",
+      "scrollCue": "Scroll",
+      "storyEyebrow": "Tentang Saya",
+      "storyTitle": "Penasaran dulu, baru produksi.",
+      "venturesEyebrow": "Proyek Terpilih",
+      "venturesTitle": "Yang saya buat dan masih jalan.",
+      "impactEyebrow": "Dalam angka",
+      "impactTitle": "Terukur, bukan diklaim.",
+      "experienceEyebrow": "Pengalaman",
+      "experienceTitle": "Tempat yang paling banyak saya pelajari."
+    }
   },
   "skills": {
     "categories": {
@@ -105,17 +117,65 @@
       "SOFT_SKILL": "Soft Skill"
     }
   },
+  "capabilities": {
+    "eyebrow": "Semuanya dalam satu orbit",
+    "title": "Satu tempat untuk seluruh portofolio",
+    "description": "Enam bagian, satu sistem. Setiap bagian situs ini adalah halaman nyata yang dirawat — bukan sekadar placeholder.",
+    "projects": {
+      "title": "Proyek pilihan",
+      "description": "Studi kasus lengkap dengan demo langsung, source code, tumpukan teknologi, dan masalah yang diselesaikan."
+    },
+    "experience": {
+      "title": "Pengalaman profesional",
+      "description": "Peran, tanggung jawab, dan dampak yang terukur, beserta teknologi yang dipakai di setiap peran."
+    },
+    "certificates": {
+      "title": "Sertifikat terverifikasi",
+      "description": "Kredensial profesional dengan penerbit, tanggal terbit, dan ID kredensial yang bisa diverifikasi."
+    },
+    "skills": {
+      "title": "Keterampilan teknis",
+      "description": "Dikelompokkan per frontend, backend, database, dan DevOps — ditambah soft skill yang membuatnya berguna."
+    },
+    "about": {
+      "title": "Latar belakang & filosofi",
+      "description": "Lulusan Sistem Informasi E-Business yang menulis tentang kode bersih, performa, dan UX."
+    },
+    "contact": {
+      "title": "Kontak langsung",
+      "description": "Formulir yang berfungsi dengan proteksi Turnstile, plus email, GitHub, LinkedIn, dan X."
+    }
+  },
+  "showcase": {
+    "eyebrow": "Dibangun untuk Bertrari",
+    "title": "Lihat seluruh gambaran sekaligus",
+    "description": "Setiap proyek, sertifikat, dan kredensial diambil dari database yang sama dengan bagian situs lainnya. Tidak ada angka yang dikarang.",
+    "cta": "Jelajahi proyek",
+    "dashboardTitle": "Portofolio · langsung",
+    "live": "Langsung",
+    "labels": {
+      "projects": "Proyek",
+      "certificates": "Sertifikat",
+      "experience": "Peran",
+      "skills": "Keterampilan"
+    },
+    "statsProjects": "Proyek",
+    "statsCertificates": "Sertifikat",
+    "statsExperience": "Peran",
+    "statsSkills": "Skill",
+    "copyright": "Dibangun di antara bintang-bintang."
+  },
   "coreValues": {
     "title": "Filosofi Inti Saya",
     "subtitle": "Prinsip yang memandu setiap baris kode dan keputusan desain yang saya buat.",
-    "performanceFirst": "Performa Utama",
-    "performanceFirstDesc": "Saya percaya website yang cepat adalah hak pengguna, bukan fitur tambahan. Optimasi adalah prioritas.",
-    "typeSafe": "Type-Safe & Andal",
-    "typeSafeDesc": "Menggunakan TypeScript dan testing untuk memastikan kode yang scalable dan minim bug di production.",
-    "userCentric": "Desain Berorientasi Pengguna",
-    "userCentricDesc": "Teknologi yang hebat tidak ada artinya jika tidak mudah digunakan. UX selalu menjadi panduan utama.",
-    "continuousLearning": "Belajar Berkelanjutan",
-    "continuousLearningDesc": "Dunia tech bergerak cepat. Saya selalu meluangkan waktu untuk mempelajari arsitektur dan tools terbaru."
+    "performanceFirst": "Performa Dulu",
+    "performanceFirstDesc": "Website lambat itu memalukan, bukan nilai tambah. Jadi saya kejar kecepatan sejak awal, bukan setelah semuanya rampung.",
+    "typeSafe": "Kode yang Aman",
+    "typeSafeDesc": "Pakai TypeScript plus tes, biar kodenya tumbuh besar tetap nggak gampang pecah di production.",
+    "userCentric": "Belum Selesai Kalau Susah Dipakai",
+    "userCentricDesc": "Teknologi sehebat apa pun nggak ada gunanya kalau orangnya bingung makainya. Gampang dipakai itu targetnya.",
+    "continuousLearning": "Belajar Terus",
+    "continuousLearningDesc": "Dunia tech cepet berubah. Saya sisihin waktu buat ngikutin arsitektur dan tools baru."
   },
   "projects": {
     "title": "Proyek",

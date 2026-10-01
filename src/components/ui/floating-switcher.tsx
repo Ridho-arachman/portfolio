@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   AnimatePresence,
   animate,
@@ -19,6 +20,14 @@ const SEGMENT_WIDTH = 56;
 const SNAP = { type: "spring", stiffness: 400, damping: 32 } as const;
 
 /**
+ * Home bersifat fixed-dark: semua warnanya datang dari token `--color-ascend-*`
+ * yang hardcoded dan tidak punya pasangan `.light`, plus `.ascend-chrome` yang
+ * memaksa navbar/footer ikut gelap. Menampilkan tombol tema di sini hanya
+ * memberi kontrol yang kelihatan hidup tanpa efek apa pun, jadi disembunyikan.
+ */
+const HOME_ROUTE = /^\/(en|id)\/?$/;
+
+/**
  * Pengganti ThemeToggleFloating: satu pill dua segmen (Tema | PortoBot) yang
  * bisa diklik, dicoret keyboard, atau diseret mendatar. Memakai context tema
  * dan tidak menyentuh `useMessages()`/`useSiteSettings()` karena dirender dari
@@ -27,6 +36,7 @@ const SNAP = { type: "spring", stiffness: 400, damping: 32 } as const;
 export function FloatingSwitcher() {
   const { toggleTheme, resolvedTheme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
+  const pathname = usePathname();
 
   const [mounted, setMounted] = useState(false);
   const [toggling, setToggling] = useState(false);
@@ -49,6 +59,8 @@ export function FloatingSwitcher() {
     if (wasBotOpen.current && !botOpen) botRef.current?.focus();
     wasBotOpen.current = botOpen;
   }, [botOpen]);
+
+  if (HOME_ROUTE.test(pathname)) return null;
 
   if (!mounted) {
     return <div className="fixed right-6 bottom-6 z-40" aria-hidden="true" />;
