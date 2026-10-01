@@ -158,6 +158,10 @@ export const getMessages = unstable_cache(
       return bundledDoc;
     }
   },
-  ["messages-v1"],
+  // v2: namespace showcase/capabilities ditambah Okt 2026 — kunci lama
+  // ("messages-v1") masih menyimpan dokumen pra-deploy di Data Cache Vercel
+  // (persisten antar-deploy) sehingga /id 500 (t.showcase undefined).
+  // Naikkan versi setiap kali shape top-level messages berubah.
+  ["messages-v2"],
   { revalidate: 3600, tags: ["translations"] },
 );
