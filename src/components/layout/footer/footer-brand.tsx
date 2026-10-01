@@ -13,10 +13,9 @@ export function FooterBrand() {
         <Image
           src="/logo-optimized.webp"
           alt={`${siteName} Logo`}
-          width={80}
-          height={100}
+          width={48}
+          height={48}
           className="w-10 h-10 rounded-sm object-cover shadow-sm"
-          priority
           sizes="40px"
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="

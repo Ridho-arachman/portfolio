@@ -106,15 +106,3 @@ export function resolveIconForSkill(skill: {
 }
 
 export const isKnownIconName = (iconName: string) => resolveIcon(iconName) !== null;
-
-/**
- * Every Simple Icons export name, loaded on demand. The full `react-icons/si`
- * module is ~1.9MB gzipped, so this is a dynamic import: it is only ever called
- * from the admin skill form and never lands in a public page bundle.
- */
-export async function loadAllIconNames(): Promise<ReadonlySet<string>> {
-  const si = await import("react-icons/si");
-  return new Set(
-    Object.keys(si).filter((key) => key.startsWith("Si") && key !== "SiIcons"),
-  );
-}

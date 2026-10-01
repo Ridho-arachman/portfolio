@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { LazySection } from "@/components/ui/lazy-section";
 import { PublicProviders } from "@/lib/public-providers";
 import { RevealObserver } from "@/components/sections/ascend/reveal-observer";
@@ -12,7 +12,6 @@ import {
   type PortfolioCounts,
 } from "@/components/sections/ascend/showcase-section";
 import { CtaSection } from "@/components/sections/ascend/cta-section";
-import { PlanetCanvas } from "@/components/sections/planet/planet-canvas";
 import type { Project } from "@/components/sections/projects/constants";
 import type { CertificateListData } from "@/components/sections/certificates/constants";
 
@@ -89,6 +88,14 @@ function BelowFoldSkeleton() {
   );
 }
 
+const PlanetCanvas = dynamic(
+  () =>
+    import("@/components/sections/planet/planet-canvas").then(
+      (m) => m.PlanetCanvas
+    ),
+  { ssr: false }
+);
+
 // One lazy bundle for everything below the fold: react-query + nuqs providers
 // + projects/certificates/contact sections (incl. zod, turnstile) are
 // code-split here so they never load or execute on the home page's critical
@@ -111,11 +118,23 @@ export function HomePageContent({
   certificates,
   counts,
 }: HomePageContentProps) {
+  // ponytail: planet mounts post-load/idle so three.js (~600KB+) never blocks LCP/TBT; ceiling = planet pops in ~1s later on slow networks, upgrade = preload GLB when hero depends on it (it doesn't — LCP is text)
+  const [planetReady, setPlanetReady] = useState(false);
+  useEffect(() => {
+    if (planetReady) return;
+    const start = () => setPlanetReady(true);
+    if (document.readyState === "complete") {
+      const t = window.setTimeout(start, 0);
+      return () => window.clearTimeout(t);
+    }
+    window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, [planetReady]);
   return (
     <>
       <div className="ascend-theme relative min-h-screen">
         <div className="ascend-backdrop" />
-        <PlanetCanvas />
+        {planetReady ? <PlanetCanvas /> : null}
         <PublicProviders>
           {children}
           <CapabilitiesSection />

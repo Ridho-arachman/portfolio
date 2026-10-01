@@ -118,6 +118,7 @@ export function CertificateCard({
                         src={img}
                         alt={`${t.common.preview} ${idx + 1}`}
                         fill
+                        sizes="48px"
                         className="object-cover grayscale group-hover:grayscale-0 transition-all"
                       />
                     </div>

@@ -115,20 +115,9 @@ export default async function RootLayout({
       <head>
         <link
           rel="preconnect"
-          href="https://images.unsplash.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preconnect"
-          href="https://picsum.photos"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preconnect"
           href="https://challenges.cloudflare.com"
           crossOrigin="anonymous"
         />
-        <link rel="dns-prefetch" href="https://*.supabase.co" />
       </head>
       <body className="bg-bg-primary text-text-primary antialiased">
         <ThemeProvider disableTransitionOnChange>

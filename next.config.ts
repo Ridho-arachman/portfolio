@@ -137,10 +137,7 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         headers: [
-          { key: "Link", value: "<https://images.unsplash.com>; rel=preconnect; crossorigin" },
-          { key: "Link", value: "<https://picsum.photos>; rel=preconnect; crossorigin" },
           { key: "Link", value: "<https://challenges.cloudflare.com>; rel=preconnect; crossorigin" },
-          { key: "Link", value: "<https://*.supabase.co>; rel=preconnect; crossorigin" },
         ],
       },
     ];
