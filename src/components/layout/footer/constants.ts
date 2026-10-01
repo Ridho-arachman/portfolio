@@ -1,5 +1,5 @@
 import { FaLinkedin } from "react-icons/fa";
-import { SiGithub, SiGmail, SiX } from "react-icons/si";
+import { SiGithub, SiGmail, SiInstagram, SiX } from "react-icons/si";
 
 import type { SiteSettings } from "@/lib/settings";
 
@@ -17,6 +17,7 @@ export const SOCIAL_LINK_META = [
   { key: "github", label: "GitHub", icon: SiGithub },
   { key: "linkedin", label: "LinkedIn", icon: FaLinkedin },
   { key: "twitter", label: "X (Twitter)", icon: SiX },
+  { key: "instagram", label: "Instagram", icon: SiInstagram },
   { key: "email", label: "Email Ridho", icon: SiGmail },
 ] as const;
 
@@ -40,6 +41,7 @@ export function resolveSocialLinks(settings: SiteSettings): SocialLink[] {
     github: settings.githubUrl.trim(),
     linkedin: settings.linkedinUrl.trim(),
     twitter: settings.twitterUrl.trim(),
+    instagram: settings.instagramUrl.trim(),
     email: email ? `mailto:${email}` : "",
   };
 

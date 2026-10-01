@@ -28,6 +28,7 @@ describe("FooterSocial", () => {
     expect(hrefOf("GitHub")).toHaveAttribute("href", testSiteSettings.githubUrl);
     expect(hrefOf("LinkedIn")).toHaveAttribute("href", testSiteSettings.linkedinUrl);
     expect(hrefOf("X (Twitter)")).toHaveAttribute("href", testSiteSettings.twitterUrl);
+    expect(hrefOf("Instagram")).toHaveAttribute("href", testSiteSettings.instagramUrl);
     expect(hrefOf("Email Ridho")).toHaveAttribute(
       "href",
       `mailto:${testSiteSettings.contactEmail}`,
@@ -49,6 +50,13 @@ describe("FooterSocial", () => {
     renderSocial({ ...testSiteSettings, twitterUrl: "" });
 
     expect(screen.queryByRole("link", { name: "X (Twitter)" })).not.toBeInTheDocument();
+    expect(hrefOf("GitHub")).toBeInTheDocument();
+  });
+
+  it("menyembunyikan instagram saat instagramUrl kosong", () => {
+    renderSocial({ ...testSiteSettings, instagramUrl: "   " });
+
+    expect(screen.queryByRole("link", { name: "Instagram" })).not.toBeInTheDocument();
     expect(hrefOf("GitHub")).toBeInTheDocument();
   });
 

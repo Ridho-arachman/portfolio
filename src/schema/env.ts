@@ -20,6 +20,7 @@ export const clientEnvSchema = z.object({
   NEXT_PUBLIC_GITHUB_URL: z.string().default("https://github.com/Ridho-arachman"),
   NEXT_PUBLIC_LINKEDIN_URL: z.string().default("https://linkedin.com/in/ridho-arachman"),
   NEXT_PUBLIC_TWITTER_URL: z.string().default("https://twitter.com/ridho_arachman"),
+  NEXT_PUBLIC_INSTAGRAM_URL: z.string().default(""),
 
   NEXT_PUBLIC_MAP_TILE_URL: z.string().default("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"),
   NEXT_PUBLIC_NGROK_DOMAIN: z.string().optional(),

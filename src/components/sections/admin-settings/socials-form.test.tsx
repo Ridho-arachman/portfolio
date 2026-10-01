@@ -54,6 +54,9 @@ describe("SocialsForm", () => {
     expect(screen.getByLabelText(/x \(twitter\) url/i)).toHaveValue(
       testSiteSettings.twitterUrl,
     );
+    expect(screen.getByLabelText(/instagram url/i)).toHaveValue(
+      testSiteSettings.instagramUrl,
+    );
   });
 
   it("mengirim kolom URL dengan nama kolom DB", async () => {
@@ -72,6 +75,7 @@ describe("SocialsForm", () => {
           githubUrl: "https://github.com/ada",
           linkedinUrl: testSiteSettings.linkedinUrl,
           twitterUrl: testSiteSettings.twitterUrl,
+          instagramUrl: testSiteSettings.instagramUrl,
         },
         // `contactEmail` ada di grup profile, bukan socials.
         profile: { contactEmail: testSiteSettings.contactEmail },

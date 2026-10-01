@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import { useTranslation } from "@/hooks/use-translation";
 import { useSiteSettings } from "@/components/providers/public-content-provider";
+import { resolveSocialLinks } from "@/components/layout/footer/constants";
 import { LazySection } from "@/components/ui/lazy-section";
 import { displayFont } from "@/components/sections/about/cinematic/font";
 import { CinematicHero } from "@/components/sections/about/cinematic/hero";
@@ -35,7 +36,9 @@ export function AboutPageContent({
   counts,
 }: AboutPageContentProps) {
   const { t } = useTranslation();
-  const { fullName, bio, contactEmail } = useSiteSettings();
+  const siteSettings = useSiteSettings();
+  const { fullName, bio, contactEmail } = siteSettings;
+  const socials = resolveSocialLinks(siteSettings);
   const c = t.about.cinematic;
 
   const principles = [
@@ -116,6 +119,22 @@ export function AboutPageContent({
               className="size-[0.7em] shrink-0 text-accent"
             />
           </Link>
+          {socials.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-4">
+              {socials.map((social) => (
+                <Link
+                  key={social.key}
+                  href={social.href}
+                  target={social.key === "email" ? undefined : "_blank"}
+                  rel={social.key === "email" ? undefined : "noreferrer"}
+                  aria-label={social.label}
+                  className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full border border-glass-border bg-bg-secondary/60 text-text-secondary transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/50 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                >
+                  <social.icon aria-hidden="true" className="size-5" />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

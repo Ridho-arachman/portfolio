@@ -34,6 +34,7 @@ export const SITE_SETTINGS_SELECT = {
   githubUrl: true,
   linkedinUrl: true,
   twitterUrl: true,
+  instagramUrl: true,
   siteName: true,
   tagline: true,
   siteUrl: true,
@@ -54,6 +55,7 @@ export type SiteSettings = {
   githubUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
+  instagramUrl: string;
   siteName: string;
   tagline: string;
   siteUrl: string;
@@ -83,6 +85,7 @@ export function envSiteSettings(): SiteSettings {
     githubUrl: env.NEXT_PUBLIC_GITHUB_URL,
     linkedinUrl: env.NEXT_PUBLIC_LINKEDIN_URL,
     twitterUrl: env.NEXT_PUBLIC_TWITTER_URL,
+    instagramUrl: env.NEXT_PUBLIC_INSTAGRAM_URL,
     siteName: env.NEXT_PUBLIC_SITE_NAME,
     tagline: env.NEXT_PUBLIC_SITE_TAGLINE,
     siteUrl: env.NEXT_PUBLIC_SITE_URL,
@@ -107,6 +110,7 @@ export function resolveSiteSettings(row: SiteSettingsRow | null): SiteSettings {
     githubUrl: pick(row?.githubUrl, env.githubUrl),
     linkedinUrl: pick(row?.linkedinUrl, env.linkedinUrl),
     twitterUrl: pick(row?.twitterUrl, env.twitterUrl),
+    instagramUrl: pick(row?.instagramUrl, env.instagramUrl),
     siteName: pick(row?.siteName, env.siteName),
     tagline: pick(row?.tagline, env.tagline),
     siteUrl: pick(row?.siteUrl, env.siteUrl),

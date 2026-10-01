@@ -58,6 +58,7 @@ export async function POST(req: Request) {
         githubUrl: null,
         linkedinUrl: null,
         twitterUrl: null,
+        instagramUrl: null,
       }),
       ...(sections.has("site") && {
         siteName: null,

@@ -37,6 +37,7 @@ function makeRow(overrides: Partial<SiteSettingsRow> = {}): SiteSettingsRow {
     githubUrl: null,
     linkedinUrl: null,
     twitterUrl: null,
+    instagramUrl: null,
     siteName: null,
     tagline: null,
     siteUrl: null,
@@ -69,6 +70,7 @@ describe("resolveSiteSettings", () => {
     expect(resolved.githubUrl).toBe(env.githubUrl);
     expect(resolved.linkedinUrl).toBe(env.linkedinUrl);
     expect(resolved.twitterUrl).toBe(env.twitterUrl);
+    expect(resolved.instagramUrl).toBe(env.instagramUrl);
     expect(resolved.tagline).toBe(env.tagline);
     expect(resolved.siteUrl).toBe(env.siteUrl);
     expect(resolved.siteDescription).toBe(env.siteDescription);
@@ -76,12 +78,13 @@ describe("resolveSiteSettings", () => {
 
   it("treats a blank override as absent so the site is never blanked", () => {
     const resolved = resolveSiteSettings(
-      makeRow({ fullName: "", jobTitle: "   ", siteDescription: "" }),
+      makeRow({ fullName: "", jobTitle: "   ", siteDescription: "", instagramUrl: "" }),
     );
 
     expect(resolved.fullName).toBe(env.fullName);
     expect(resolved.jobTitle).toBe(env.jobTitle);
     expect(resolved.siteDescription).toBe(env.siteDescription);
+    expect(resolved.instagramUrl).toBe(env.instagramUrl);
   });
 
   it("restores the default nav when the row overrides nothing", () => {

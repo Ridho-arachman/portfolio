@@ -14,6 +14,7 @@ const settings: SiteSettings = {
   githubUrl: "https://github.com/ridho",
   linkedinUrl: "https://linkedin.com/in/ridho",
   twitterUrl: "https://twitter.com/ridho",
+  instagramUrl: "https://instagram.com/ridho",
   siteName: "Ridho.dev",
   tagline: "Tagline dari admin.",
   siteUrl: "https://example.com",

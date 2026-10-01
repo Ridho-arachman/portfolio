@@ -16,6 +16,7 @@ export const socialsSchema = z.object({
   github: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   linkedin: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   x: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
+  instagram: z.union([z.url("Enter a valid URL"), z.literal("")]).optional(),
   email: z
     .union([z.email("Enter a valid email address"), z.literal("")])
     .optional(),
@@ -80,6 +81,7 @@ const socialsUpdateSchema = z.object({
   githubUrl: z.url("Enter a valid URL"),
   linkedinUrl: z.url("Enter a valid URL"),
   twitterUrl: z.url("Enter a valid URL"),
+  instagramUrl: z.url("Enter a valid URL"),
 });
 
 const siteUpdateSchema = z.object({

@@ -298,6 +298,7 @@ model SiteSettings {
   githubUrl       String? // Override NEXT_PUBLIC_GITHUB_URL
   linkedinUrl     String? // Override NEXT_PUBLIC_LINKEDIN_URL
   twitterUrl      String? // Override NEXT_PUBLIC_TWITTER_URL
+  instagramUrl    String? // Override NEXT_PUBLIC_INSTAGRAM_URL
   // Site
   siteName        String? // Override NEXT_PUBLIC_SITE_NAME
   tagline         String? // Override NEXT_PUBLIC_SITE_TAGLINE

@@ -16,6 +16,7 @@ function toFormValues(settings: SiteSettings): SocialsFormValues {
     github: settings.githubUrl,
     linkedin: settings.linkedinUrl,
     x: settings.twitterUrl,
+    instagram: settings.instagramUrl,
     email: settings.contactEmail,
   };
 }
@@ -40,6 +41,7 @@ export function SocialsForm() {
         githubUrl: values.github,
         linkedinUrl: values.linkedin,
         twitterUrl: values.x,
+        instagramUrl: values.instagram,
       },
       // `contactEmail` tinggal di grup `profile` (lihat profileUpdateSchema),
       // jadi email form ini dikirim sebagai override kolom yang sama.
@@ -100,6 +102,20 @@ export function SocialsForm() {
             />
             {errors.x && (
               <p className="text-xs text-destructive">{errors.x.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="instagram">{ADMIN_SETTINGS.fieldInstagram}</Label>
+            <Input
+              id="instagram"
+              type="url"
+              placeholder="https://instagram.com/username"
+              aria-invalid={errors.instagram ? true : undefined}
+              {...register("instagram")}
+            />
+            {errors.instagram && (
+              <p className="text-xs text-destructive">{errors.instagram.message}</p>
             )}
           </div>
 

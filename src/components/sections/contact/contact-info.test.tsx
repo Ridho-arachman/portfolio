@@ -70,5 +70,9 @@ describe("ContactInfo", () => {
       "href",
       testSiteSettings.githubUrl,
     );
+    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+      "href",
+      testSiteSettings.instagramUrl,
+    );
   });
 });

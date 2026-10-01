@@ -93,7 +93,7 @@ describe("PUT /api/admin/settings", () => {
 
   it("stores each group in its own columns", async () => {
     await put({
-      socials: { githubUrl: "https://github.com/ada", twitterUrl: "https://x.com/ada" },
+      socials: { githubUrl: "https://github.com/ada", twitterUrl: "https://x.com/ada", instagramUrl: "https://instagram.com/ada" },
       site: { siteUrl: "https://ada.dev" },
       quickLinks: ["contact", "home"],
     });
@@ -101,6 +101,7 @@ describe("PUT /api/admin/settings", () => {
     const row = await readRow();
     expect(row?.githubUrl).toBe("https://github.com/ada");
     expect(row?.twitterUrl).toBe("https://x.com/ada");
+    expect(row?.instagramUrl).toBe("https://instagram.com/ada");
     expect(row?.siteUrl).toBe("https://ada.dev");
     expect(row?.quickLinks).toEqual(["contact", "home"]);
   });
