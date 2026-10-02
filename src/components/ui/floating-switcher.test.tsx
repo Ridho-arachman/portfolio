@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -134,25 +134,89 @@ describe("dua segmen pada kontrol mengambang", () => {
 });
 
 describe("home yang fixed-dark", () => {
-  it("tidak merender kontrol tema maupun PortoBot di sana", async () => {
+  it("menyembunyikan segmen tema tapi tetap merender PortoBot", async () => {
     mockPathname.current = "/en";
 
-    const { container } = render(
+    render(
       <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
         <Navbar />
         <FloatingSwitcher />
       </PublicContentProvider>,
     );
 
-    await act(async () => {
-      await new Promise((resolve) =>
-        requestAnimationFrame(() => resolve(undefined)),
-      );
-    });
+    const bot = await screen.findByRole("radio", { name: "PortoBot" });
 
-    expect(container.querySelector("div.fixed.right-6.bottom-6")).toBeNull();
-    expect(
-      screen.queryByRole("radiogroup", { name: "Site controls" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("radio", { name: "Toggle theme" })).not.toBeInTheDocument();
+    // Roving tabindex harus tetap menyisakan satu stop yang bisa dicapai keyboard.
+    expect(bot).toHaveAttribute("tabindex", "0");
+  });
+
+  it("tidak menambah halaman saat panah ditekan di home", async () => {
+    mockPathname.current = "/en";
+
+    render(
+      <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+        <Navbar />
+        <FloatingSwitcher />
+      </PublicContentProvider>,
+    );
+
+    const bot = await screen.findByRole("radio", { name: "PortoBot" });
+    bot.focus();
+    await userEvent.keyboard("{ArrowLeft}");
+
+    // `preventDefault()` tanpa alasan akan memblokir scroll halaman untuk user keyboard.
+    expect(bot).toHaveFocus();
+  });
+});
+
+describe("admin yang tidak butuh PortoBot", () => {
+  it("menyembunyikan PortoBot tapi tetap menyisakan toggle tema", async () => {
+    mockPathname.current = "/admin/projects";
+
+    render(
+      <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+        <Navbar />
+        <FloatingSwitcher />
+      </PublicContentProvider>,
+    );
+
+    const theme = await screen.findByRole("radio", { name: "Toggle theme" });
+
+    expect(screen.queryByRole("radio", { name: "PortoBot" })).not.toBeInTheDocument();
+    // Roving tabindex harus tetap menyisakan satu stop yang bisa dicapai keyboard.
+    expect(theme).toHaveAttribute("tabindex", "0");
+  });
+
+  it("menyembunyikan PortoBot di /admin/login juga, bukan hanya di sub-halaman", async () => {
+    mockPathname.current = "/admin/login";
+
+    render(<FloatingSwitcher />);
+
+    await screen.findByRole("radio", { name: "Toggle theme" });
+    expect(screen.queryByRole("radio", { name: "PortoBot" })).not.toBeInTheDocument();
+  });
+
+  it("toggle tema di admin tetap berfungsi", async () => {
+    const user = userEvent.setup();
+    mockPathname.current = "/admin";
+
+    render(<FloatingSwitcher />);
+
+    await user.click(await screen.findByRole("radio", { name: "Toggle theme" }));
+
+    expect(toggleTheme).toHaveBeenCalledTimes(1);
+  });
+
+  it("tidak menambah halaman saat panah ditekan di admin", async () => {
+    mockPathname.current = "/admin";
+
+    render(<FloatingSwitcher />);
+
+    const theme = await screen.findByRole("radio", { name: "Toggle theme" });
+    theme.focus();
+    await userEvent.keyboard("{ArrowLeft}");
+
+    expect(theme).toHaveFocus();
   });
 });

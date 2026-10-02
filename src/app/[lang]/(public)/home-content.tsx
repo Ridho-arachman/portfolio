@@ -118,17 +118,31 @@ export function HomePageContent({
   certificates,
   counts,
 }: HomePageContentProps) {
-  // ponytail: planet mounts post-load/idle so three.js (~600KB+) never blocks LCP/TBT; ceiling = planet pops in ~1s later on slow networks, upgrade = preload GLB when hero depends on it (it doesn't — LCP is text)
+  // ponytail: planet mounts once the main thread is idle so three.js + the 1.9MB
+  // GLB/PNG decode never blocks LCP/TBT. Ceiling = globe appears ~1s later (it
+  // has a 1.9s entrance animation, so the pop-in is invisible).
   const [planetReady, setPlanetReady] = useState(false);
   useEffect(() => {
     if (planetReady) return;
-    const start = () => setPlanetReady(true);
+    let idle: number | undefined;
+    const start = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        idle = window.requestIdleCallback(() => setPlanetReady(true), {
+          timeout: 3000,
+        });
+      } else {
+        idle = window.setTimeout(() => setPlanetReady(true), 1500);
+      }
+    };
     if (document.readyState === "complete") {
-      const t = window.setTimeout(start, 0);
-      return () => window.clearTimeout(t);
+      start();
+      return () => window.clearTimeout(idle);
     }
     window.addEventListener("load", start, { once: true });
-    return () => window.removeEventListener("load", start);
+    return () => {
+      window.removeEventListener("load", start);
+      window.clearTimeout(idle);
+    };
   }, [planetReady]);
   return (
     <>

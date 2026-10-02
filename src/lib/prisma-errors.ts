@@ -57,6 +57,12 @@ export function describePrismaError(
         message: `${entityLabel} is referenced by other records`,
         status: 409,
       };
+    // Column does not exist / schema out of sync (migration not applied)
+    case "P2022":
+      return {
+        message: `${entityLabel} schema is out of sync`,
+        status: 500,
+      };
     default:
       return null;
   }

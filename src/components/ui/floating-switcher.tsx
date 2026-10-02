@@ -14,18 +14,23 @@ import { MessageCircle, Moon, Sun } from "lucide-react";
 
 import { PortoBot } from "@/components/faq/porto-bot";
 import { useTheme } from "@/providers/theme-provider";
+import { cn } from "@/lib/utils";
 
 /** Lebar satu segmen (w-14) — dipakai sebagai ambang tengah saat drag. */
 const SEGMENT_WIDTH = 56;
 const SNAP = { type: "spring", stiffness: 400, damping: 32 } as const;
 
 /**
- * Home bersifat fixed-dark: semua warnanya datang dari token `--color-ascend-*`
- * yang hardcoded dan tidak punya pasangan `.light`, plus `.ascend-chrome` yang
- * memaksa navbar/footer ikut gelap. Menampilkan tombol tema di sini hanya
- * memberi kontrol yang kelihatan hidup tanpa efek apa pun, jadi disembunyikan.
+ * Home (`/en`, `/id`) tetap harus punya pill ini untuk PortoBot, tapi segmen
+ * tema disembunyikan: semua warna home datang dari token `--color-ascend-*` yang
+ * hardcoded dan tidak punya pasangan `.light`, plus `.ascend-chrome` yang memaksa
+ * navbar/footer ikut gelap. Tombol tema di sana cuma kontrol yang kelihatan hidup
+ * tanpa efek apa pun.
  */
 const HOME_ROUTE = /^\/(en|id)\/?$/;
+
+/** Admin tidak butuh PortoBot, dan tidak ada halaman publik di dalam `/admin`. */
+const ADMIN_ROUTE = /^\/admin(\/|$)/;
 
 /**
  * Pengganti ThemeToggleFloating: satu pill dua segmen (Tema | PortoBot) yang
@@ -53,6 +58,14 @@ export function FloatingSwitcher() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  const isHome = HOME_ROUTE.test(pathname);
+  const isAdmin = ADMIN_ROUTE.test(pathname);
+
+  // Di home hanya PortoBot, di admin hanya tema. Di jalur mana pun yang
+  // tersisa (halaman publik lain) keduanya tampil dan bisa diseret.
+  const showTheme = !isHome;
+  const showBot = !isAdmin;
+
   // Fokus kembali ke tombol PortoBot setelah panel ditutup, supaya pengguna
   // keyboard tidak terjatuh ke <body> dan kehilangan tempatnya.
   useEffect(() => {
@@ -60,13 +73,21 @@ export function FloatingSwitcher() {
     wasBotOpen.current = botOpen;
   }, [botOpen]);
 
-  if (HOME_ROUTE.test(pathname)) return null;
+  // Navigasi client-side tidak me-remount root layout, jadi `botOpen` bisa
+  // menyala false di `/admin`. Yang menentukan render tetap `botVisible`:
+  // mutate state di dalam effect akan memicu cascading render.
+  const botVisible = showBot && botOpen;
 
   if (!mounted) {
     return <div className="fixed right-6 bottom-6 z-40" aria-hidden="true" />;
   }
 
   const isDark = resolvedTheme === "dark";
+  const isDual = showTheme && showBot;
+  const indicatorX = isDual && botOpen ? SEGMENT_WIDTH : 0;
+  // Roving tabindex harus menunjuk segmen yang benar-benar ada, kalau tidak
+  // `tabIndex={0}` jatuh ke tombol yang sudah di-unmount.
+  const activeIndex = showTheme ? (showBot ? focused : 0) : 1;
 
   const toggleThemeDebounced = () => {
     if (toggling) return;
@@ -86,8 +107,11 @@ export function FloatingSwitcher() {
   };
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > SEGMENT_WIDTH / 2) activate(1);
-    else if (info.offset.x < -SEGMENT_WIDTH / 2) activate(0);
+    if (info.offset.x > SEGMENT_WIDTH / 2) {
+      if (showBot) activate(1);
+    } else if (info.offset.x < -SEGMENT_WIDTH / 2) {
+      if (showTheme) activate(0);
+    }
 
     if (prefersReducedMotion) dragX.set(0);
     else animate(dragX, 0, SNAP);
@@ -97,7 +121,7 @@ export function FloatingSwitcher() {
     // Scrim ditumpuk lebih dulu di dalam wrapper yang sama, jadi ia menutupi
     // viewport di bawah pill tanpa menutupi navbar (z-50) di atasnya.
     <div className="fixed right-6 bottom-6 z-40">
-      {botOpen ? (
+      {botVisible ? (
         <div
           aria-hidden="true"
           onClick={() => setBotOpen(false)}
@@ -106,7 +130,7 @@ export function FloatingSwitcher() {
       ) : null}
 
       <AnimatePresence>
-        {botOpen ? (
+        {botVisible ? (
           <PortoBot variant="panel" open onClose={() => setBotOpen(false)} />
         ) : null}
       </AnimatePresence>
@@ -114,72 +138,81 @@ export function FloatingSwitcher() {
       <motion.div
         role="radiogroup"
         aria-label="Site controls"
-        drag={prefersReducedMotion ? false : "x"}
+        drag={prefersReducedMotion || !isDual ? false : "x"}
         dragMomentum={false}
         onDragEnd={handleDragEnd}
         style={{ x: dragX }}
-        className="grid h-14 w-28 grid-cols-2 place-items-center rounded-full border border-white/10 bg-bg-secondary/80 p-1 shadow-2xl backdrop-blur-md"
+        className={cn(
+          "grid h-14 place-items-center rounded-full border border-white/10 bg-bg-secondary/80 p-1 shadow-2xl backdrop-blur-md",
+          isDual ? "w-28 grid-cols-2" : "w-14 grid-cols-1",
+        )}
       >
         <motion.span
           layoutId="switcher-indicator"
           aria-hidden="true"
           className="absolute left-1 top-1 h-12 w-14 rounded-full border border-accent/30 bg-accent/10"
-          style={prefersReducedMotion ? { x: botOpen ? SEGMENT_WIDTH : 0 } : undefined}
+          style={prefersReducedMotion ? { x: indicatorX } : undefined}
           initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-          animate={prefersReducedMotion ? undefined : { opacity: 1, x: botOpen ? SEGMENT_WIDTH : 0 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, x: indicatorX }}
           transition={prefersReducedMotion ? undefined : SNAP}
         />
 
-        <button
-          ref={themeRef}
-          type="button"
-          role="radio"
-          aria-checked={!botOpen}
-          aria-label="Toggle theme"
-          aria-busy={toggling}
-          tabIndex={focused === 0 ? 0 : -1}
-          onClick={() => activate(0)}
-          onFocus={() => setFocused(0)}
-          className="group relative z-10 flex h-12 w-14 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          {isDark ? <Moon className="h-5 w-5 text-accent" /> : <Sun className="h-5 w-5 text-accent" />}
-          <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-bg-tertiary px-3 py-1.5 text-xs text-text-secondary opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100">
-            {isDark ? "Switch to Light" : "Switch to Dark"}
-          </span>
-        </button>
+        {showTheme ? (
+          <button
+            ref={themeRef}
+            type="button"
+            role="radio"
+            aria-checked={!showBot || !botOpen}
+            aria-label="Toggle theme"
+            aria-busy={toggling}
+            tabIndex={activeIndex === 0 ? 0 : -1}
+            onClick={() => activate(0)}
+            onFocus={() => setFocused(0)}
+            className="group relative z-10 flex h-12 w-14 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            {isDark ? <Moon className="h-5 w-5 text-accent" /> : <Sun className="h-5 w-5 text-accent" />}
+            <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-bg-tertiary px-3 py-1.5 text-xs text-text-secondary opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100">
+              {isDark ? "Switch to Light" : "Switch to Dark"}
+            </span>
+          </button>
+        ) : null}
 
-        <button
-          ref={botRef}
-          type="button"
-          role="radio"
-          aria-checked={botOpen}
-          aria-label="PortoBot"
-          tabIndex={focused === 1 ? 0 : -1}
-          onClick={() => activate(1)}
-          onFocus={() => setFocused(1)}
-          onKeyDown={(event) => {
-            // Panah/Home/End hanya memindahkan fokus (aktivasi manual), Enter dan
-            // Space yang memilih — supaya menyorot tombol Tema tidak ikut
-            // mengganti tema tanpa sengaja.
-            if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "End") {
-              event.preventDefault();
-              focusSegment(1);
-            } else if (
-              event.key === "ArrowLeft" ||
-              event.key === "ArrowUp" ||
-              event.key === "Home"
-            ) {
-              event.preventDefault();
-              focusSegment(0);
-            }
-          }}
-          className="group relative z-10 flex h-12 w-14 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <MessageCircle className="h-5 w-5 text-accent" />
-          <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-bg-tertiary px-3 py-1.5 text-xs text-text-secondary opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100">
-            PortoBot
-          </span>
-        </button>
+        {showBot ? (
+          <button
+            ref={botRef}
+            type="button"
+            role="radio"
+            aria-checked={!showTheme || botOpen}
+            aria-label="PortoBot"
+            tabIndex={activeIndex === 1 ? 0 : -1}
+            onClick={() => activate(1)}
+            onFocus={() => setFocused(1)}
+            onKeyDown={(event) => {
+              // Panah/Home/End hanya memindahkan fokus (aktivasi manual), Enter dan
+              // Space yang memilih — supaya menyorot tombol Tema tidak ikut
+              // mengganti tema tanpa sengaja. Kalau hanya satu segmen yang ada,
+              // `preventDefault()` di sini akan memblokir scroll halaman.
+              if (!isDual) return;
+              if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "End") {
+                event.preventDefault();
+                focusSegment(1);
+              } else if (
+                event.key === "ArrowLeft" ||
+                event.key === "ArrowUp" ||
+                event.key === "Home"
+              ) {
+                event.preventDefault();
+                focusSegment(0);
+              }
+            }}
+            className="group relative z-10 flex h-12 w-14 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <MessageCircle className="h-5 w-5 text-accent" />
+            <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-bg-tertiary px-3 py-1.5 text-xs text-text-secondary opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100">
+              PortoBot
+            </span>
+          </button>
+        ) : null}
       </motion.div>
     </div>
   );

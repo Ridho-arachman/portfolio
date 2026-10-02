@@ -3,7 +3,9 @@ import { MotionProvider } from "@/components/providers/motion-provider";
 import { FloatingSwitcher } from "@/components/ui/floating-switcher";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { getSiteSettings } from "@/lib/settings";
+import { DEFAULT_LOCALE, isValidLocale } from "@/lib/i18n";
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -97,14 +99,16 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params?: Promise<{ lang?: string }>;
 }) {
-  const resolvedParams = params ? await params : undefined;
-  const lang = resolvedParams?.lang;
-  const locale = lang === "id" || lang === "en" ? lang : "en";
+  // Root layout berada di luar segmen [lang], jadi route params tidak pernah
+  // berisi locale dan `params` di sini selalu undefined. Proxy memforward locale
+  // sebagai request header; itu satu-satunya cara layout terluar tahu bahasa
+  // aktif tanpa memindahkan <html>/<body> ke dalam [lang].
+  const headerList = await headers();
+  const headerLocale = headerList.get("x-current-locale");
+  const locale = headerLocale && isValidLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE;
 
   return (
     <html

@@ -31,8 +31,14 @@ export async function proxy(request: NextRequest) {
   const pathnameLocale = getLocaleFromPath(pathname);
 
   if (pathnameLocale && isValidLocale(pathnameLocale)) {
-    // Locale is valid, continue with admin auth check
-    const response = NextResponse.next();
+    // Locale is valid, continue with admin auth check.
+    // The header must ride on the REQUEST, not just the response: the root
+    // layout sits outside the [lang] segment and can never see route params, so
+    // this request header is the only channel that can tell <html lang> which
+    // language is actually being served.
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-current-locale", pathnameLocale);
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
     response.headers.set("x-current-locale", pathnameLocale);
     return handleAdminAuth(request, response);
   }

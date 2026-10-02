@@ -22,7 +22,6 @@ import {
     SphereGeometry,
     sRGBEncoding,
     Texture,
-    TextureLoader,
     Vector2,
     VSMShadowMap,
     WebGL1Renderer,
@@ -316,6 +315,26 @@ function buildLandMarkers(
 
     if (placed === 0) return null;
     return { positions: positions.subarray(0, placed * 3), seeds: seeds.subarray(0, placed) };
+}
+
+// ponytail: the source clouds PNG is 6000x6000 and decoding/uploading that costs seconds of
+// main-thread time on a throttled phone; createImageBitmap resizes off-thread instead. Ceiling
+// = 2048 cap (still denser than the ~500px globe). Upgrade path: ship a 2048 asset.
+async function loadScaledTexture(url: string, maxSize: number): Promise<Texture> {
+    const bitmap = await createImageBitmap(await (await fetch(url)).blob());
+    const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("planet: 2d context unavailable");
+    context.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+    const texture = new Texture(canvas);
+    texture.needsUpdate = true;
+    return texture;
 }
 
 export function createPlanetScene(options: {
@@ -716,7 +735,7 @@ export function createPlanetScene(options: {
         planetSource.layers.set(LAYERS.ENTIRE_SCENE);
         planetGroup.add(planetSource);
 
-        const cloudTexture = await new TextureLoader().loadAsync(PLANET_CLOUDS_PNG);
+        const cloudTexture = await loadScaledTexture(PLANET_CLOUDS_PNG, 2048);
         if (disposed) return;
         cloudTexture.wrapS = RepeatWrapping;
         cloudTexture.wrapT = RepeatWrapping;
