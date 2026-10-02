@@ -320,7 +320,7 @@ export function LiquidImage({
         alt={alt}
         {...imageProps}
         style={active && !still ? { filter: `url(#${filterId})` } : undefined}
-        className={`object-cover ${active ? "grayscale-0" : "grayscale"} transition-[grayscale] duration-500 ease-out`}
+        className="object-cover transition-transform duration-500 ease-out"
       />
 
       {veil ? (

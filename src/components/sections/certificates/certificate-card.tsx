@@ -41,7 +41,7 @@ export function CertificateCard({
                   alt={cert.title}
                   width={800}
                   height={600}
-                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                  className="object-cover group-hover:scale-105 transition-all duration-700 ease-out"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
@@ -119,7 +119,7 @@ export function CertificateCard({
                         alt={`${t.common.preview} ${idx + 1}`}
                         fill
                         sizes="48px"
-                        className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                        className="object-cover transition-all"
                       />
                     </div>
                   ))}

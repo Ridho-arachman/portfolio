@@ -45,7 +45,7 @@ export function ExperienceListItem({
                 src={exp.thumbnail ?? ""}
                 alt={exp.role}
                 fill
-                className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                className="object-cover group-hover:scale-105 transition-all duration-700 ease-out"
               />
 
               {/* Type Badge (Shadcn UI) - Inline rendering untuk menghindari error React */}

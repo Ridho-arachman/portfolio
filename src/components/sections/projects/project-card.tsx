@@ -30,7 +30,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             alt={project.title}
             width={800}
             height={600}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
@@ -73,7 +73,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                     alt={`${t.common.preview} ${idx + 1}`}
                     width={48}
                     height={48}
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                    className="object-cover transition-all"
                     sizes="48px"
                     placeholder="blur"
                     blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="

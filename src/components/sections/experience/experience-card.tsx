@@ -42,7 +42,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                       src={exp.thumbnail ?? ""}
                       alt={exp.role}
                       fill
-                      className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                      className="object-cover group-hover:scale-105 transition-all duration-700 ease-out"
                     />
 
                     {/* Type Badge (Shadcn UI) - Inline rendering untuk hindari error React */}
@@ -111,7 +111,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                               src={img}
                               alt={`${t.experience.galleryPreview} ${idx + 1}`}
                               fill
-                              className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                              className="object-cover transition-all"
                             />
                           </div>
                         ))}

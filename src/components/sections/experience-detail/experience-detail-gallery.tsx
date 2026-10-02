@@ -57,7 +57,7 @@ export function ExperienceDetailGallery({
                   src={img}
                   alt={`Gallery ${idx + 1}`}
                   fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  className="object-cover transition-all duration-500"
                 />
                 <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors duration-300" />
               </CardContent>
