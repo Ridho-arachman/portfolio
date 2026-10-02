@@ -25,6 +25,24 @@ export interface MessageGroup {
   skipped: SkippedField[];
 }
 
+/**
+ * Key yang ditimpa `composePublicContent` SETELAH translations (public-content.ts):
+ * edit admin ke 5 key ini tidak pernah render. Editor menandainya read-only;
+ * rendering publik tidak berubah.
+ */
+export const SETTINGS_OWNED_KEYS = new Set([
+  "hero.greeting",
+  "hero.title",
+  "hero.description",
+  "footer.tagline",
+  "contact.location",
+]);
+
+/** True bila path dikelola Admin → Settings, bukan editor translations. */
+export function isSettingsOwned(path: string): boolean {
+  return SETTINGS_OWNED_KEYS.has(path);
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }

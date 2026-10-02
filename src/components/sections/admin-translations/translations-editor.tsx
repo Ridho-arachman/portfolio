@@ -1,17 +1,26 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ChevronDown, Languages, Search } from "lucide-react";
+import { ChevronDown, Languages, RotateCcw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SaveButton } from "@/components/sections/admin-settings/save-button";
 import { DEFAULT_LOCALE, LOCALES, LOCALE_FLAGS, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { useAdminTranslations, useUpdateTranslations } from "@/hooks/use-translations";
+import {
+  useAdminTranslations,
+  useResetTranslations,
+  useUpdateTranslations,
+} from "@/hooks/use-translations";
 import { ADMIN_TRANSLATIONS } from "./constants";
 import { MessageField, SkippedMessageField } from "./message-field";
-import { filterGroups, groupMessages, type MessageGroup } from "./message-tree";
+import {
+  filterGroups,
+  groupMessages,
+  isSettingsOwned,
+  type MessageGroup,
+} from "./message-tree";
 
 const fill = (template: string, vars: Record<string, string | number>) =>
   Object.entries(vars).reduce(
@@ -19,21 +28,35 @@ const fill = (template: string, vars: Record<string, string | number>) =>
     template,
   );
 
-function shallowDiffers(
-  a: Record<string, string>,
-  b: Record<string, string>,
-) {
+function shallowDiffers(a: Record<string, string>, b: Record<string, string>) {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   return [...keys].some((key) => a[key] !== b[key]);
 }
 
+function countDiffers(a: Record<string, string>, b: Record<string, string>) {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  let count = 0;
+  for (const key of keys) {
+    if (a[key] !== b[key]) count += 1;
+  }
+  return count;
+}
+
 export function TranslationsEditor() {
-  const { data, isPending, error } = useAdminTranslations();
-  const { mutate, isPending: isSaving, isSuccess } = useUpdateTranslations();
+  const { data, isPending, error, refetch } = useAdminTranslations();
+  const {
+    mutate,
+    isPending: isSaving,
+    isSuccess,
+    error: saveError,
+    reset: clearSaveError,
+  } = useUpdateTranslations();
+  const { mutate: resetLocale, isPending: isResetting } = useResetTranslations();
 
   const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [confirmReset, setConfirmReset] = useState(false);
   const [draft, setDraft] = useState<{
     base: string;
     values: Record<string, string>;
@@ -41,11 +64,20 @@ export function TranslationsEditor() {
 
   const entry = data?.find((item) => item.locale === locale);
   const patch = entry?.patch ?? {};
-  // Draft dibuang begitu patch server berubah (di-save, atau locale diganti), jadi
-  // tidak mungkin mengirim draft basi. Dihitung saat render supaya tidak ada
-  // setState kedua di dalam effect.
   const base = JSON.stringify(patch);
-  const values = draft?.base === base ? draft.values : patch;
+  // Draft tidak pernah dibuang diam-diam saat patch server berubah (refetch):
+  // tetap tampil sampai admin save / pindah locale / reset, yang masing-masing
+  // minta konfirmasi bila dirty. Draft yang sudah sama dengan patch terbaru
+  // diabaikan tanpa setState supaya tidak jadi phantom dirty. String kosong
+  // tetap tampil di input tapi tidak ikut persistable.
+  const draftStale =
+    draft &&
+    draft.base !== base &&
+    !shallowDiffers(
+      patch,
+      Object.fromEntries(Object.entries(draft.values).filter(([, value]) => value !== "")),
+    );
+  const values = draft && (draft.base === base || !draftStale) ? draft.values : patch;
 
   const groups = groupMessages(entry?.messages);
   const visible = filterGroups(groups, query, values);
@@ -53,14 +85,11 @@ export function TranslationsEditor() {
   const searching = query.trim() !== "";
   const editable = groups.reduce((total, group) => total + group.fields.length, 0);
 
-  // String kosong berarti "jangan persist", bukan "persist string kosong" —
-  // server menolak nilai kosong dengan 400. Dipisah dari `values` supaya
-  // mengosongkan field tidak langsung memunculkan lagi teks bundel di input,
-  // tapi tetap tidak pernah ikut terkirim.
   const persistable = Object.fromEntries(
     Object.entries(values).filter(([, value]) => value !== ""),
   );
   const dirty = shallowDiffers(patch, persistable);
+  const changedCount = countDiffers(patch, persistable);
 
   const isOpen = (group: MessageGroup) =>
     searching || (collapsed[group.namespace] ?? group.fields.some((f) => f.path in patch));
@@ -74,10 +103,31 @@ export function TranslationsEditor() {
     setDraft({ base, values: next });
   };
 
+  const switchLocale = (next: Locale) => {
+    if (next === locale) return;
+    if (dirty && !window.confirm(ADMIN_TRANSLATIONS.dirtyConfirm)) return;
+    setDraft(null);
+    setConfirmReset(false);
+    setLocale(next);
+  };
+
+  const handleResetLocale = () => {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      return;
+    }
+    setConfirmReset(false);
+    clearSaveError();
+    setDraft(null);
+    resetLocale(locale);
+  };
+
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!dirty) return;
-    mutate({ locale, values: persistable });
+    if (draft && draft.base !== base && !window.confirm(ADMIN_TRANSLATIONS.staleConfirm)) return;
+    clearSaveError();
+    mutate({ locale, values: persistable, expectedUpdatedAt: entry?.updatedAt ?? undefined });
   };
 
   return (
@@ -111,17 +161,20 @@ export function TranslationsEditor() {
                   size="sm"
                   variant={item === locale ? "default" : "ghost"}
                   aria-pressed={item === locale}
-                  onClick={() => setLocale(item)}
+                  onClick={() => switchLocale(item)}
                   className="rounded-full"
                 >
                   {LOCALE_FLAGS[item]} {item.toUpperCase()}
                 </Button>
               ))}
             </div>
+            <span aria-live="polite" className="text-xs text-text-secondary">
+              {fill(ADMIN_TRANSLATIONS.changedLabel, { count: changedCount })}
+            </span>
             <SaveButton
               formId="translations-form"
               isSaving={isSaving}
-              saved={isSuccess && !dirty}
+              saved={isSuccess && !dirty && !saveError}
             />
           </div>
         </div>
@@ -132,12 +185,22 @@ export function TranslationsEditor() {
           {isPending ? (
             <Skeleton className="h-96 w-full rounded-2xl" />
           ) : error ? (
-            <p
+            <div
               role="alert"
               className="rounded-2xl border border-destructive/40 bg-destructive/10 px-5 py-4 text-sm text-destructive"
             >
-              {error.message || ADMIN_TRANSLATIONS.errorTitle}
-            </p>
+              <p>{error.message || ADMIN_TRANSLATIONS.errorTitle}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => refetch()}
+                className="mt-3 rounded-full"
+              >
+                <RotateCcw className="h-4 w-4" />
+                {ADMIN_TRANSLATIONS.retryLabel}
+              </Button>
+            </div>
           ) : (
             <form id="translations-form" onSubmit={onSubmit} noValidate className="space-y-4">
               <div className="space-y-3 rounded-2xl border border-glass-border bg-glass-bg/80 px-5 py-4 backdrop-blur-xl">
@@ -161,7 +224,30 @@ export function TranslationsEditor() {
                     overridden: Object.keys(persistable).length,
                   })}
                 </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    onClick={handleResetLocale}
+                    disabled={isResetting}
+                  >
+                    <RotateCcw className={cn("h-4 w-4", isResetting && "animate-spin")} />
+                    {confirmReset
+                      ? ADMIN_TRANSLATIONS.resetConfirmLabel
+                      : ADMIN_TRANSLATIONS.resetLabel}
+                  </Button>
+                </div>
               </div>
+
+              {saveError && (
+                <p
+                  role="alert"
+                  className="rounded-2xl border border-destructive/40 bg-destructive/10 px-5 py-4 text-sm text-destructive"
+                >
+                  {saveError.message}
+                </p>
+              )}
 
               {visible.length === 0 ? (
                 <p className="rounded-2xl border border-glass-border bg-glass-bg/80 px-5 py-8 text-center text-sm text-text-secondary">
@@ -211,6 +297,7 @@ export function TranslationsEditor() {
                               overridden={field.path in persistable}
                               onEdit={(value) => edit(field.path, value)}
                               onReset={() => reset(field.path)}
+                              readOnly={isSettingsOwned(field.path)}
                             />
                           ))}
 

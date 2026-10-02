@@ -2,7 +2,7 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod/v4";
 import prisma from "@/lib/prisma";
 import { LOCALES, isValidLocale, type Locale } from "@/lib/i18n";
-import { resolveMessages, translationPatchSchema, translationPutSchema } from "@/lib/translations";
+import { resolveMessages, resolveMessagesLenient, translationPatchSchema, translationPutSchema } from "@/lib/translations";
 import type { Messages } from "@/lib/translation-types";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
@@ -20,11 +20,14 @@ const bundled: Record<Locale, Messages> = {
 /**
  * Patch tersimpan bisa saja rusak atau key-nya sudah dihapus dari dokumen
  * bawaan. `getMessages` sudah menelan error itu demi halaman publik, tapi
- * endpoint ini tidak boleh 500 hanya karena satu baris rusak.
+ * endpoint ini tidak boleh 500 hanya karena satu baris rusak. Lenient di
+ * sini supaya GET admin menampilkan pesan efektif (kunci bagus tetap
+ * tampil, kunci rusak visibly dropped via console.error) — bukan dokumen
+ * bawaan yang tampak bersih palsu. PUT pre-write di bawah tetap strict.
  */
 function safeResolve(locale: Locale, patch: Record<string, string> | null): Messages {
   try {
-    return resolveMessages(bundled[locale], patch);
+    return resolveMessagesLenient(bundled[locale], patch);
   } catch {
     return bundled[locale];
   }
@@ -34,23 +37,19 @@ export async function GET() {
   try {
     await requireAdminSession();
 
-    const rows = await prisma.translation.findMany({ select: { locale: true, values: true } });
+    const rows = await prisma.translation.findMany({
+      select: { locale: true, values: true, updatedAt: true },
+    });
 
     const locales = LOCALES.map((locale) => {
-      // Parse ulang dengan schema yang sama seperti body PUT: aturan "patch =
-      // datar, nilai = string" hanya perlu didefinisikan sekali.
-      const parsed = translationPatchSchema.shape.values.safeParse(
-        rows.find((row) => row.locale === locale)?.values,
-      );
+      const row = rows.find((item) => item.locale === locale);
+      const parsed = translationPatchSchema.shape.values.safeParse(row?.values);
 
       return {
         locale,
-        // `messages`: yang benar-benar dirender situs publik setelah patch.
         messages: safeResolve(locale, parsed.success ? parsed.data : null),
-        // `patch`: key yang benar-benar tersimpan. Editor butuh bedanya dari
-        // key yang diwarisi dari dokumen bawaan supaya bisa menampilkannya
-        // read-only, bukan menyiratkan semua key itu tersimpan.
         patch: parsed.success ? parsed.data : {},
+        updatedAt: row ? row.updatedAt.toISOString() : null,
       };
     });
 

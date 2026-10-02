@@ -8,6 +8,7 @@ export const ADMIN_TRANSLATIONS = {
     "Fields marked Inherited come from src/messages and are not stored in the database. Saving after editing one starts persisting it as an override.",
   inheritedLabel: "Inherited",
   overrideLabel: "Override",
+  settingsOwnedLabel: "Managed in Admin → Settings",
   clearLabel: "Reset {path} to the bundled value",
   skippedNote:
     "{path} is a JSON {kind}, not a string. The patch API only accepts string values, so it cannot be overridden here.",
@@ -17,5 +18,12 @@ export const ADMIN_TRANSLATIONS = {
   savingLabel: "Saving...",
   savedLabel: "Saved",
   errorTitle: "Could not load translations",
+  retryLabel: "Retry",
   groupLabel: "{namespace} — {count} keys",
+  changedLabel: "{count} diubah",
+  dirtyConfirm: "You have unsaved translation edits. Discard them?",
+  staleConfirm:
+    "Translations changed on the server since you started editing. Save and overwrite?",
+  resetLabel: "Reset locale to bundled",
+  resetConfirmLabel: "Click again to confirm reset",
 } as const;

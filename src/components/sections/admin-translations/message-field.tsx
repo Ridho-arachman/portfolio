@@ -17,11 +17,11 @@ const fill = (template: string, vars: Record<string, string | number>) =>
 
 interface MessageFieldProps {
   field: EditableField;
-  /** Teks di input: nilai draft bila di-override, selain itu nilai bundel. */
   value: string;
   overridden: boolean;
   onEdit: (value: string) => void;
   onReset: () => void;
+  readOnly?: boolean;
 }
 
 export function MessageField({
@@ -30,16 +30,36 @@ export function MessageField({
   overridden,
   onEdit,
   onReset,
+  readOnly,
 }: MessageFieldProps) {
   const inputId = `t-${field.path}`;
+
+  if (readOnly) {
+    return (
+      <li className="grid gap-2 rounded-xl border border-dashed border-glass-border bg-bg-secondary/40 px-3 py-3 sm:grid-cols-[minmax(0,16rem)_1fr_auto] sm:items-center sm:gap-3">
+        <Label
+          htmlFor={inputId}
+          title={field.path}
+          className="min-w-0 truncate font-mono text-xs font-normal text-text-secondary"
+        >
+          {field.path}
+        </Label>
+
+        <Input id={inputId} value={value} readOnly disabled aria-readonly="true" />
+
+        <div className="flex items-center gap-2 sm:justify-end">
+          <Badge variant="outline" title={ADMIN_TRANSLATIONS.settingsOwnedLabel}>
+            {ADMIN_TRANSLATIONS.settingsOwnedLabel}
+          </Badge>
+        </div>
+      </li>
+    );
+  }
 
   return (
     <li
       className={cn(
         "grid gap-2 rounded-xl border px-3 py-3 sm:grid-cols-[minmax(0,16rem)_1fr_auto] sm:items-center sm:gap-3",
-        // Bingkai putus-putus + badge outline = diwarisi dari dokumen bundel;
-        // bingkai aksen solid = akan ikut dipersist. Ini satu-satunya pembeda
-        // yang perlu dibaca admin, jadi tidak disembunyikan di hover.
         overridden
           ? "border-accent/40 bg-accent/5"
           : "border-dashed border-glass-border bg-bg-secondary/40",
