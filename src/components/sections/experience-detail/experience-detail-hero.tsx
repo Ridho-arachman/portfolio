@@ -16,6 +16,7 @@ import * as m from "motion/react-m";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
+import { experienceTypeLabel } from "@/lib/experience-type-label";
 
 interface ExperienceDetailHeroProps {
   exp: ExperienceListData;
@@ -79,7 +80,7 @@ export function ExperienceDetailHero({
               className="gap-1.5 px-3 py-1.5 rounded-full bg-accent/20 backdrop-blur-md border-accent/30 text-xs font-semibold text-accent mb-4"
             >
               <TypeIcon className="w-3.5 h-3.5" />
-              {exp.type}
+              {experienceTypeLabel(exp.type, t.experience)}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-text-primary mb-4 leading-tight">
               {exp.role}

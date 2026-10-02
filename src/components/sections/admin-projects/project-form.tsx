@@ -60,6 +60,9 @@ export function ProjectForm({
           order: initialData.order,
           idTitle: initialData.translations?.id?.title ?? "",
           idDescription: initialData.translations?.id?.description ?? "",
+          idRole: initialData.translations?.id?.role ?? "",
+          idHighlights:
+            initialData.translations?.id?.highlights?.join("\n") ?? "",
         }
       : {
           title: "",
@@ -75,6 +78,8 @@ export function ProjectForm({
           order: 0,
           idTitle: "",
           idDescription: "",
+          idRole: "",
+          idHighlights: "",
         },
   });
 
@@ -114,6 +119,11 @@ export function ProjectForm({
       translations: idOverrides({
         title: values.idTitle ?? "",
         description: values.idDescription ?? "",
+        role: values.idRole ?? "",
+        highlights: (values.idHighlights ?? "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
       }),
     };
 
@@ -261,6 +271,29 @@ export function ProjectForm({
                       rows={4}
                       placeholder={ADMIN_PROJECTS.fieldIdDescriptionPlaceholder}
                       {...register("idDescription")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idRole">
+                      {ADMIN_PROJECTS.fieldIdRole}
+                    </Label>
+                    <Input
+                      id="idRole"
+                      placeholder={ADMIN_PROJECTS.fieldIdRolePlaceholder}
+                      {...register("idRole")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idHighlights">
+                      {ADMIN_PROJECTS.fieldIdHighlights}
+                    </Label>
+                    <Textarea
+                      id="idHighlights"
+                      rows={4}
+                      placeholder={ADMIN_PROJECTS.fieldIdHighlightsPlaceholder}
+                      {...register("idHighlights")}
                     />
                   </div>
                 </div>

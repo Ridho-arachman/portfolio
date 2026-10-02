@@ -52,4 +52,8 @@ export const ADMIN_PROJECTS = {
   fieldIdTitlePlaceholder: "e.g. Platform Portfolio Web3",
   fieldIdDescription: "Description (ID)",
   fieldIdDescriptionPlaceholder: "Deskripsi singkat yang tampil di kartu proyek.",
+  fieldIdRole: "Role (ID)",
+  fieldIdRolePlaceholder: "e.g. Frontend Developer",
+  fieldIdHighlights: "Highlights (ID, satu poin per baris)",
+  fieldIdHighlightsPlaceholder: "Merilis ke produksi\nMemimpin tim frontend",
 } as const;

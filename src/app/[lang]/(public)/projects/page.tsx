@@ -41,7 +41,16 @@ const getProjects = unstable_cache(
       // `include: { category: true }` menarik `deletedAt` ke payload cache dan
       // kolom Date kembali jadi string setelah warm. Insiden 86d09b0.
       include: {
-        category: { where: notDeleted, select: { id: true, name: true } },
+        category: {
+          where: notDeleted,
+          select: {
+            id: true,
+            name: true,
+            // Spread (bukan key langsung): kolom `translations` baru ada di
+            // schema.prisma, client hasil generate Batch 1 menyusul.
+            ...{ translations: true },
+          },
+        },
       },
     });
   },

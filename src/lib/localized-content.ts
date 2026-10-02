@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { DEFAULT_LOCALE, type Locale } from "./i18n";
 import {
+  CATEGORY_TRANSLATABLE_FIELDS,
   CERTIFICATE_TRANSLATABLE_FIELDS,
   EXPERIENCE_TRANSLATABLE_FIELDS,
   PROJECT_TRANSLATABLE_FIELDS,
+  categoryTranslationsSchema,
   certificateTranslationsSchema,
   experienceTranslationsSchema,
   projectTranslationsSchema,
@@ -98,6 +100,13 @@ export function localizeCertificate<T extends { translations?: unknown }>(
   );
 }
 
+export function localizeCategory<T extends { translations?: unknown }>(
+  row: T,
+  locale: Locale,
+): T {
+  return localizeWith(row, locale, categoryTranslationsSchema, CATEGORY_TRANSLATABLE_FIELDS);
+}
+
 /** Varian array untuk halaman daftar, supaya tidak perlu `.map()` di call site. */
 export function localizeProjects<T extends { translations?: unknown }>(
   rows: readonly T[],
@@ -118,4 +127,11 @@ export function localizeCertificates<T extends { translations?: unknown }>(
   locale: Locale,
 ): T[] {
   return rows.map((row) => localizeCertificate(row, locale));
+}
+
+export function localizeCategories<T extends { translations?: unknown }>(
+  rows: readonly T[],
+  locale: Locale,
+): T[] {
+  return rows.map((row) => localizeCategory(row, locale));
 }

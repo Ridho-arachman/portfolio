@@ -1,3 +1,5 @@
+import type { CategoryTranslations } from "@/schema/content-translations";
+
 export interface AdminCategory {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface AdminCategory {
   order: number;
   createdAt: string;
   updatedAt: string;
+  translations?: CategoryTranslations | null;
 }
 
 export const ADMIN_CATEGORIES = {
@@ -35,4 +38,10 @@ export const ADMIN_CATEGORIES = {
   fieldDescriptionPlaceholder: "Short description of this category.",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
+  idSectionLabel: "Bahasa Indonesia (opsional)",
+  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  fieldIdName: "Name (ID)",
+  fieldIdNamePlaceholder: "e.g. Pengembangan Web",
+  fieldIdDescription: "Description (ID)",
+  fieldIdDescriptionPlaceholder: "Deskripsi singkat kategori ini.",
 } as const;

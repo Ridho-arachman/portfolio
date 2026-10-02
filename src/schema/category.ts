@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { slugRegex } from "./project";
+import { categoryTranslationsSchema } from "./content-translations";
 
 // Client-side form validation for the admin category form.
 export const categoryFormSchema = z.object({
@@ -13,6 +14,8 @@ export const categoryFormSchema = z.object({
     .max(120, "Slug must be at most 120 characters"),
   description: z.union([z.string().min(1), z.literal("")]).optional(),
   order: z.coerce.number().int("Order must be a whole number").min(0),
+  idName: z.string().optional(),
+  idDescription: z.string().optional(),
 });
 
 export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
@@ -27,6 +30,7 @@ export const categoryCreateSchema = z.object({
     .optional(),
   description: z.string().optional(),
   order: z.number(),
+  translations: categoryTranslationsSchema.optional(),
 });
 
 export type CategoryCreateValues = z.infer<typeof categoryCreateSchema>;
@@ -41,6 +45,7 @@ export const categoryUpdateSchema = z.object({
     .optional(),
   description: z.string().optional(),
   order: z.number().optional(),
+  translations: categoryTranslationsSchema.optional(),
 });
 
 export type CategoryUpdateValues = z.infer<typeof categoryUpdateSchema>;

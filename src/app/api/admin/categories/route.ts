@@ -1,4 +1,5 @@
 import { revalidateTag } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { notDeleted, trashedOnly, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
@@ -67,6 +68,13 @@ export async function POST(req: Request) {
         slug,
         description: data.description || null,
         order: data.order,
+        // Spread, bukan key langsung: kolom `translations` baru ada di
+        // schema.prisma dan client hasil generate Batch 1 — spread tidak
+        // kena excess-property check, jadi baris ini kompilasi sebelum
+        // maupun sesudah generate. Pola kondisinya sama dengan PUT project.
+        ...(data.translations !== undefined && {
+          translations: data.translations ?? Prisma.DbNull,
+        }),
       },
     });
 

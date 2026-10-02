@@ -8,11 +8,14 @@ import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { type ExperienceListItemProps } from "./constants";
+import { useTranslation } from "@/hooks/use-translation";
+import { experienceTypeLabel } from "@/lib/experience-type-label";
 
 export function ExperienceListItem({
   exp,
   index = 0,
 }: ExperienceListItemProps) {
+  const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   return (
     // 1. Outer Wrapper: Animasi Scroll Reveal (Fade In + Slide Up)
@@ -55,7 +58,7 @@ export function ExperienceListItem({
                 ) : (
                   <Briefcase className="w-3.5 h-3.5" />
                 )}
-                {exp.type}
+                {experienceTypeLabel(exp.type, t.experience)}
               </Badge>
             </div>
 

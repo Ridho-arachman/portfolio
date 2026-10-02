@@ -9,6 +9,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FolderKanban } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
+import { localizeCategories } from "@/lib/localized-content";
 import { selectProjectPage } from "@/lib/utils/project-filter";
 
 const PAGE_SIZE = 6;
@@ -23,7 +24,7 @@ interface ProjectsPageContentProps {
     technologies: string[];
     gallery: string[];
     categoryId: string | null;
-    category: { id: string; name: string } | null;
+    category: { id: string; name: string; translations?: unknown } | null;
     // Ada di payload client supaya mapDbProjectToProject bisa melokalisasi tanpa fetch ulang.
     translations?: unknown;
   }[];
@@ -38,14 +39,16 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
   const [categoryId, setCategoryId] = useState<string | null>(null);
 
   const categories = useMemo(() => {
-    const seen = new Map<string, { id: string; name: string }>();
+    const seen = new Map<string, { id: string; name: string; translations?: unknown }>();
     for (const project of projects) {
       if (project.category && !seen.has(project.category.id)) {
         seen.set(project.category.id, project.category);
       }
     }
-    return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
-  }, [projects]);
+    return localizeCategories([...seen.values()], locale).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+  }, [projects, locale]);
 
   const { visible, totalPages, page: currentPage } = useMemo(
     () => selectProjectPage(projects, categoryId, page, PAGE_SIZE),

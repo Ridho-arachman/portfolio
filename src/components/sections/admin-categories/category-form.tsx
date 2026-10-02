@@ -13,6 +13,8 @@ import {
   categoryFormSchema,
   type CategoryFormValues,
 } from "@/schema/category";
+import type { CategoryTranslations } from "@/schema/content-translations";
+import { idOverrides } from "@/schema/content-translations";
 import { ADMIN_CATEGORIES, type AdminCategory } from "./constants";
 import { slugify } from "@/utils/slug";
 
@@ -25,7 +27,9 @@ export function CategoryForm({
   mode: "create" | "edit";
   initialData?: AdminCategory;
   isLoading: boolean;
-  onSubmit: (data: CategoryFormValues) => void;
+  onSubmit: (
+    data: CategoryFormValues & { translations?: CategoryTranslations },
+  ) => void;
 }) {
   const slugTouched = useRef(mode === "edit");
 
@@ -44,12 +48,16 @@ export function CategoryForm({
           slug: initialData.slug,
           description: initialData.description ?? "",
           order: initialData.order,
+          idName: initialData.translations?.id?.name ?? "",
+          idDescription: initialData.translations?.id?.description ?? "",
         }
       : {
           name: "",
           slug: "",
           description: "",
           order: 0,
+          idName: "",
+          idDescription: "",
         },
   });
 
@@ -67,6 +75,10 @@ export function CategoryForm({
       slug: values.slug,
       description: values.description || undefined,
       order: values.order,
+      translations: idOverrides({
+        name: values.idName ?? "",
+        description: values.idDescription ?? "",
+      }),
     };
 
     onSubmit(payload);
@@ -174,6 +186,40 @@ export function CategoryForm({
                     placeholder={ADMIN_CATEGORIES.fieldDescriptionPlaceholder}
                     {...register("description")}
                   />
+                </div>
+
+                <div className="space-y-4 rounded-2xl border border-dashed border-glass-border p-4 sm:col-span-2">
+                  <div>
+                    <p className="text-sm font-medium">
+                      {ADMIN_CATEGORIES.idSectionLabel}
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      {ADMIN_CATEGORIES.idSectionNote}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idName">
+                      {ADMIN_CATEGORIES.fieldIdName}
+                    </Label>
+                    <Input
+                      id="idName"
+                      placeholder={ADMIN_CATEGORIES.fieldIdNamePlaceholder}
+                      {...register("idName")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="idDescription">
+                      {ADMIN_CATEGORIES.fieldIdDescription}
+                    </Label>
+                    <Textarea
+                      id="idDescription"
+                      rows={3}
+                      placeholder={ADMIN_CATEGORIES.fieldIdDescriptionPlaceholder}
+                      {...register("idDescription")}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

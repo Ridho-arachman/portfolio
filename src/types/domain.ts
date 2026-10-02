@@ -4,6 +4,7 @@
  */
 
 import type {
+  CategoryTranslations,
   CertificateTranslations,
   ExperienceTranslations,
   ProjectTranslations,
@@ -252,6 +253,7 @@ export interface CategoryBase {
   order: number;
   createdAt: string;
   updatedAt: string;
+  translations: CategoryTranslations | null;
 }
 
 export type AdminCategory = CategoryBase;

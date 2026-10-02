@@ -14,7 +14,36 @@ import {
   useUpdateCategory,
 } from "@/hooks/use-categories";
 import type { AdminCategory } from "./constants";
-import type { CategoryCreateValues, CategoryUpdateValues } from "@/schema/category";
+import type {
+  CategoryCreateValues,
+  CategoryFormValues,
+  CategoryUpdateValues,
+} from "@/schema/category";
+import type { CategoryTranslations } from "@/schema/content-translations";
+
+type CategoryFormPayload = CategoryFormValues & {
+  translations?: CategoryTranslations;
+};
+
+function mapFormToCreate(data: CategoryFormPayload): CategoryCreateValues {
+  return {
+    name: data.name,
+    slug: data.slug,
+    description: data.description || undefined,
+    order: data.order,
+    translations: data.translations,
+  };
+}
+
+function mapFormToUpdate(data: CategoryFormPayload): CategoryUpdateValues {
+  return {
+    name: data.name,
+    slug: data.slug,
+    description: data.description || undefined,
+    order: data.order,
+    translations: data.translations,
+  };
+}
 
 export function CategoryFormPage({
   mode,
@@ -111,8 +140,9 @@ export function CategoryFormPage({
       isLoading={createMutation.isPending || updateMutation.isPending}
       onSubmit={
         mode === "edit" && categoryData
-          ? (data: CategoryUpdateValues) => updateMutation.mutate({ id: categoryData.id, data })
-          : (data: CategoryCreateValues) => createMutation.mutate(data)
+          ? (data: CategoryFormPayload) =>
+              updateMutation.mutate({ id: categoryData.id, data: mapFormToUpdate(data) })
+          : (data: CategoryFormPayload) => createMutation.mutate(mapFormToCreate(data))
       }
     />
   );

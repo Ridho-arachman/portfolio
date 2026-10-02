@@ -140,6 +140,46 @@ describe("POST /api/faq", () => {
     expect(payload.answer).toMatch(/Portofolio Landing Page/);
   });
 
+  it("memakai copy Indonesia saat locale id dan override-nya terisi", async () => {
+    vi.mocked(prisma.project.findMany).mockResolvedValue(
+      [
+        {
+          ...projects[0],
+          translations: {
+            id: {
+              title: "Halaman Arahan Portofolio",
+              description: "Halaman arahan statis.",
+            },
+          },
+        },
+      ] as unknown as Awaited<ReturnType<typeof prisma.project.findMany>>,
+    );
+
+    const res = await POST(makeRequest({ question: "porto-folio", locale: "id" }));
+
+    expect(res.status).toBe(200);
+    const payload = await res.json();
+    expect(payload.answer).toMatch(/Halaman Arahan Portofolio/);
+    expect(payload.answer).not.toMatch(/Portofolio Landing Page/);
+  });
+
+  it("mewarisi base Inggris untuk field yang override Indonesianya kosong", async () => {
+    vi.mocked(prisma.project.findMany).mockResolvedValue(
+      [
+        {
+          ...projects[0],
+          translations: { id: { title: "   " } },
+        },
+      ] as unknown as Awaited<ReturnType<typeof prisma.project.findMany>>,
+    );
+
+    const res = await POST(makeRequest({ question: "porto-folio", locale: "id" }));
+
+    expect(res.status).toBe(200);
+    const payload = await res.json();
+    expect(payload.answer).toMatch(/Portofolio Landing Page/);
+  });
+
   it("balas sapaan dengan `intro` saat pertanyaan kosong", async () => {
     const res = await POST(makeRequest({}));
 

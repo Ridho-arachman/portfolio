@@ -93,6 +93,25 @@ describe("POST /api/admin/categories", () => {
     expect(res.status).toBe(400);
   });
 
+  it("persists the Indonesian translations payload", async () => {
+    const translations = {
+      id: { name: `${prefix} I18n ID`, description: "Deskripsi kategori" },
+    };
+    const res = await post({
+      name: `${prefix} I18n`,
+      order: 0,
+      translations,
+    });
+
+    expect(res.status).toBe(201);
+    expect(await res.json()).toMatchObject({ data: { translations } });
+
+    const row = await prisma.category.findUnique({
+      where: { slug: `${prefix}-i18n` },
+    });
+    expect(row).toMatchObject({ translations });
+  });
+
   it("returns 401 when the session guard rejects", async () => {
     mockedRequire.mockRejectedValue(new Error("Unauthorized"));
     const res = await post({ name: `${prefix} forbidden` });
@@ -160,6 +179,22 @@ describe("GET/PUT/DELETE /api/admin/categories/[id]", () => {
     expect(row?.name).toBe(`${prefix} Renamed`);
     expect(row?.order).toBe(9);
     expect(row?.slug).toBe(`${prefix}-renamed`);
+  });
+
+  it("persists translations overrides on update", async () => {
+    const translations = { id: { name: `${prefix} Nama ID` } };
+    const res = await updateRoute(
+      new Request(`http://localhost/api/admin/categories/${categoryId}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ translations }),
+      }),
+      withParams(categoryId),
+    );
+
+    expect(res.status).toBe(200);
+    const row = await prisma.category.findUnique({ where: { id: categoryId } });
+    expect(row).toMatchObject({ translations });
   });
 
   it("moves the category to trash instead of removing the row", async () => {

@@ -6,6 +6,11 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { applyRateLimit } from "@/lib/rate-limit";
 import { composePublicContent } from "@/lib/public-content";
+import {
+  localizeCertificates,
+  localizeExperiences,
+  localizeProjects,
+} from "@/lib/localized-content";
 import { getSiteSettings } from "@/lib/settings";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
@@ -42,7 +47,7 @@ export async function POST(request: NextRequest) {
   try {
     const [messages, settings, projects, experience, certificates, skills] = await Promise.all([
       getMessages(locale),
-      getSiteSettings(),
+      getSiteSettings(locale),
       prisma.project.findMany({
         where: { ...notDeleted, isPublished: true },
         orderBy: { order: "asc" },
@@ -55,17 +60,18 @@ export async function POST(request: NextRequest) {
           technologies: true,
           role: true,
           year: true,
+          translations: true,
         },
       }),
       prisma.experience.findMany({
         where: { ...notDeleted, isPublished: true },
         orderBy: { order: "asc" },
-        select: { slug: true, title: true, company: true, startDate: true, endDate: true, isCurrent: true },
+        select: { slug: true, title: true, company: true, startDate: true, endDate: true, isCurrent: true, translations: true },
       }),
       prisma.certificate.findMany({
         where: { ...notDeleted, isPublished: true },
         orderBy: { order: "asc" },
-        select: { slug: true, title: true, issuer: true, issueDate: true },
+        select: { slug: true, title: true, issuer: true, issueDate: true, translations: true },
       }),
       // Skill tidak punya `isPublished` — hanya soft delete yang membedakannya.
       prisma.skill.findMany({
@@ -75,13 +81,15 @@ export async function POST(request: NextRequest) {
       }),
     ]);
 
+    // Locale datang dari body (default "en"): jawaban ID memakai copy
+    // Indonesia yang sudah diisi admin, field yang kosong mewarisi base.
     const ctx: FaqContext = {
       locale,
       messages: composePublicContent(messages, settings),
       settings,
-      projects,
-      experience,
-      certificates,
+      projects: localizeProjects(projects, locale),
+      experience: localizeExperiences(experience, locale),
+      certificates: localizeCertificates(certificates, locale),
       skills,
     };
 

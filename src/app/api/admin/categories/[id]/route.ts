@@ -1,4 +1,5 @@
 import { revalidateTag } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
@@ -66,6 +67,10 @@ export async function PUT(
           description: data.description || null,
         }),
         ...(data.order !== undefined && { order: data.order }),
+        // Spread seperti di POST: aman terhadap client yang belum di-generate ulang.
+        ...(data.translations !== undefined && {
+          translations: data.translations ?? Prisma.DbNull,
+        }),
       },
     });
 

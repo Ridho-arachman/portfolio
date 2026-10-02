@@ -26,6 +26,7 @@ function mapFormToCreate(data: Omit<AdminProject, "id" | "createdAt" | "updatedA
     isPublished: data.isPublished,
     order: data.order,
     categoryId: data.categoryId ?? undefined,
+    translations: data.translations ?? undefined,
   };
 }
 
@@ -46,6 +47,7 @@ function mapFormToUpdate(data: Omit<AdminProject, "id" | "createdAt" | "updatedA
     isPublished: data.isPublished,
     order: data.order,
     categoryId: data.categoryId ?? undefined,
+    translations: data.translations ?? undefined,
   };
 }
 

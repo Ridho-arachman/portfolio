@@ -25,6 +25,8 @@ export const projectFormSchema = z.object({
   order: z.coerce.number().int("Order must be a whole number").min(0),
   idTitle: z.string().optional(),
   idDescription: z.string().optional(),
+  idRole: z.string().optional(),
+  idHighlights: z.string().optional(),
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;

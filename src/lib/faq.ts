@@ -291,7 +291,7 @@ function renderProject(ctx: FaqContext, project: FaqProject): FaqReply {
   const { messages: t } = ctx;
   const links: FaqLink[] = [{ label: project.title, href: projectHref(ctx, project.slug) }];
   if (project.liveUrl) links.push({ label: project.title, href: project.liveUrl });
-  if (project.repoUrl) links.push({ label: "Source", href: project.repoUrl });
+  if (project.repoUrl) links.push({ label: t.faq.sourceLabel, href: project.repoUrl });
 
   return {
     answer: t.faq.answers.project

@@ -179,6 +179,28 @@ describe("konten kosong", () => {
   });
 });
 
+describe("label lokalisasi", () => {
+  it("memakai faq.sourceLabel untuk tautan repo, bukan hardcode Inggris", () => {
+    const en = answerQuestion(
+      "ceritakan tentang project presence-labs",
+      context("en"),
+    );
+    const id = answerQuestion(
+      "ceritakan tentang project presence-labs",
+      context("id"),
+    );
+
+    expect(en.links?.map((link) => link.label)).toContain(
+      enMessages.faq.sourceLabel,
+    );
+    expect(id.links?.map((link) => link.label)).toContain(
+      idMessages.faq.sourceLabel,
+    );
+    expect(enMessages.faq.sourceLabel).toBe("Source");
+    expect(idMessages.faq.sourceLabel).toBe("Sumber");
+  });
+});
+
 describe("buildGreeting", () => {
   it("mengisi nama dan memberi chip", () => {
     const { intro, suggestions } = buildGreeting(context("en"));

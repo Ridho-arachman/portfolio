@@ -53,17 +53,25 @@ const certificate = localizedContent({
   summary: z.array(z.string()),
 });
 
+const category = localizedContent({
+  name: z.string(),
+  description: z.string(),
+});
+
 export const projectTranslationsSchema = project.schema;
 export const experienceTranslationsSchema = experience.schema;
 export const certificateTranslationsSchema = certificate.schema;
+export const categoryTranslationsSchema = category.schema;
 
 export const PROJECT_TRANSLATABLE_FIELDS = project.fields;
 export const EXPERIENCE_TRANSLATABLE_FIELDS = experience.fields;
 export const CERTIFICATE_TRANSLATABLE_FIELDS = certificate.fields;
+export const CATEGORY_TRANSLATABLE_FIELDS = category.fields;
 
 export type ProjectTranslations = z.infer<typeof project.schema>;
 export type ExperienceTranslations = z.infer<typeof experience.schema>;
 export type CertificateTranslations = z.infer<typeof certificate.schema>;
+export type CategoryTranslations = z.infer<typeof category.schema>;
 
 export function idOverrides<T extends Record<string, string | string[]>>(fields: T) {
   const id: Partial<T> = {};
