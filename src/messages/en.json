@@ -319,6 +319,14 @@
   "faq": {
     "metaTitle": "Ask PortoBot | Ridho Arachman",
     "metaDescription": "Ask PortoBot about Ridho Arachman's projects, skills, work experience, certifications, and how to get in touch.",
+    "ui": {
+      "log": "PortoBot conversation",
+      "placeholder": "Ask about projects, skills, experience…",
+      "send": "Send message",
+      "close": "Close PortoBot",
+      "thinking": "PortoBot is typing",
+      "fallback": "Something went wrong. Please try again."
+    },
     "intro": "Hi, I'm PortoBot. I answer questions about {name} — the projects, skills, experience and certifications on this site. I don't cover anything beyond that, so feel free to ask.",
     "fallback": "I can only answer questions about {name} — his projects, skills, work experience, certifications and contact details. For anything else, reach him directly at {contact}.",
     "present": "Present",

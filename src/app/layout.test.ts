@@ -7,6 +7,10 @@ vi.mock("@/lib/settings", () => ({
   getSiteSettings: vi.fn(),
 }));
 
+vi.mock("next/headers", () => ({
+  headers: async () => ({ get: () => "en" }),
+}));
+
 // `next/font/google` hanya jalan lewat loader Next; di luar build ia tidak
 // mengembalikan class font, jadi stub agar modul layout bisa diimpor.
 vi.mock("next/font/google", () => ({

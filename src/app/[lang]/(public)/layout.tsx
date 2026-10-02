@@ -4,9 +4,7 @@ import { AscendChrome } from '@/components/sections/ascend/ascend-chrome';
 import { PublicContentProvider } from '@/components/providers/public-content-provider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { Locale, DEFAULT_LOCALE, isValidLocale } from '@/lib/i18n';
-import { getMessages } from '@/lib/translations';
-import { getSiteSettings } from '@/lib/settings';
-import { composePublicContent } from '@/lib/public-content';
+import { getPublicContent } from '@/lib/public-content';
 
 // Tanpa ini payload provider dibekukan saat build: perubahan settings di admin
 // tidak akan pernah sampai ke browser sampai deploy berikutnya.
@@ -23,14 +21,11 @@ export default async function PublicLayout({
   // `lang` berasal dari URL, jadi harus divalidasi sebelum dipakai sebagai Locale.
   const locale: Locale = isValidLocale(lang) ? lang : DEFAULT_LOCALE;
 
-  const [messages, settings] = await Promise.all([
-    getMessages(locale),
-    getSiteSettings(),
-  ]);
+  const { messages, settings } = await getPublicContent(locale);
 
   return (
     <PublicContentProvider
-      messages={composePublicContent(messages, settings)}
+      messages={messages}
       settings={settings}
     >
       <Navbar />

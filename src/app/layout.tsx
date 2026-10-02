@@ -3,7 +3,7 @@ import { MotionProvider } from "@/components/providers/motion-provider";
 import { FloatingSwitcher } from "@/components/ui/floating-switcher";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { getSiteSettings } from "@/lib/settings";
-import { DEFAULT_LOCALE, isValidLocale } from "@/lib/i18n";
+import { DEFAULT_LOCALE, isValidLocale, OG_LOCALE } from "@/lib/i18n";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -30,6 +30,9 @@ const geistMono = Geist_Mono({
 // SEO. `generateMetadata` bisa-await, dan `getSiteSettings()` tidak pernah
 // melempar error (jatuh ke default env), jadi `next build` tetap aman saat DB mati.
 export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const headerLocale = headerList.get("x-current-locale");
+  const locale = headerLocale && isValidLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE;
   const { siteUrl, siteName, siteDescription, fullName, jobTitle, bio, twitterUrl } =
     await getSiteSettings();
 
@@ -60,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: "index, follow",
     openGraph: {
       type: "website",
-      locale: "en_US",
+      locale: OG_LOCALE[locale],
       url: siteUrl,
       siteName,
       title,

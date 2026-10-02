@@ -54,7 +54,11 @@ Every server cache in the app, and nothing else. This table is exhaustive —
 | `src/app/[lang]/(public)/about/page.tsx` | `about-experiences` | `experiences` | 3600s |
 | `src/app/[lang]/(public)/certificates/page.tsx` | `public-certificates` | `certificates` | 3600s |
 | `src/lib/settings.ts` | `site-settings-v1` | `site-settings` | 3600s |
-| `src/lib/translations.ts` | `messages-v1` | `translations` | 3600s |
+| `src/lib/translations.ts` | `messages-v3` | `translations` | 3600s |
+
+Bump the `messages-vN` key whenever the top-level shape of `Messages` changes —
+the Data Cache persists across deploys, so a stale key serves a document missing
+the new namespace and crashes public pages.
 
 ### The Full Set of Server Tags
 ```
@@ -83,7 +87,7 @@ restore, purge:
 ```ts
 revalidateTag("projects", { expire: 0 })      // and experiences, certificates, categories
 revalidateTag("site-settings", { expire: 0 }) // settings PUT + reset
-revalidateTag("translations", { expire: 0 })  // translations PUT
+revalidateTag("translations", { expire: 0 })  // translations PUT + reset
 ```
 
 `expire: 0` = immediate invalidation.

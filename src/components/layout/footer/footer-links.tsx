@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
-import { getLocaleFromPath, removeLocaleFromPath, addLocaleToPath } from "@/lib/i18n";
+import { useLocale } from "@/hooks/use-locale";
+import { removeLocaleFromPath, addLocaleToPath } from "@/lib/i18n";
 import { isQuickLinkKey, QUICK_LINK_PATHS } from "@/lib/quick-links";
 import { usePathname } from "next/navigation";
 import { useSiteSettings } from "@/components/providers/public-content-provider";
@@ -12,7 +13,7 @@ export function FooterLinks() {
   const { t } = useTranslation();
   const { quickLinks } = useSiteSettings();
   const pathname = usePathname();
-  const pathLocale = getLocaleFromPath(pathname) || 'en';
+  const pathLocale = useLocale();
   const cleanPath = removeLocaleFromPath(pathname);
 
   const buildHref = (path: string) => addLocaleToPath(path, pathLocale);

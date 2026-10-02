@@ -14,6 +14,7 @@ import { MessageCircle, Moon, Sun } from "lucide-react";
 
 import { PortoBot } from "@/components/faq/porto-bot";
 import { useTheme } from "@/providers/theme-provider";
+import { LOCALES } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 /** Lebar satu segmen (w-14) — dipakai sebagai ambang tengah saat drag. */
@@ -27,7 +28,7 @@ const SNAP = { type: "spring", stiffness: 400, damping: 32 } as const;
  * navbar/footer ikut gelap. Tombol tema di sana cuma kontrol yang kelihatan hidup
  * tanpa efek apa pun.
  */
-const HOME_ROUTE = /^\/(en|id)\/?$/;
+const HOME_ROUTE = new RegExp(`^/(${LOCALES.join("|")})/?$`);
 
 /** Admin tidak butuh PortoBot, dan tidak ada halaman publik di dalam `/admin`. */
 const ADMIN_ROUTE = /^\/admin(\/|$)/;

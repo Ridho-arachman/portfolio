@@ -6,7 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
-import { getLocaleFromPath, removeLocaleFromPath } from "@/lib/i18n";
+import { useLocale } from "@/hooks/use-locale";
+import { removeLocaleFromPath } from "@/lib/i18n";
 import { NAV_LINK_PATHS, type NavLinkKey } from "./constants";
 
 // Link yang konteksnya sama (bukti karier) digabung jadi satu nav link yang bisa collapse
@@ -22,7 +23,7 @@ export function DesktopNav() {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Get locale from pathname since this component is outside [lang] segment
-  const pathLocale = getLocaleFromPath(pathname) || 'en';
+  const pathLocale = useLocale();
   const cleanPath = removeLocaleFromPath(pathname);
 
   // Tutup menu saat rute berubah

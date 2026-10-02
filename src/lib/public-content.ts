@@ -10,6 +10,7 @@
 //kopinya jadi milik admin; key yang tidak disebut di sini tetap murni i18n.
 import type { SiteSettings } from "./settings";
 import type { Messages } from "./translation-types";
+import type { Locale } from "./i18n";
 
 /**
  * Murni (tanpa I/O). Ganti lima field yang sebelumnya hardcode nama author,
@@ -40,4 +41,23 @@ export function composePublicContent(
       location: settings.location,
     },
   };
+}
+
+/**
+ * Sumber tunggal metadata + layout publik: pesan sudah dioverlay settings
+ * supaya copy SEO sama dengan copy on-page. Import dinamis agar modul ini
+ * tetap bisa dipakai fixture jsdom tanpa menarik prisma/next-cache.
+ */
+export async function getPublicContent(
+  locale: Locale,
+): Promise<{ messages: Messages; settings: SiteSettings }> {
+  const [{ getMessages }, { getSiteSettings }] = await Promise.all([
+    import("./translations"),
+    import("./settings"),
+  ]);
+  const [messages, settings] = await Promise.all([
+    getMessages(locale),
+    getSiteSettings(),
+  ]);
+  return { messages: composePublicContent(messages, settings), settings };
 }

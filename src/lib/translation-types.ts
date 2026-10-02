@@ -1,4 +1,4 @@
 import enMessages from '@/messages/en.json';
 
 export type Messages = typeof enMessages;
-export type Locale = 'en' | 'id';
+export type { Locale } from '@/lib/i18n';

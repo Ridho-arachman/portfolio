@@ -319,6 +319,14 @@
   "faq": {
     "metaTitle": "Tanya PortoBot | Ridho Arachman",
     "metaDescription": "Tanyakan apa saja tentang project, skill, pengalaman kerja, dan sertifikat Ridho Arachman lewat PortoBot.",
+    "ui": {
+      "log": "Percakapan PortoBot",
+      "placeholder": "Tanya soal project, skill, pengalaman…",
+      "send": "Kirim pesan",
+      "close": "Tutup PortoBot",
+      "thinking": "PortoBot sedang mengetik",
+      "fallback": "Terjadi kesalahan. Silakan coba lagi."
+    },
     "intro": "Halo, saya PortoBot. Saya menjawab pertanyaan tentang {name} — project, skill, pengalaman, dan sertifikat di situs ini. Di luar itu saya tidak bisa membantu, jadi silakan bertanya.",
     "fallback": "Saya hanya bisa menjawab pertanyaan tentang {name} — project, skill, pengalaman kerja, sertifikat, dan kontak-nya. Untuk hal lain, bisa menghubungi langsung di {contact}.",
     "present": "Sekarang",

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { DEFAULT_LOCALE, getLocaleFromPath, isValidLocale } from "./lib/i18n";
+import { DEFAULT_LOCALE, getInvalidLocaleRedirect, getLocaleFromPath, isValidLocale, NEXT_LOCALE_COOKIE, resolveRedirectLocale } from "./lib/i18n";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -43,20 +43,22 @@ export async function proxy(request: NextRequest) {
     return handleAdminAuth(request, response);
   }
 
-  // No locale in path, redirect to default locale
-  // But first check Accept-Language header for better UX
+  // Segmen locale-ish yang invalid (/fr/about) distrip, bukan ditumpuk
+  // menjadi /en/fr/about — target locale ikut cookie > Accept-Language > default.
+  const cookieLocale = request.cookies.get(NEXT_LOCALE_COOKIE)?.value ?? null;
   const acceptLanguage = request.headers.get("accept-language");
-  let detectedLocale = DEFAULT_LOCALE;
-
-  if (acceptLanguage) {
-    const preferredLocale = acceptLanguage
-      .split(",")[0]
-      .split("-")[0]
-      .toLowerCase();
-    if (isValidLocale(preferredLocale)) {
-      detectedLocale = preferredLocale;
-    }
+  const invalidRedirect = getInvalidLocaleRedirect(pathname, { cookieLocale, acceptLanguage });
+  if (invalidRedirect) {
+    const url = request.nextUrl.clone();
+    url.pathname = invalidRedirect;
+    const response = NextResponse.redirect(url);
+    response.headers.set("x-current-locale", invalidRedirect.split("/").filter(Boolean)[0] ?? DEFAULT_LOCALE);
+    return response;
   }
+
+  // No locale in path, redirect to default locale
+  // Urutan: cookie NEXT_LOCALE > Accept-Language > DEFAULT_LOCALE.
+  const detectedLocale = resolveRedirectLocale({ cookieLocale, acceptLanguage });
 
   // Redirect to the detected/default locale
   const url = request.nextUrl.clone();

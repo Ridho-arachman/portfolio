@@ -1,5 +1,5 @@
 import { ContactPageContent } from "./contact-content";
-import { getMessages } from "@/lib/translations";
+import { getPublicContent } from "@/lib/public-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { Metadata } from "next";
 
@@ -10,7 +10,7 @@ interface ContactPageProps {
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const locale = resolvedParams.lang as Locale;
-  const messages = await getMessages(isValidLocale(locale) ? locale : DEFAULT_LOCALE);
+  const { messages } = await getPublicContent(isValidLocale(locale) ? locale : DEFAULT_LOCALE);
   const alternates = getAlternatePaths('/contact');
 
   return {

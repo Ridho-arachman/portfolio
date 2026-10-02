@@ -4,6 +4,7 @@ import { mapDbProjectToProject } from "@/components/sections/projects/map-projec
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
+import { getPublicContent } from "@/lib/public-content";
 import { localizeCertificate } from "@/lib/localized-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
@@ -16,7 +17,7 @@ interface HomePageProps {
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const locale = resolvedParams.lang as Locale;
-  const messages = await getMessages(isValidLocale(locale) ? locale : DEFAULT_LOCALE);
+  const { messages } = await getPublicContent(isValidLocale(locale) ? locale : DEFAULT_LOCALE);
   const alternates = getAlternatePaths('/');
 
   return {

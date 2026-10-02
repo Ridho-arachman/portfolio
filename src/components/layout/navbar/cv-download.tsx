@@ -2,19 +2,18 @@
 
 import { cn } from '@/lib/utils';
 import { Download, FileText } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/hooks/use-translation';
+import { useLocale } from '@/hooks/use-locale';
 import { useState, useRef, useEffect } from 'react';
-import { getLocaleFromPath, Locale } from '@/lib/i18n';
+import { LOCALES, Locale } from '@/lib/i18n';
 
 export function CVDownload({ dropUp = false, fullWidth = false }: { dropUp?: boolean; fullWidth?: boolean }) {
-  const pathname = usePathname();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const currentLocale = getLocaleFromPath(pathname) || 'en';
+  const currentLocale = useLocale();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -99,7 +98,7 @@ export function CVDownload({ dropUp = false, fullWidth = false }: { dropUp?: boo
           )}
         >
           <ul role="listbox" className="py-1">
-            {(['en', 'id'] as Locale[]).map((locale) => (
+            {LOCALES.map((locale) => (
               <li key={locale} role="option" aria-selected={locale === currentLocale}>
                 <button
                   onClick={() => handleDownload(locale)}

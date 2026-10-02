@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Send, X } from "lucide-react";
-import { usePathname } from "next/navigation";
 
-import { DEFAULT_LOCALE, getLocaleFromPath, isValidLocale, type Locale } from "@/lib/i18n";
+import { useLocale } from "@/hooks/use-locale";
+import { useMessages } from "@/components/providers/public-content-provider";
 
 export type PortoBotVariant = "panel" | "page";
 
@@ -20,40 +20,6 @@ type ChatMessage = {
   role: "user" | "bot";
   text: string;
   links?: PortoBotReply["links"];
-};
-
-/**
- * Copy UI yang tidak pernah datang dari API. Enam string per locale; intro,
- * isi jawaban, dan saran chip semuanya milik /api/faq supaya teks itu bisa
- * diganti dari admin lewat tabel translation.
- */
-const UI: Record<
-  Locale,
-  {
-    log: string;
-    placeholder: string;
-    send: string;
-    close: string;
-    thinking: string;
-    fallback: string;
-  }
-> = {
-  en: {
-    log: "PortoBot conversation",
-    placeholder: "Ask about projects, skills, experience…",
-    send: "Send message",
-    close: "Close PortoBot",
-    thinking: "PortoBot is typing",
-    fallback: "Something went wrong. Please try again.",
-  },
-  id: {
-    log: "Percakapan PortoBot",
-    placeholder: "Tanya soal project, skill, pengalaman…",
-    send: "Kirim pesan",
-    close: "Tutup PortoBot",
-    thinking: "PortoBot sedang mengetik",
-    fallback: "Terjadi kesalahan. Silakan coba lagi.",
-  },
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -105,11 +71,8 @@ export function PortoBot({
 }): JSX.Element {
   const prefersReducedMotion = useReducedMotion();
 
-  // `lang` dari segment URL, bukan useParams: komponen ini dirender dari root
-  // layout (yang tidak punya params) maupun dari halaman /faq.
-  const pathLocale = getLocaleFromPath(usePathname());
-  const locale: Locale = pathLocale && isValidLocale(pathLocale) ? pathLocale : DEFAULT_LOCALE;
-  const ui = UI[locale];
+  const locale = useLocale();
+  const ui = useMessages().faq.ui;
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);

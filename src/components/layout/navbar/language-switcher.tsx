@@ -3,14 +3,14 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Globe } from 'lucide-react';
-import { LOCALES, LOCALE_FLAGS, LOCALE_NATIVE_NAMES, Locale, removeLocaleFromPath } from '@/lib/i18n';
-import { useTranslation } from '@/hooks/use-translation';
+import { LOCALES, LOCALE_FLAGS, LOCALE_NATIVE_NAMES, Locale, removeLocaleFromPath, setLocaleCookie } from '@/lib/i18n';
+import { useLocale } from '@/hooks/use-locale';
 import { useState, useRef, useEffect } from 'react';
 
 export function LanguageSwitcher({ inline = false }: { inline?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { locale: currentLocale } = useTranslation();
+  const currentLocale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -53,7 +53,8 @@ export function LanguageSwitcher({ inline = false }: { inline?: boolean }) {
 
     const cleanPath = removeLocaleFromPath(pathname);
     const newPath = `/${newLocale}${cleanPath === '/' ? '' : cleanPath}`;
-    
+
+    setLocaleCookie(newLocale);
     router.push(newPath);
     setIsOpen(false);
   };
