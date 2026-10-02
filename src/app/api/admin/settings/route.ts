@@ -1,7 +1,12 @@
 import { revalidateTag } from "next/cache";
 import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
-import { getSiteSettings, SITE_SETTINGS_ID, SITE_SETTINGS_SELECT } from "@/lib/settings";
+import {
+  getAdminSettings,
+  mergeSettingsTranslations,
+  SITE_SETTINGS_ID,
+  SITE_SETTINGS_SELECT,
+} from "@/lib/settings";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import { successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
@@ -14,8 +19,9 @@ export async function GET() {
     await requireAdminSession();
 
     // Hasil resolve, bukan baris mentah: form admin harus selalu menampilkan
-    // nilai efektif, tidak pernah string kosong dari kolom yang null.
-    return successResponse(await getSiteSettings());
+    // nilai efektif, tidak pernah string kosong dari kolom yang null. Plus
+    // override id mentah untuk prefill input Bahasa Indonesia.
+    return successResponse(await getAdminSettings());
   } catch (error) {
     return errorResponseFrom(error, "Site settings operation failed");
   }
@@ -34,16 +40,26 @@ export async function PUT(req: Request) {
       return errorResponse(parsed.error.issues[0].message, 400);
     }
 
-    const { profile, socials, site, quickLinks } = parsed.data;
+    const { profile, socials, site, quickLinks, translations } = parsed.data;
 
     // Nama field grup = nama kolom (lihat schema/settings.ts), jadi tidak ada
     // peta rename. Prisma mengabaikan key bernilai `undefined`, jadi hanya grup
     // yang dikirim yang tersentuh; mengembalikan nilai ke env lewat /reset.
+    // `translations` digabung dengan yang tersimpan dulu: profile dan site
+    // mengirim key id yang berbeda, jadi tulis langsung akan saling menimpa.
+    const stored = await prisma.siteSettings.findUnique({
+      where: { id: SITE_SETTINGS_ID },
+      select: { translations: true },
+    });
+    const merged = translations === undefined
+      ? undefined
+      : (mergeSettingsTranslations(stored?.translations, translations) ?? Prisma.DbNull);
     const columns = {
       ...profile,
       ...socials,
       ...site,
       ...(quickLinks && { quickLinks }),
+      ...(merged !== undefined && { translations: merged }),
     };
 
     await prisma.siteSettings.upsert({
@@ -58,7 +74,7 @@ export async function PUT(req: Request) {
     // tersimpan di dalam entri cache `translations`.
     revalidateTag("site-settings", { expire: 0 });
 
-    return successResponse(await getSiteSettings());
+    return successResponse(await getAdminSettings());
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       // Baris singleton ganda: secara teori mustahil karena upsert by id, tapi

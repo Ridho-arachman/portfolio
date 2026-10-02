@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { siteSchema, type SiteFormValues } from "@/schema/settings";
 import { useAdminSettings, useUpdateSettings } from "@/hooks/use-settings";
-import type { SiteSettings } from "@/lib/settings";
+import type { AdminSettingsPayload } from "@/lib/settings";
 import {
   DEFAULT_QUICK_LINK_KEYS,
   isQuickLinkKey,
@@ -20,10 +20,12 @@ import { ADMIN_SETTINGS, QUICK_LINK_LABELS } from "./constants";
 import { SaveButton } from "./save-button";
 import { SettingsSection } from "./settings-section";
 
-function toFormValues(settings: SiteSettings): SiteFormValues {
+function toFormValues(settings: AdminSettingsPayload): SiteFormValues {
   return {
     siteName: settings.siteName,
     tagline: settings.tagline,
+    idTagline: settings.translations?.id?.tagline ?? "",
+    idSiteDescription: settings.translations?.id?.siteDescription ?? "",
   };
 }
 
@@ -61,7 +63,16 @@ export function SiteForm() {
   });
 
   const onSubmit = (values: SiteFormValues) => {
-    mutate({ site: values, quickLinks });
+    mutate({
+      site: { siteName: values.siteName, tagline: values.tagline },
+      translations: {
+        id: {
+          tagline: values.idTagline ?? "",
+          siteDescription: values.idSiteDescription ?? "",
+        },
+      },
+      quickLinks,
+    });
   };
 
   const toggle = (key: QuickLinkKey) =>
@@ -125,7 +136,20 @@ export function SiteForm() {
               <p className="text-xs text-destructive">{errors.tagline.message}</p>
             )}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="idTagline">{ADMIN_SETTINGS.fieldIdTagline}</Label>
+            <Input id="idTagline" {...register("idTagline")} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="idSiteDescription">
+              {ADMIN_SETTINGS.fieldIdSiteDescription}
+            </Label>
+            <Input id="idSiteDescription" {...register("idSiteDescription")} />
+          </div>
         </div>
+        <p className="mt-3 text-xs text-text-secondary">{ADMIN_SETTINGS.fieldIdHint}</p>
 
         <div className="mt-6 border-t border-glass-border pt-5">
           <h3 className="font-medium text-text-primary">

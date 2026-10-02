@@ -10,7 +10,7 @@ import {
   type ProfileFormValues,
 } from "@/schema/settings";
 import { useAdminSettings, useUpdateSettings } from "@/hooks/use-settings";
-import type { SiteSettings } from "@/lib/settings";
+import type { AdminSettingsPayload } from "@/lib/settings";
 import { ADMIN_SETTINGS } from "./constants";
 import { SaveButton } from "./save-button";
 import { SettingsSection } from "./settings-section";
@@ -20,13 +20,16 @@ import { SettingsSection } from "./settings-section";
  * ("jobTitle", "contactEmail") yang jadi body PUT, jadi dipetakan di dua arah:
  * form -> PUT di `onSubmit`, PUT -> form di sini.
  */
-function toFormValues(settings: SiteSettings): ProfileFormValues {
+function toFormValues(settings: AdminSettingsPayload): ProfileFormValues {
   return {
     fullName: settings.fullName,
     title: settings.jobTitle,
     email: settings.contactEmail,
     location: settings.location,
     bio: settings.bio,
+    idJobTitle: settings.translations?.id?.jobTitle ?? "",
+    idLocation: settings.translations?.id?.location ?? "",
+    idBio: settings.translations?.id?.bio ?? "",
   };
 }
 
@@ -56,6 +59,13 @@ export function ProfileForm() {
         bio: values.bio,
         location: values.location,
         contactEmail: values.email,
+      },
+      translations: {
+        id: {
+          jobTitle: values.idJobTitle ?? "",
+          location: values.idLocation ?? "",
+          bio: values.idBio ?? "",
+        },
       },
     });
   };
@@ -135,6 +145,22 @@ export function ProfileForm() {
             {errors.bio && (
               <p className="text-xs text-destructive">{errors.bio.message}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="idJobTitle">{ADMIN_SETTINGS.fieldIdTitle}</Label>
+            <Input id="idJobTitle" {...register("idJobTitle")} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="idLocation">{ADMIN_SETTINGS.fieldIdLocation}</Label>
+            <Input id="idLocation" {...register("idLocation")} />
+          </div>
+
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="idBio">{ADMIN_SETTINGS.fieldIdBio}</Label>
+            <Textarea id="idBio" rows={4} {...register("idBio")} />
+            <p className="text-xs text-text-secondary">{ADMIN_SETTINGS.fieldIdHint}</p>
           </div>
         </div>
       </form>

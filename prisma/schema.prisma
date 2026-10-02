@@ -103,6 +103,12 @@ model Category {
   slug        String    @unique // e.g., "web-dev"
   description String?
   order       Int       @default(0)
+  // Override copy per locale: { "id": { "name"?, "description"? } }.
+  // Kolom di atas (name/description) adalah konten DEFAULT_LOCALE (en).
+  // Resolver: src/lib/localized-content.ts. Kolom ini ditambah tanpa
+  // migration/generate di batch ini — Batch 1 menjalankan diff+generate
+  // terakhir mencakup seluruh schema.
+  translations Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
@@ -306,6 +312,13 @@ model SiteSettings {
   siteDescription String? // Override NEXT_PUBLIC_SITE_DESCRIPTION
   // Urutan subset dari 6 nav key kanonik (lihat src/lib/quick-links.ts)
   quickLinks      String[] @default(["home", "about", "projects", "experience", "certificates", "contact"])
+  // Override copy per locale: { "id": { "bio"?, "jobTitle"?, "location"?, "tagline"?, "siteDescription"? } }.
+  // Kolom di atas (bio/jobTitle/location/tagline/siteDescription) adalah konten
+  // DEFAULT_LOCALE (en). Key yang absen atau kosong berarti "warisi kolom base"
+  // — lihat src/lib/settings.ts. fullName/siteName/contactEmail/URL tidak ada di
+  // sini: itu proper noun/identifier, bukan copy. Category punya kolom sendiri
+  // di batch lain — jangan tambah di sini.
+  translations    Json?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

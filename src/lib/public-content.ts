@@ -57,7 +57,7 @@ export async function getPublicContent(
   ]);
   const [messages, settings] = await Promise.all([
     getMessages(locale),
-    getSiteSettings(),
+    getSiteSettings(locale),
   ]);
   return { messages: composePublicContent(messages, settings), settings };
 }

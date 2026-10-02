@@ -46,10 +46,10 @@ describe("SiteForm", () => {
     renderWithQuery(<SiteForm />);
     await loaded();
 
-    expect(screen.getByLabelText(/site name/i)).toHaveValue(
+    expect(screen.getByLabelText("Site Name")).toHaveValue(
       testSiteSettings.siteName,
     );
-    expect(screen.getByLabelText(/tagline/i)).toHaveValue(
+    expect(screen.getByLabelText("Tagline")).toHaveValue(
       testSiteSettings.tagline,
     );
     // Fixture hanya mengaktifkan home + about, jadi empat sisanya harus mati.
@@ -118,8 +118,7 @@ describe("SiteForm", () => {
     ).toBeEnabled();
   });
 
-  it("menampilkan pesan error dari API lewat toast", async () => {
-    const user = userEvent.setup();
+  it("menampilkan pesan error dari API lewat toast", async () => {    const user = userEvent.setup();
     mocks.updateOne.mockRejectedValue(
       new Error("Quick links cannot be empty"),
     );
@@ -130,6 +129,33 @@ describe("SiteForm", () => {
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith("Quick links cannot be empty");
+    });
+  });
+
+  it("memuat dan menyimpan override tagline dan deskripsi ID", async () => {
+    const user = userEvent.setup();
+    mocks.fetchOne.mockResolvedValue({
+      ...testSiteSettings,
+      translations: { id: { tagline: "Tagline ID." } },
+    });
+
+    renderWithQuery(<SiteForm />);
+    await loaded();
+    expect(
+      screen.getByLabelText("Tagline (Bahasa Indonesia)"),
+    ).toHaveValue("Tagline ID.");
+
+    await user.type(
+      screen.getByLabelText("Site description (Bahasa Indonesia)"),
+      "Deskripsi ID.",
+    );
+    await user.click(saveButton());
+
+    await waitFor(() => expect(mocks.updateOne).toHaveBeenCalled());
+    expect(lastPayload()).toMatchObject({
+      translations: {
+        id: { tagline: "Tagline ID.", siteDescription: "Deskripsi ID." },
+      },
     });
   });
 });

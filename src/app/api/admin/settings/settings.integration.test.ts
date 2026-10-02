@@ -106,8 +106,34 @@ describe("PUT /api/admin/settings", () => {
     expect(row?.quickLinks).toEqual(["contact", "home"]);
   });
 
-  it("rejects a blank value so it can never blank the public site", async () => {
-    const res = await put({ profile: { fullName: "   " } });
+  it("persists the translations group and merges it across forms", async () => {
+    const profileRes = await put({ translations: { id: { bio: "Bio Indonesia." } } });
+
+    expect(profileRes.status).toBe(200);
+    expect((await profileRes.json()).data.translations).toEqual({
+      id: { bio: "Bio Indonesia." },
+    });
+
+    const siteRes = await put({ translations: { id: { tagline: "Tagline ID." } } });
+
+    expect(siteRes.status).toBe(200);
+    expect((await readRow())?.translations).toEqual({
+      id: { bio: "Bio Indonesia.", tagline: "Tagline ID." },
+    });
+    expect((await siteRes.json()).data.translations).toEqual({
+      id: { bio: "Bio Indonesia.", tagline: "Tagline ID." },
+    });
+  });
+
+  it("keeps an empty override stored while the resolved value inherits the base", async () => {
+    await put({ translations: { id: { bio: "" } } });
+
+    const { data } = await (await get()).json();
+    expect(data.bio).toBe(envSiteSettings().bio);
+    expect(data.translations).toEqual({ id: { bio: "" } });
+  });
+
+  it("rejects a blank value so it can never blank the public site", async () => {    const res = await put({ profile: { fullName: "   " } });
 
     expect(res.status).toBe(400);
     expect((await res.json()).error).toContain("cannot be empty");
@@ -200,6 +226,20 @@ describe("POST /api/admin/settings/reset", () => {
     const row = await readRow();
     expect(row?.fullName).toBeNull();
     expect(row?.githubUrl).toBe("https://github.com/ada");
+  });
+
+  it("clears the section translations on reset so id inherits the base again", async () => {
+    await put({ translations: { id: { bio: "Bio ID.", tagline: "Tagline ID." } } });
+
+    const res = await reset({ section: "profile" });
+
+    expect(res.status).toBe(200);
+    expect((await res.json()).data.translations).toEqual({
+      id: { tagline: "Tagline ID." },
+    });
+    expect((await readRow())?.translations).toEqual({
+      id: { tagline: "Tagline ID." },
+    });
   });
 
   it("restores only the default nav when the quickLinks section is reset", async () => {
