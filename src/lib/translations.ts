@@ -4,9 +4,9 @@
 //   2. dokumen bawaan src/messages/<locale>.json
 //
 // Prinsip: fungsi ini tidak pernah melempar error dan tidak pernah mengosongkan
-// situs. Patch yang tidak valid apa pun (kunci asing, nilai non-string, JSON rusak)
-// diabaikan seluruhnya dan dokumen bawaan yang menang, supaya halaman publik
-// selalu punya copy lengkap.
+// situs. Patch yang tidak bisa dipakai sama sekali (DB mati, JSON rusak, semua
+// kunci asing) jatuh ke dokumen bawaan; satu kunci rusak hanya membuang kunci
+// itu (resolveMessagesLenient), supaya halaman publik selalu punya copy lengkap.
 import { unstable_cache } from "next/cache";
 import { z } from "zod/v4";
 
@@ -135,6 +135,49 @@ export function resolveMessages(
 }
 
 /**
+ * Varian baca yang toleran terhadap satu kunci rusak: kalau patch lolos
+ * `resolveMessages` apa adanya, kembalikan itu; kalau ZodError, coba tiap
+ * kunci satu per satu, gabungkan yang valid di atas dokumen bawaan, dan
+ * catat kunci yang dibuang ke console.error. Tidak pernah melempar ZodError;
+ * error non-zod (tidak terduga dari fungsi murni ini) jatuh ke bawaan.
+ * Jalur tulis (PUT) tetap memakai `resolveMessages` yang strict.
+ */
+export function resolveMessagesLenient(
+  bundledDoc: Messages,
+  patch: Record<string, string> | null,
+): Messages {
+  if (!patch || Object.keys(patch).length === 0) return bundledDoc;
+
+  try {
+    return resolveMessages(bundledDoc, patch);
+  } catch (error) {
+    if (!(error instanceof z.ZodError)) {
+      console.error("[translations] gagal memuat translation, pakai dokumen bawaan:", error);
+      return bundledDoc;
+    }
+
+    const valid: Record<string, string> = {};
+    const dropped: string[] = [];
+
+    for (const [key, value] of Object.entries(patch)) {
+      try {
+        resolveMessages(bundledDoc, { [key]: value });
+        valid[key] = value;
+      } catch {
+        dropped.push(key);
+      }
+    }
+
+    if (dropped.length > 0) {
+      console.error("[translations] mengabaikan kunci tidak valid:", dropped);
+    }
+    if (Object.keys(valid).length === 0) return bundledDoc;
+
+    return resolveMessages(bundledDoc, valid);
+  }
+}
+
+/**
  * Sumber tunggal untuk halaman publik. Kalau database mati, atau patch-nya
  * tidak bisa dipakai, kembalikan dokumen bawaan — situs tetap utuh, tidak 500.
  */
@@ -152,16 +195,16 @@ export const getMessages = unstable_cache(
       // body API admin supaya aturan "patch = datar, nilai = string" hanya didefinisikan sekali.
       const values = translationPatchSchema.shape.values.safeParse(row?.values);
 
-      return resolveMessages(bundledDoc, values.success ? values.data : null);
+      return resolveMessagesLenient(bundledDoc, values.success ? values.data : null);
     } catch (error) {
       console.error("[translations] gagal memuat translation, pakai dokumen bawaan:", error);
       return bundledDoc;
     }
   },
-  // v2: namespace showcase/capabilities ditambah Okt 2026 — kunci lama
-  // ("messages-v1") masih menyimpan dokumen pra-deploy di Data Cache Vercel
-  // (persisten antar-deploy) sehingga /id 500 (t.showcase undefined).
-  // Naikkan versi setiap kali shape top-level messages berubah.
-  ["messages-v2"],
+  // v3: namespace faq.ui ditambah (copy UI PortoBot pindah dari hardcode
+  // komponen ke messages) — kunci lama ("messages-v2") masih menyimpan dokumen
+  // pra-deploy di Data Cache Vercel (persisten antar-deploy) sehingga t.faq.ui
+  // undefined. Naikkan versi setiap kali shape top-level messages berubah.
+  ["messages-v3"],
   { revalidate: 3600, tags: ["translations"] },
 );

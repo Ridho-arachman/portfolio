@@ -24,7 +24,7 @@ import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
 import prisma from "@/lib/prisma";
 import type { Messages } from "./translation-types";
-import { getMessages, resolveMessages, translationPatchSchema } from "./translations";
+import { getMessages, resolveMessages, resolveMessagesLenient, translationPatchSchema } from "./translations";
 
 const findUnique = vi.mocked(prisma.translation.findUnique);
 
@@ -200,6 +200,87 @@ describe("getMessages — never throws, never blanks the site", () => {
     findUnique.mockResolvedValue(row({ "hero.nonexistent": "x" }));
 
     await expect(getMessages("en")).resolves.toEqual(enMessages);
+  });
+
+  it("keeps the valid keys when the stored patch mixes one unknown key in", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      findUnique.mockResolvedValue(
+        row({ "hero.greeting": "Halo", "hero.nonexistent": "x" }),
+      );
+
+      const messages = await getMessages("en");
+
+      expect(messages.hero.greeting).toBe("Halo");
+      expect(messages.hero.title).toBe(enMessages.hero.title);
+      expect(errorSpy).toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+});
+
+describe("resolveMessagesLenient — narrow fallback on the read path", () => {
+  it("keeps the good keys and drops only the bad one", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const merged = resolveMessagesLenient(enMessages, {
+        "hero.greeting": "Halo",
+        "hero.nonexistent": "x",
+      });
+
+      expect(merged.hero.greeting).toBe("Halo");
+      expect(merged.hero.title).toBe(enMessages.hero.title);
+      expect(errorSpy).toHaveBeenCalledOnce();
+      // Daftar kunci yang dibuang harus terlihat di log.
+      expect(errorSpy.mock.calls[0][1]).toEqual(["hero.nonexistent"]);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("returns bundled when every key is bad", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      expect(
+        resolveMessagesLenient(enMessages, { "hero.nonexistent": "x" }),
+      ).toEqual(enMessages);
+      expect(errorSpy).toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("behaves like resolveMessages for null, empty, and all-valid patches", () => {
+    expect(resolveMessagesLenient(enMessages, null)).toBe(enMessages);
+    expect(resolveMessagesLenient(enMessages, {})).toBe(enMessages);
+
+    const merged = resolveMessagesLenient(enMessages, { "hero.greeting": "Halo" });
+    expect(merged.hero.greeting).toBe("Halo");
+    expect(merged.hero.title).toBe(enMessages.hero.title);
+  });
+
+  it("leaves the strict writer untouched: resolveMessages still throws on a bad key", () => {
+    // PUT pre-write memakai resolveMessages — satu kunci asing harus tetap
+    // melempar (route mengubahnya jadi 400, tanpa menyentuh DB).
+    expect(() =>
+      resolveMessages(enMessages, {
+        "hero.greeting": "Halo",
+        "hero.nonexistent": "x",
+      }),
+    ).toThrow();
+  });
+});
+
+describe("bundled locale parity — en.json vs id.json", () => {
+  it("has identical leaf key sets so no locale 500s on a missing leaf", () => {
+    const enPaths = collectLeaves(enMessages).map(([path]) => path).sort();
+    const idPaths = collectLeaves(idMessages).map(([path]) => path).sort();
+
+    expect(idPaths).toEqual(enPaths);
   });
 });
 
