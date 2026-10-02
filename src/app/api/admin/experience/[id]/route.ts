@@ -3,6 +3,11 @@ import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { experienceUpdateSchema } from "@/schema/experience";
+import { EXPERIENCE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
@@ -55,6 +60,21 @@ export async function PUT(
       return errorResponse("Experience not found", 404);
     }
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    // Only when the translations key is present: an absent key leaves the
+    // stored column untouched so existing manual overrides are never lost.
+    const translations =
+      data.translations !== undefined
+        ? await withAutoIdTranslations(
+            translatableBase(
+              { ...existing, ...data },
+              EXPERIENCE_TRANSLATABLE_FIELDS,
+            ),
+            data.translations,
+            EXPERIENCE_TRANSLATABLE_FIELDS,
+          )
+        : undefined;
+
     const experience = await prisma.experience.update({
       where: { id },
       data: {
@@ -80,7 +100,7 @@ export async function PUT(
         ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.order !== undefined && { order: data.order }),
         ...(data.translations !== undefined && {
-          translations: data.translations ?? Prisma.DbNull,
+          translations: translations ?? Prisma.DbNull,
         }),
       },
     });

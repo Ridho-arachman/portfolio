@@ -31,6 +31,12 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+// POST auto-fills blank Indonesian overrides, which reaches MyMemory unless the
+// translator is stubbed. Keep this suite off the network.
+vi.mock("@/lib/translate", () => ({
+  translateTexts: vi.fn(async (texts: string[]) => texts.map(() => "")),
+}));
+
 import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";

@@ -50,7 +50,7 @@ export const ADMIN_CERTIFICATES = {
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
   idSectionLabel: "Bahasa Indonesia (opsional)",
-  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  idSectionNote: "Leave blank to auto-translate from English.",
   fieldIdTitle: "Title (ID)",
   fieldIdTitlePlaceholder: "e.g. AWS Certified Cloud Practitioner",
   fieldIdSummary: "Summary (ID, satu poin per baris)",

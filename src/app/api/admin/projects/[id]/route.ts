@@ -7,6 +7,11 @@ import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
 import { projectUpdateSchema } from "@/schema/project";
+import { PROJECT_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +79,22 @@ export async function PUT(
     const slug =
       data.slug || (data.title ? slugify(data.title) : undefined);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    // Only when the translations key is present: an absent key leaves the
+    // stored column untouched so existing manual overrides are never lost.
+    // Base falls back to the stored row for fields missing in partial updates.
+    const translations =
+      data.translations !== undefined
+        ? await withAutoIdTranslations(
+            translatableBase(
+              { ...existing, ...data },
+              PROJECT_TRANSLATABLE_FIELDS,
+            ),
+            data.translations,
+            PROJECT_TRANSLATABLE_FIELDS,
+          )
+        : undefined;
+
     const project = await prisma.project.update({
       where: { id },
       data: {
@@ -101,7 +122,7 @@ export async function PUT(
           categoryId: data.categoryId || null,
         }),
         ...(data.translations !== undefined && {
-          translations: data.translations ?? Prisma.DbNull,
+          translations: translations ?? Prisma.DbNull,
         }),
       },
     });

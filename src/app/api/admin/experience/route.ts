@@ -9,6 +9,11 @@ import {successResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
 import { experienceCreateSchema } from "@/schema/experience";
+import { EXPERIENCE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +72,13 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug ?? slugify(data.title);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    const translations = await withAutoIdTranslations(
+      translatableBase({ ...data }, EXPERIENCE_TRANSLATABLE_FIELDS),
+      data.translations,
+      EXPERIENCE_TRANSLATABLE_FIELDS,
+    );
+
     const experience = await prisma.experience.create({
       data: {
         ...data,
@@ -75,6 +87,7 @@ export async function POST(req: Request) {
         endDate: data.endDate ? new Date(data.endDate) : null,
         description: data.description ?? [],
         gallery: data.gallery ?? [],
+        translations: translations ?? undefined,
       },
     });
 

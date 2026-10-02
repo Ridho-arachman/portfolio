@@ -47,7 +47,7 @@ export const ADMIN_PROJECTS = {
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
   idSectionLabel: "Bahasa Indonesia (opsional)",
-  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  idSectionNote: "Leave blank to auto-translate from English.",
   fieldIdTitle: "Title (ID)",
   fieldIdTitlePlaceholder: "e.g. Platform Portfolio Web3",
   fieldIdDescription: "Description (ID)",

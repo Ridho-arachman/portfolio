@@ -10,6 +10,11 @@ import {successResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
 import { categoryCreateSchema } from "@/schema/category";
+import { CATEGORY_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +67,13 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug || slugify(data.name);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    const translations = await withAutoIdTranslations(
+      translatableBase({ ...data }, CATEGORY_TRANSLATABLE_FIELDS),
+      data.translations,
+      CATEGORY_TRANSLATABLE_FIELDS,
+    );
+
     const category = await prisma.category.create({
       data: {
         name: data.name,
@@ -73,7 +85,7 @@ export async function POST(req: Request) {
         // kena excess-property check, jadi baris ini kompilasi sebelum
         // maupun sesudah generate. Pola kondisinya sama dengan PUT project.
         ...(data.translations !== undefined && {
-          translations: data.translations ?? Prisma.DbNull,
+          translations: translations ?? Prisma.DbNull,
         }),
       },
     });

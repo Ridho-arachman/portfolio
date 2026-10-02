@@ -39,7 +39,7 @@ export const ADMIN_CATEGORIES = {
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",
   idSectionLabel: "Bahasa Indonesia (opsional)",
-  idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+  idSectionNote: "Leave blank to auto-translate from English.",
   fieldIdName: "Name (ID)",
   fieldIdNamePlaceholder: "e.g. Pengembangan Web",
   fieldIdDescription: "Description (ID)",

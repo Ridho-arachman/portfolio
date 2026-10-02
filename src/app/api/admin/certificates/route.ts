@@ -10,6 +10,11 @@ import {successResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
 import { certificateCreateSchema } from "@/schema/certificate";
+import { CERTIFICATE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +72,13 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug || slugify(data.title);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    const translations = await withAutoIdTranslations(
+      translatableBase({ ...data }, CERTIFICATE_TRANSLATABLE_FIELDS),
+      data.translations,
+      CERTIFICATE_TRANSLATABLE_FIELDS,
+    );
+
     const certificate = await prisma.certificate.create({
       data: {
         slug,
@@ -82,7 +94,7 @@ export async function POST(req: Request) {
         summary: data.summary,
         isPublished: data.isPublished,
         order: data.order,
-        translations: data.translations ?? Prisma.DbNull,
+        translations: translations ?? Prisma.DbNull,
       },
     });
 

@@ -4,6 +4,11 @@ import prisma from "@/lib/prisma";
 import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { certificateUpdateSchema } from "@/schema/certificate";
+import { CERTIFICATE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
@@ -58,6 +63,21 @@ export async function PUT(
     const slug =
       data.slug || (data.title ? slugify(data.title) : undefined);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    // Only when the translations key is present: an absent key leaves the
+    // stored column untouched so existing manual overrides are never lost.
+    const translations =
+      data.translations !== undefined
+        ? await withAutoIdTranslations(
+            translatableBase(
+              { ...existing, ...data },
+              CERTIFICATE_TRANSLATABLE_FIELDS,
+            ),
+            data.translations,
+            CERTIFICATE_TRANSLATABLE_FIELDS,
+          )
+        : undefined;
+
     const certificate = await prisma.certificate.update({
       where: { id },
       data: {
@@ -87,7 +107,7 @@ export async function PUT(
         }),
         ...(data.order !== undefined && { order: data.order }),
         ...(data.translations !== undefined && {
-          translations: data.translations ?? Prisma.DbNull,
+          translations: translations ?? Prisma.DbNull,
         }),
       },
     });

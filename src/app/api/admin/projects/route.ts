@@ -4,6 +4,11 @@ import prisma from "@/lib/prisma";
 import { notDeleted, trashedOnly, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { projectCreateSchema } from "@/schema/project";
+import { PROJECT_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse,
@@ -62,6 +67,13 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug || slugify(data.title);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    const translations = await withAutoIdTranslations(
+      translatableBase({ ...data }, PROJECT_TRANSLATABLE_FIELDS),
+      data.translations,
+      PROJECT_TRANSLATABLE_FIELDS,
+    );
+
     const project = await prisma.project.create({
       data: {
         title: data.title,
@@ -79,7 +91,7 @@ export async function POST(req: Request) {
         isPublished: data.isPublished,
         order: data.order,
         categoryId: data.categoryId || null,
-        translations: data.translations ?? Prisma.DbNull,
+        translations: translations ?? Prisma.DbNull,
       },
     });
 

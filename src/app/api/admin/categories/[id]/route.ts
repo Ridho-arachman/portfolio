@@ -4,6 +4,11 @@ import prisma from "@/lib/prisma";
 import { notDeleted, slugReserved } from "@/lib/soft-delete";
 import { slugify } from "@/utils/slug";
 import { categoryUpdateSchema } from "@/schema/category";
+import { CATEGORY_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
+import {
+  translatableBase,
+  withAutoIdTranslations,
+} from "@/lib/content-i18n";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
@@ -58,6 +63,21 @@ export async function PUT(
     const slug =
       data.slug || (data.name ? slugify(data.name) : undefined);
 
+    // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
+    // Only when the translations key is present: an absent key leaves the
+    // stored column untouched so existing manual overrides are never lost.
+    const translations =
+      data.translations !== undefined
+        ? await withAutoIdTranslations(
+            translatableBase(
+              { ...existing, ...data },
+              CATEGORY_TRANSLATABLE_FIELDS,
+            ),
+            data.translations,
+            CATEGORY_TRANSLATABLE_FIELDS,
+          )
+        : undefined;
+
     const category = await prisma.category.update({
       where: { id },
       data: {
@@ -69,7 +89,7 @@ export async function PUT(
         ...(data.order !== undefined && { order: data.order }),
         // Spread seperti di POST: aman terhadap client yang belum di-generate ulang.
         ...(data.translations !== undefined && {
-          translations: data.translations ?? Prisma.DbNull,
+          translations: translations ?? Prisma.DbNull,
         }),
       },
     });

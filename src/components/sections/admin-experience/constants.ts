@@ -73,7 +73,7 @@ export const ADMIN_EXPERIENCE = {
     orderLabel: "Display Order",
     orderPlaceholder: "0",
     idSectionLabel: "Bahasa Indonesia (opsional)",
-    idSectionNote: "Kosongkan field yang tidak perlu diterjemahkan — otomatis pakai versi Inggris.",
+    idSectionNote: "Leave blank to auto-translate from English.",
     idTitleLabel: "Role (ID)",
     idTitlePlaceholder: "e.g. Frontend Developer",
     idDescriptionLabel: "Description (ID, satu poin per baris)",
