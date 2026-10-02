@@ -284,6 +284,19 @@ describe("bundled locale parity — en.json vs id.json", () => {
   });
 });
 
+describe("hardcoded literals moved to messages", () => {
+  it("has the gallery, metadata, and source-label keys in both locales", () => {
+    expect(enMessages.projectDetail.galleryImage).toContain("{index}");
+    expect(idMessages.projectDetail.galleryImage).toContain("{index}");
+    expect(enMessages.experienceDetail.metaDescription).toContain("{title}");
+    expect(enMessages.experienceDetail.metaDescription).toContain("{company}");
+    expect(idMessages.experienceDetail.metaDescription).toContain("{title}");
+    expect(idMessages.experienceDetail.metaDescription).toContain("{company}");
+    expect(typeof enMessages.faq.sourceLabel).toBe("string");
+    expect(typeof idMessages.faq.sourceLabel).toBe("string");
+  });
+});
+
 describe("resolveMessages — prototype pollution guard", () => {
   it("rejects a __proto__ dotted key without touching Object.prototype", () => {
     expect(() =>

@@ -11,32 +11,26 @@ const TYPE_MAP: Record<string, ExperienceType> = {
   EDUCATION: "EDUCATION",
 };
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-function formatDate(d: Date): string {
-  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+function formatDate(d: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(d);
 }
 
 export function formatExperiencePeriod(
   startDate: Date | string,
   endDate: Date | string | null | undefined,
   isCurrent: boolean,
+  locale: Locale = DEFAULT_LOCALE,
+  presentLabel = "Present",
 ): string {
-  const end = isCurrent || !endDate ? "Present" : formatDate(new Date(endDate));
-  return `${formatDate(new Date(startDate))} - ${end}`;
+  const end =
+    isCurrent || !endDate
+      ? presentLabel
+      : formatDate(new Date(endDate), locale);
+  return `${formatDate(new Date(startDate), locale)} - ${end}`;
 }
 
 export interface MappedExperience {
@@ -58,8 +52,15 @@ export interface MappedExperience {
 export function mapExperience(
   exp: PrismaExperience,
   locale: Locale = DEFAULT_LOCALE,
+  presentLabel = "Present",
 ): MappedExperience {
-  const period = formatExperiencePeriod(exp.startDate, exp.endDate, exp.isCurrent);
+  const period = formatExperiencePeriod(
+    exp.startDate,
+    exp.endDate,
+    exp.isCurrent,
+    locale,
+    presentLabel,
+  );
   const localized = localizeExperience(exp, locale);
 
   return {
@@ -82,6 +83,7 @@ export function mapExperience(
 export function mapExperiences(
   exps: PrismaExperience[],
   locale: Locale = DEFAULT_LOCALE,
+  presentLabel = "Present",
 ): MappedExperience[] {
-  return exps.map((exp) => mapExperience(exp, locale));
+  return exps.map((exp) => mapExperience(exp, locale, presentLabel));
 }

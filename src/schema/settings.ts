@@ -8,6 +8,9 @@ export const profileSchema = z.object({
   email: z.email("Enter a valid email address"),
   location: z.string().min(2, "Location must be at least 2 characters"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
+  idJobTitle: z.string().optional(),
+  idLocation: z.string().optional(),
+  idBio: z.string().optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -27,6 +30,8 @@ export type SocialsFormValues = z.infer<typeof socialsSchema>;
 export const siteSchema = z.object({
   siteName: z.string().min(2, "Site name must be at least 2 characters"),
   tagline: z.string().min(2, "Tagline must be at least 2 characters"),
+  idTagline: z.string().optional(),
+  idSiteDescription: z.string().optional(),
 });
 
 export type SiteFormValues = z.infer<typeof siteSchema>;
@@ -114,6 +119,24 @@ export const settingsUpdateSchema = z.object({
   quickLinks: z
     .array(z.enum(quickLinkKeys))
     .min(1, "Quick links cannot be empty")
+    .optional(),
+  // Override copy Bahasa Indonesia, nested per locale: form profile mengirim
+  // id { bio, jobTitle, location }, form site mengirim id { tagline,
+  // siteDescription }. String kosong berarti "warisi base" dan dipertahankan
+  // apa adanya — resolver yang mengabaikannya, bukan skema ini, supaya admin
+  // bisa mengosongkan override yang dulu pernah diisi.
+  translations: z
+    .object({
+      id: z
+        .object({
+          bio: z.string().optional(),
+          jobTitle: z.string().optional(),
+          location: z.string().optional(),
+          tagline: z.string().optional(),
+          siteDescription: z.string().optional(),
+        })
+        .optional(),
+    })
     .optional(),
 });
 

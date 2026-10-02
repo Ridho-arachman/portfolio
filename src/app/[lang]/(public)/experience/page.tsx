@@ -50,7 +50,12 @@ export default async function ExperienceListPage({ params }: ExperiencePageProps
   const locale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
 
   const rawExperiences = await getExperiences();
-  const experiences = mapExperiences(rawExperiences, locale);
+  const messages = await getMessages(locale);
+  const experiences = mapExperiences(
+    rawExperiences,
+    locale,
+    messages.experience.current,
+  );
 
   return <ExperiencePageContent experiences={experiences} />;
 }

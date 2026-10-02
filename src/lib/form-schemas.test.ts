@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { contactFormSchema } from "@/schema/contact";
+import { contactFormSchema, createContactFormSchema } from "@/schema/contact";
+import enMessages from "@/messages/en.json";
+import idMessages from "@/messages/id.json";
 import { loginFormSchema } from "@/schema/login";
 import { certificateFormSchema } from "@/schema/certificate";
 import { experienceFormSchema } from "@/schema/experience";
+import {
+  categoryCreateSchema,
+  categoryFormSchema,
+  categoryUpdateSchema,
+} from "@/schema/category";
+import { projectFormSchema } from "@/schema/project";
 import {
   passwordSchema,
   settingsResetSchema,
@@ -47,6 +55,74 @@ describe("contactFormSchema", () => {
       name: "  Ridho  ",
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe("createContactFormSchema", () => {
+  const valid = {
+    name: "Ridho",
+    email: "ridho@example.com",
+    subject: "Project Inquiry",
+    content: "Hello, I have a project for you.",
+  };
+
+  it("accepts valid input in both locales", () => {
+    expect(
+      createContactFormSchema(enMessages.contact.form.validation).safeParse(valid)
+        .success,
+    ).toBe(true);
+    expect(
+      createContactFormSchema(idMessages.contact.form.validation).safeParse(valid)
+        .success,
+    ).toBe(true);
+  });
+
+  it("reports the translated strings for each failing field", () => {
+    const idValidation = idMessages.contact.form.validation;
+    const schema = createContactFormSchema(idValidation);
+
+    const name = schema.safeParse({ ...valid, name: "A" });
+    expect(name.success).toBe(false);
+    if (!name.success) {
+      expect(name.error.issues[0].message).toBe(idValidation.nameRequired);
+    }
+
+    const emptyEmail = schema.safeParse({ ...valid, email: "" });
+    expect(emptyEmail.success).toBe(false);
+    if (!emptyEmail.success) {
+      expect(emptyEmail.error.issues[0].message).toBe(idValidation.emailRequired);
+    }
+
+    const badEmail = schema.safeParse({ ...valid, email: "nope" });
+    expect(badEmail.success).toBe(false);
+    if (!badEmail.success) {
+      expect(badEmail.error.issues[0].message).toBe(idValidation.emailInvalid);
+    }
+
+    const emptyContent = schema.safeParse({ ...valid, content: "" });
+    expect(emptyContent.success).toBe(false);
+    if (!emptyContent.success) {
+      expect(emptyContent.error.issues[0].message).toBe(idValidation.messageRequired);
+    }
+
+    const shortContent = schema.safeParse({ ...valid, content: "short" });
+    expect(shortContent.success).toBe(false);
+    if (!shortContent.success) {
+      expect(shortContent.error.issues[0].message).toBe(
+        idValidation.messageMinLength,
+      );
+    }
+  });
+
+  it("keeps the English messages byte-identical to the validation namespace", () => {
+    const enValidation = enMessages.contact.form.validation;
+    const schema = createContactFormSchema(enValidation);
+
+    const badEmail = schema.safeParse({ ...valid, email: "nope" });
+    expect(badEmail.success).toBe(false);
+    if (!badEmail.success) {
+      expect(badEmail.error.issues[0].message).toBe(enValidation.emailInvalid);
+    }
   });
 });
 
@@ -175,6 +251,80 @@ describe("experienceFormSchema", () => {
     expect(
       experienceFormSchema.safeParse({ ...valid, description: "   " }).success,
     ).toBe(false);
+  });
+});
+
+describe("categoryFormSchema", () => {
+  const valid = {
+    name: "Web Development",
+    slug: "web-dev",
+    description: "Sites",
+    order: 0,
+  };
+
+  it("accepts valid input without Indonesian fields", () => {
+    expect(categoryFormSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("accepts optional Indonesian name and description", () => {
+    expect(
+      categoryFormSchema.safeParse({
+        ...valid,
+        idName: "Pengembangan Web",
+        idDescription: "Situs",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects an invalid slug", () => {
+    expect(
+      categoryFormSchema.safeParse({ ...valid, slug: "Uppercase Slug!" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("categoryCreateSchema/categoryUpdateSchema", () => {
+  it("carries the translations payload for the Json column", () => {
+    const translations = { id: { name: "Pengembangan Web" } };
+    expect(
+      categoryCreateSchema.safeParse({
+        name: "Web Development",
+        order: 0,
+        translations,
+      }),
+    ).toEqual({
+      success: true,
+      data: { name: "Web Development", order: 0, translations },
+    });
+    expect(
+      categoryUpdateSchema.safeParse({ translations }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a mistyped translations payload", () => {
+    expect(
+      categoryUpdateSchema.safeParse({ translations: { id: { name: 42 } } })
+        .success,
+    ).toBe(false);
+  });
+});
+
+describe("projectFormSchema", () => {
+  it("accepts optional Indonesian role and highlights", () => {
+    const valid = {
+      title: "Web3 Portfolio Platform",
+      slug: "web3-portfolio",
+      description: "A portfolio built with Web3 tooling.",
+      thumbnail: "https://images.example.com/cover.jpg",
+      technologies: "Next.js, Tailwind",
+      gallery: [],
+      isPublished: true,
+      order: 0,
+      idRole: "Frontend Developer",
+      idHighlights: "Merilis ke produksi",
+    };
+
+    expect(projectFormSchema.safeParse(valid).success).toBe(true);
   });
 });
 

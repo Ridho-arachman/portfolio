@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const headerLocale = headerList.get("x-current-locale");
   const locale = headerLocale && isValidLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE;
   const { siteUrl, siteName, siteDescription, fullName, jobTitle, bio, twitterUrl } =
-    await getSiteSettings();
+    await getSiteSettings(locale);
 
   const title = `${fullName} | ${jobTitle}`;
   const description = siteDescription || bio;

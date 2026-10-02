@@ -56,16 +56,16 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send message/i }));
 
     expect(
-      await screen.findByText("Name must be at least 2 characters", {}, { timeout: 5000 }),
+      await screen.findByText("Name is required", {}, { timeout: 5000 }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Please enter a valid email address"),
+      screen.getByText("Email is required"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Subject must be at least 3 characters"),
+      screen.getByText("Subject is required"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Message must be at least 10 characters"),
+      screen.getByText("Message is required"),
     ).toBeInTheDocument();
   });
 
@@ -84,10 +84,10 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send message/i }));
 
     expect(
-      await screen.findByText("Please enter a valid email address", {}, { timeout: 5000 }),
+      await screen.findByText("Please enter a valid email", {}, { timeout: 5000 }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Name must be at least 2 characters"),
+      screen.queryByText("Name is required"),
     ).not.toBeInTheDocument();
   });
 

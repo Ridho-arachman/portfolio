@@ -84,7 +84,10 @@ export function ProjectDetailGallery({
                 <CardContent className="p-0 h-full w-full">
                   <Image
                     src={img}
-                    alt={`Gallery ${idx + 1}`}
+                    alt={t.projectDetail.galleryImage.replaceAll(
+                      "{index}",
+                      String(idx + 1),
+                    )}
                     fill
                     className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                   />

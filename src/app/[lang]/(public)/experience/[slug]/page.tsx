@@ -43,10 +43,9 @@ export async function generateMetadata({
 
   return {
     title: `${localized.title} — ${experience.company}`,
-    description:
-      locale === "id"
-        ? `Detail pengalaman ${localized.title} di ${experience.company}.`
-        : `Details of the ${localized.title} experience at ${experience.company}.`,
+    description: messages.experienceDetail.metaDescription
+      .replaceAll("{title}", localized.title)
+      .replaceAll("{company}", experience.company),
   };
 }
 
@@ -66,13 +65,22 @@ export default async function ExperienceDetailPage({
     notFound();
   }
 
-  const exp = mapExperience(rawExperience, locale);
+  const messages = await getMessages(locale);
+  const exp = mapExperience(
+    rawExperience,
+    locale,
+    messages.experience.current,
+  );
 
   const allRaw = await prisma.experience.findMany({
     where: { isPublished: true, ...notDeleted },
     orderBy: { order: "asc" },
   });
-  const allMapped = mapExperiences(allRaw, locale);
+  const allMapped = mapExperiences(
+    allRaw,
+    locale,
+    messages.experience.current,
+  );
 
   const index = allMapped.findIndex((e) => e.slug === slug);
   const prev = index > 0 ? allMapped[index - 1] : null;

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TurnstileWidget } from "@/components/ui/turnstile";
 import { zodResolver } from "@/lib/zod-resolver";
-import { contactFormSchema, type ContactFormValues } from "@/schema/contact";
+import { createContactFormSchema, type ContactFormValues } from "@/schema/contact";
 import { CONTACT_FORM_FIELDS } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
 import type { Messages } from "@/lib/translation-types";
@@ -32,7 +32,7 @@ export function ContactForm() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: zodResolver(createContactFormSchema(t.contact.form.validation)),
     mode: "onTouched",
   });
 

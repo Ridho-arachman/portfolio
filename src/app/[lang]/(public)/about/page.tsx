@@ -90,16 +90,22 @@ export default async function AboutPage({ params }: AboutPageProps) {
   const { lang } = await params;
   const locale = isValidLocale(lang) ? (lang as Locale) : DEFAULT_LOCALE;
 
-  const [rawExperiences, rawProjects, rawSkills, counts] = await Promise.all([
-    getExperiences(),
-    getProjects(),
-    getSkills(),
-    getCounts(),
-  ]);
+  const [rawExperiences, rawProjects, rawSkills, counts, messages] =
+    await Promise.all([
+      getExperiences(),
+      getProjects(),
+      getSkills(),
+      getCounts(),
+      getMessages(locale),
+    ]);
 
   return (
     <AboutPageContent
-      experiences={mapExperiences(rawExperiences, locale)}
+      experiences={mapExperiences(
+        rawExperiences,
+        locale,
+        messages.experience.current,
+      )}
       projects={rawProjects.map((project) => mapDbProjectToProject(project, locale))}
       skillNames={rawSkills.map((skill) => skill.name)}
       counts={counts}

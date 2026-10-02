@@ -54,7 +54,7 @@ Every server cache in the app, and nothing else. This table is exhaustive —
 | `src/app/[lang]/(public)/about/page.tsx` | `about-experiences` | `experiences` | 3600s |
 | `src/app/[lang]/(public)/certificates/page.tsx` | `public-certificates` | `certificates` | 3600s |
 | `src/lib/settings.ts` | `site-settings-v1` | `site-settings` | 3600s |
-| `src/lib/translations.ts` | `messages-v3` | `translations` | 3600s |
+| `src/lib/translations.ts` | `messages-v4` | `translations` | 3600s |
 
 Bump the `messages-vN` key whenever the top-level shape of `Messages` changes —
 the Data Cache persists across deploys, so a stale key serves a document missing

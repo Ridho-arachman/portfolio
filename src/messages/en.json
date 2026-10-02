@@ -208,7 +208,8 @@
     "npmPackage": "npm Package",
     "prev": "Previous Project",
     "next": "Next Project",
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "galleryImage": "Gallery {index}"
   },
   "experience": {
     "title": "Experience",
@@ -245,7 +246,8 @@
     "gallery": "Gallery",
     "prev": "Previous Experience",
     "next": "Next Experience",
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "metaDescription": "Details of the {title} experience at {company}."
   },
   "certificates": {
     "title": "Certificates",
@@ -330,6 +332,7 @@
     "intro": "Hi, I'm PortoBot. I answer questions about {name} — the projects, skills, experience and certifications on this site. I don't cover anything beyond that, so feel free to ask.",
     "fallback": "I can only answer questions about {name} — his projects, skills, work experience, certifications and contact details. For anything else, reach him directly at {contact}.",
     "present": "Present",
+    "sourceLabel": "Source",
     "none": "Nothing is published there yet.",
     "suggestions": {
       "identity": "Who is {name}?",
