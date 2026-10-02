@@ -122,6 +122,48 @@ export function hexToVec3(hex: string): Vector3 {
     return new Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
 }
 
+/* -------------------------------------------------------------- mobile quality tier */
+
+// ponytail: mobile particle budget. Ceiling: 45% fewer points — motes and stars read as
+// texture, not geometry, at phone resolution. Upgrade path: per-device benchmark tier.
+export const MOBILE_PARTICLE_SCALE = 0.55;
+
+// ponytail: mobile pixel-ratio ceiling. Ceiling: on a 3x phone the globe renders at
+// 1 device pixel per CSS pixel, so it looks softer than the desktop build — that is the
+// deliberate trade for hitting 60fps, since fill rate across 3 render targets is what
+// blows the 16.7ms frame budget. Upgrade path: per-device benchmark tier that raises this
+// when headroom allows.
+export const MOBILE_MAX_PIXEL_RATIO = 1;
+
+// ponytail: mobile cloud-shell tessellation. Ceiling: visible faceting on the cloud rim
+// at phone size (silhouette only — the shells are soft alpha, no hard edge).
+// Upgrade path: raise to 32 once a mid-range device is verified at 60fps.
+export const MOBILE_CLOUD_SEGMENTS = 24;
+
+/** Cloud shell segments for the current tier. Desktop returns `n` untouched. */
+export function cloudSegments(n: number, mobile: boolean): number {
+    return mobile ? MOBILE_CLOUD_SEGMENTS : n;
+}
+
+/**
+ * True only for a coarse pointer on a narrow viewport. Both halves are required: a
+ * touchscreen laptop is coarse but wide, a narrow desktop window is narrow but fine, and
+ * only the intersection is a phone-sized frame budget. A missing `matchMedia` (SSR, unit
+ * tests) is never mobile.
+ */
+export function isMobileViewport(): boolean {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+    return (
+        window.matchMedia("(pointer: coarse)").matches &&
+        window.matchMedia("(max-width: 768px)").matches
+    );
+}
+
+/** Point budget for the current tier. Desktop returns `n` untouched. */
+export function scaleCount(n: number, mobile: boolean): number {
+    return mobile ? Math.round(n * MOBILE_PARTICLE_SCALE) : n;
+}
+
 /** Piecewise smoothstep interpolation across keyframe stops. */
 export function sample(stops: readonly Stop[], p: number): number {
     const first = stops[0];

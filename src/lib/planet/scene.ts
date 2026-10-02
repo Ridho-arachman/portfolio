@@ -37,19 +37,23 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { CopyShader } from "three/examples/jsm/shaders/CopyShader.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import {
-    CLOUD_GEOMETRY_SEGMENTS,
+CLOUD_GEOMETRY_SEGMENTS,
+    cloudSegments,
     clamp,
     CONFIG,
     DRACO_DECODER_PATH,
     ENTRY_DUR,
     ENTRY_START_Y,
     hexToVec3,
+    isMobileViewport,
     LAYERS,
     MARKER_LIFT,
+    MOBILE_MAX_PIXEL_RATIO,
     PLANET_CLOUDS_PNG,
     PLANET_GLB,
     PLANET_LIGHTS_GLB,
     sample,
+    scaleCount,
     SCROLL_FADE_END,
     SCROLL_FADE_START,
     STAR_SPHERE_RADIUS,
@@ -232,6 +236,7 @@ async function readDiffusePixels(map: Texture | null): Promise<{
 function buildLandMarkers(
     mesh: Mesh,
     pixels: { data: Uint8ClampedArray; width: number; height: number },
+    markerCount: number,
 ): { positions: Float32Array; seeds: Float32Array } | null {
     const { geometry } = mesh;
     const position = geometry.getAttribute("position");
@@ -278,11 +283,11 @@ function buildLandMarkers(
         return low;
     };
 
-    const positions = new Float32Array(CONFIG.markerCount * 3);
-    const seeds = new Float32Array(CONFIG.markerCount);
-    const attempts = CONFIG.markerCount * 40;
+    const positions = new Float32Array(markerCount * 3);
+    const seeds = new Float32Array(markerCount);
+    const attempts = markerCount * 40;
     let placed = 0;
-    for (let attempt = 0; attempt < attempts && placed < CONFIG.markerCount; attempt += 1) {
+    for (let attempt = 0; attempt < attempts && placed < markerCount; attempt += 1) {
         const t = pickTriangle(Math.random() * total);
         const ia = vertexAt(t * 3);
         const ib = vertexAt(t * 3 + 1);
@@ -343,6 +348,13 @@ export function createPlanetScene(options: {
 }): PlanetSceneHandle {
     const { canvas, onReady } = options;
 
+    // The only place the mobile tier is decided. Every knob below reads this one flag,
+    // so desktop keeps its exact previous behaviour through the false branches.
+    const mobile = isMobileViewport();
+    const count = (n: number): number => scaleCount(n, mobile);
+    const resolvePixelRatio = (): number =>
+        mobile ? Math.min(window.devicePixelRatio, MOBILE_MAX_PIXEL_RATIO) : window.devicePixelRatio;
+
     if (!hasWebGL()) {
         onReady?.();
         return { onReady, dispose: () => {} };
@@ -357,7 +369,7 @@ export function createPlanetScene(options: {
         return { onReady, dispose: () => {} };
     }
 
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(resolvePixelRatio());
     renderer.outputEncoding = sRGBEncoding;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = VSMShadowMap;
@@ -403,13 +415,22 @@ export function createPlanetScene(options: {
     const finalPass = new ShaderPass(createFinalPassShader());
     finalComposer.addPass(finalPass);
 
-    // `ShaderPass` deep-copies the shader's uniforms, so the pass owns the live handles.
-    const finalUniforms = finalPass.uniforms;
-    finalUniforms.torusTexture.value = torusComposer.renderTarget1.texture;
-    finalUniforms.bloomTexture.value = bloomComposer.renderTarget1.texture;
-
     const blackTexture = new DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1, RGBAFormat);
     blackTexture.needsUpdate = true;
+
+    // `ShaderPass` deep-copies the shader's uniforms, so the pass owns the live handles.
+    const finalUniforms = finalPass.uniforms;
+    // ponytail: mobile drops the whole torus chain. Nothing is ever assigned layer 1
+    // (TORUS_SCENE), so its RenderPass draws an empty scene and the gamma + UnrealBloom
+    // mip chain + copy after it resolve black -- ~13 full-screen passes, ~9.9 Mpix/frame
+    // at the 0.76 Mpix mobile buffer, for exactly zero image contribution. FinalPass sums
+    // the target in, and an empty chain contributes 1x1 black. Ceiling: mobile gives up
+    // that bloom. Upgrade path: put real objects on TORUS_SCENE, then re-enable mobile
+    // and buy the budget back with DPR instead.
+    finalUniforms.torusTexture.value = mobile ? blackTexture : torusComposer.renderTarget1.texture;
+    // Mobile never renders bloomComposer, so its target would stay uninitialised.
+    // The 1x1 black texture is exactly what an empty bloom pass contributes.
+    finalUniforms.bloomTexture.value = mobile ? blackTexture : bloomComposer.renderTarget1.texture;
     finalUniforms.haloTexture.value = blackTexture;
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -477,10 +498,11 @@ export function createPlanetScene(options: {
     };
     resUniforms.push(atmoUniforms.uRes);
 
-    const motePositions = new Float32Array(CONFIG.atmoCount * 3);
-    const moteSizes = new Float32Array(CONFIG.atmoCount);
-    const moteSeeds = new Float32Array(CONFIG.atmoCount);
-    for (let i = 0; i < CONFIG.atmoCount; i += 1) {
+    const moteCount = count(CONFIG.atmoCount);
+    const motePositions = new Float32Array(moteCount * 3);
+    const moteSizes = new Float32Array(moteCount);
+    const moteSeeds = new Float32Array(moteCount);
+    for (let i = 0; i < moteCount; i += 1) {
         motePositions[i * 3] = Math.random() * 2 - 1;
         motePositions[i * 3 + 1] = Math.random() * 2 - 1;
         motePositions[i * 3 + 2] = Math.random() * 2 - 1;
@@ -523,10 +545,11 @@ export function createPlanetScene(options: {
     };
     resUniforms.push(starUniforms.uRes);
 
-    const starPositions = new Float32Array(CONFIG.starCount * 3);
-    const starSeeds = new Float32Array(CONFIG.starCount);
-    const starBrights = new Float32Array(CONFIG.starCount);
-    for (let i = 0; i < CONFIG.starCount; i += 1) {
+    const starCount = count(CONFIG.starCount);
+    const starPositions = new Float32Array(starCount * 3);
+    const starSeeds = new Float32Array(starCount);
+    const starBrights = new Float32Array(starCount);
+    for (let i = 0; i < starCount; i += 1) {
         const theta = Math.random() * Math.PI * 2;
         const cosPhi = Math.random() * 2 - 1;
         const sinPhi = Math.sqrt(1 - cosPhi * cosPhi);
@@ -587,7 +610,7 @@ export function createPlanetScene(options: {
         lastWidth = width;
         lastHeight = height;
 
-        const pixelRatio = window.devicePixelRatio;
+        const pixelRatio = resolvePixelRatio();
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(pixelRatio);
@@ -668,10 +691,20 @@ export function createPlanetScene(options: {
         glowMesh.quaternion.copy(camera.quaternion);
         motes.position.copy(camera.position);
 
-        camera.layers.set(LAYERS.TORUS_SCENE);
-        torusComposer.render();
-        camera.layers.set(LAYERS.BLOOM_SCENE);
-        bloomComposer.render();
+        // ponytail: mobile intentionally renders only the final composer; both chains
+        // resolve to black there and FinalPass adds black in. Ceiling: mobile gives up the
+        // marker halo. Upgrade path: assign real objects to TORUS_SCENE, then re-enable
+        // mobile and reclaim the budget via DPR.
+        if (!mobile) {
+            camera.layers.set(LAYERS.TORUS_SCENE);
+            torusComposer.render();
+            // ponytail: mobile skips the whole bloom composer — one scene render plus an
+            // UnrealBloomPass mip chain, every frame. Ceiling: land markers lose this pass's
+            // additive halo (they still draw in finalComposer). Upgrade path: run the bloom
+            // target at half resolution instead of dropping it.
+            camera.layers.set(LAYERS.BLOOM_SCENE);
+            bloomComposer.render();
+        }
         camera.layers.set(LAYERS.ENTIRE_SCENE);
         finalComposer.render();
     };
@@ -768,7 +801,11 @@ export function createPlanetScene(options: {
                 injectAtDithering(shader, CLOUD_INJECTION);
             };
             const mesh = new Mesh(
-                new SphereGeometry(CONFIG.planetRadius * layer.h, CLOUD_GEOMETRY_SEGMENTS, CLOUD_GEOMETRY_SEGMENTS),
+                new SphereGeometry(
+                    CONFIG.planetRadius * layer.h,
+                    cloudSegments(CLOUD_GEOMETRY_SEGMENTS, mobile),
+                    cloudSegments(CLOUD_GEOMETRY_SEGMENTS, mobile),
+                ),
                 material,
             );
             mesh.rotation.y = layer.ry;
@@ -785,7 +822,7 @@ export function createPlanetScene(options: {
             console.warn("[planet] Could not read the diffuse texture; skipping land markers.");
         } else {
             if (disposed) return;
-            const sampled = buildLandMarkers(planetSource, pixels);
+            const sampled = buildLandMarkers(planetSource, pixels, count(CONFIG.markerCount));
             if (sampled === null) {
                 console.warn("[planet] No land sample points found; skipping land markers.");
             } else {
@@ -797,7 +834,9 @@ export function createPlanetScene(options: {
                     uSpeed: { value: CONFIG.markerSpeed },
                 };
                 resUniforms.push(markerUniforms.uRes);
-                const pixelRatio = window.devicePixelRatio;
+                // Same cap as applySize: an uncapped value here would size the marker
+                // points against a resolution the renderer is no longer using.
+                const pixelRatio = resolvePixelRatio();
                 markerUniforms.uRes.value.set(lastWidth * pixelRatio, lastHeight * pixelRatio);
 
                 const markerGeometry = new BufferGeometry();
