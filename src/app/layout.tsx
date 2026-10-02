@@ -111,6 +111,11 @@ export default async function RootLayout({
   // aktif tanpa memindahkan <html>/<body> ke dalam [lang].
   const headerList = await headers();
   const headerLocale = headerList.get("x-current-locale");
+  // Proxy hanya menyetel header ini untuk prefix locale yang valid, jadi header
+  // ada = request-nya halaman publik. Halaman publik punya segmen [lang] di
+  // bawahnya dan switcher-nya dirender di dalam PublicContentProvider — kalau
+  // root layout juga merendernya, satu halaman punya dua pill.
+  const isPublicLocale = headerLocale !== null && isValidLocale(headerLocale);
   const locale = headerLocale && isValidLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE;
 
   return (
@@ -131,7 +136,7 @@ export default async function RootLayout({
           <MotionProvider>
             <NuqsAdapterLoader>{children}</NuqsAdapterLoader>
           </MotionProvider>
-          <FloatingSwitcher />
+          {isPublicLocale ? null : <FloatingSwitcher botEnabled={false} />}
         </ThemeProvider>
       </body>
     </html>

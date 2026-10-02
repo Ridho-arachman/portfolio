@@ -35,11 +35,16 @@ const ADMIN_ROUTE = /^\/admin(\/|$)/;
 
 /**
  * Pengganti ThemeToggleFloating: satu pill dua segmen (Tema | PortoBot) yang
- * bisa diklik, dicoret keyboard, atau diseret mendatar. Memakai context tema
- * dan tidak menyentuh `useMessages()`/`useSiteSettings()` karena dirender dari
- * root layout, di luar PublicContentProvider.
+ * bisa diklik, dicoret keyboard, atau diseret mendatar.
+ *
+ * Segmen PortoBot memanggil `useMessages()` lewat `PortoBot`, jadi pill yang
+ * menampilkannya HANYA BOLEH dirender di dalam PublicContentProvider. Root
+ * layout berada di atas provider itu, maka ia memakai `botEnabled={false}`
+ * (hanya tema) dan halaman publik merender pill sendiri dari dalam provider.
+ * `botEnabled` membuat `PortoBot` tidak pernah ter-mount, jadi tidak ada
+ * yang bisa memanggil hook provider dari luar provider.
  */
-export function FloatingSwitcher() {
+export function FloatingSwitcher({ botEnabled = true }: { botEnabled?: boolean }) {
   const { toggleTheme, resolvedTheme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const pathname = usePathname();
@@ -65,7 +70,7 @@ export function FloatingSwitcher() {
   // Di home hanya PortoBot, di admin hanya tema. Di jalur mana pun yang
   // tersisa (halaman publik lain) keduanya tampil dan bisa diseret.
   const showTheme = !isHome;
-  const showBot = !isAdmin;
+  const showBot = botEnabled && !isAdmin;
 
   // Fokus kembali ke tombol PortoBot setelah panel ditutup, supaya pengguna
   // keyboard tidak terjatuh ke <body> dan kehilangan tempatnya.

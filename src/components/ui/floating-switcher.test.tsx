@@ -170,6 +170,44 @@ describe("home yang fixed-dark", () => {
   });
 });
 
+describe("botEnabled", () => {
+  it("default true: segmen PortoBot tetap ada di halaman publik", async () => {
+    render(
+      <PublicContentProvider messages={testMessages} settings={testSiteSettings}>
+        <FloatingSwitcher />
+      </PublicContentProvider>,
+    );
+
+    // Mengunci nilai default: halaman publik bergantung pada pill yang dirender
+    // di dalam provider, jadi `botEnabled` tidak boleh diam-diam jadi false.
+    expect(await screen.findByRole("radio", { name: "PortoBot" })).toBeInTheDocument();
+  });
+
+  it("false: hanya segmen tema, dan aman dirender tanpa PublicContentProvider", async () => {
+    // Sengaja tanpa provider — ini bentuk persis pill yang dirender root layout,
+    // yang berada di ATAS PublicContentProvider. `PortoBot` memanggil
+    // `useMessages()`, jadi selama segmen bot bisa ter-mount di sini, membuka
+    // panel melempar "usePublicContent must be used within ..." dan jadi error page.
+    render(<FloatingSwitcher botEnabled={false} />);
+
+    const theme = await screen.findByRole("radio", { name: "Toggle theme" });
+
+    expect(screen.queryByRole("radio", { name: "PortoBot" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(1);
+    // Roving tabindex harus tetap menyisakan satu stop yang bisa dicapai keyboard.
+    expect(theme).toHaveAttribute("tabindex", "0");
+  });
+
+  it("false: toggle tema di luar provider tetap berfungsi", async () => {
+    const user = userEvent.setup();
+    render(<FloatingSwitcher botEnabled={false} />);
+
+    await user.click(await screen.findByRole("radio", { name: "Toggle theme" }));
+
+    expect(toggleTheme).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("admin yang tidak butuh PortoBot", () => {
   it("menyembunyikan PortoBot tapi tetap menyisakan toggle tema", async () => {
     mockPathname.current = "/admin/projects";

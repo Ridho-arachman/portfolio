@@ -2,6 +2,7 @@ import { Navbar } from '@/components/layout/navbar/navbar';
 import { Footer } from '@/components/layout/footer/footer';
 import { AscendChrome } from '@/components/sections/ascend/ascend-chrome';
 import { PublicContentProvider } from '@/components/providers/public-content-provider';
+import { FloatingSwitcher } from '@/components/ui/floating-switcher';
 import { StructuredData } from '@/components/seo/structured-data';
 import { Locale, DEFAULT_LOCALE, isValidLocale } from '@/lib/i18n';
 import { getPublicContent } from '@/lib/public-content';
@@ -35,6 +36,7 @@ export default async function PublicLayout({
         {children}
       </main>
       <Footer />
+      <FloatingSwitcher />
     </PublicContentProvider>
   );
 }
