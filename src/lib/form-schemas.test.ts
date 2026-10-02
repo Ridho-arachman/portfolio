@@ -229,7 +229,20 @@ describe("settingsUpdateSchema", () => {
 
   it("treats every group as optional so one section can be saved alone", () => {
     expect(settingsUpdateSchema.safeParse({}).success).toBe(true);
-    expect(settingsUpdateSchema.safeParse({ socials: { githubUrl: "" } }).success).toBe(false);
+  });
+
+  it("treats blank optional URLs as unset (NULL) instead of rejecting the form", () => {
+    expect(
+      settingsUpdateSchema.safeParse({ socials: { githubUrl: "" } }),
+    ).toEqual({
+      success: true,
+      data: { socials: { githubUrl: null } },
+    });
+    expect(
+      settingsUpdateSchema.safeParse({
+        socials: { instagramUrl: "https://instagram.com/ada" },
+      }).success,
+    ).toBe(true);
   });
 });
 

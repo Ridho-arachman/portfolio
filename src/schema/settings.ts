@@ -53,11 +53,24 @@ export type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 /**
  * Kolom null berarti "belum di-override" -> `resolveSiteSettings` jatuh ke env.
- * String kosong harus ditolak di boundary ini: satu field kosong tidak boleh
- * sampai ke DB dan mengosongkan halaman publik.
+ * Teks wajib memakai required() (kosong ditolak); URL opsional memakai
+ * emptyToNullUrl() (kosong berarti NULL = kembali ke env).
  */
 function required(label: string) {
   return z.string().trim().min(1, `${label} cannot be empty`);
+}
+
+/**
+ * URL opsional: string kosong berarti "kosongkan kolom" (NULL -> jatuh ke env),
+ * bukan error. Form admin selalu mengirim semua field grup (termasuk yang tidak
+ * diubah dan field baru yang default-nya kosong seperti Instagram); menolak ""
+ * di sini membuat seluruh form Socials gagal disimpan dengan 400.
+ * Field wajib (profile/site teks) tetap memakai required() di atas.
+ */
+function emptyToNullUrl(label: string) {
+  return z
+    .union([z.url(label), z.literal("")])
+    .transform((value) => (value === "" ? null : value));
 }
 
 /**
@@ -78,16 +91,16 @@ const profileUpdateSchema = z.object({
 });
 
 const socialsUpdateSchema = z.object({
-  githubUrl: z.url("Enter a valid URL"),
-  linkedinUrl: z.url("Enter a valid URL"),
-  twitterUrl: z.url("Enter a valid URL"),
-  instagramUrl: z.url("Enter a valid URL"),
+  githubUrl: emptyToNullUrl("Enter a valid URL"),
+  linkedinUrl: emptyToNullUrl("Enter a valid URL"),
+  twitterUrl: emptyToNullUrl("Enter a valid URL"),
+  instagramUrl: emptyToNullUrl("Enter a valid URL"),
 });
 
 const siteUpdateSchema = z.object({
   siteName: required("Site name"),
   tagline: required("Tagline"),
-  siteUrl: z.url("Enter a valid URL"),
+  siteUrl: emptyToNullUrl("Enter a valid URL"),
   siteDescription: required("Site description"),
 });
 
