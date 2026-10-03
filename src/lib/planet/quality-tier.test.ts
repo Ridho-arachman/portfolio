@@ -1,5 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CONFIG, isMobileViewport, MOBILE_PARTICLE_SCALE, scaleCount } from "./config";
+import {
+    CONFIG,
+    DEMOTE_FRAME_MS,
+    DEMOTE_LATE_RATIO,
+    isMobileViewport,
+    MOBILE_DEMOTED_PIXEL_RATIO,
+    MOBILE_MAX_PIXEL_RATIO,
+    MOBILE_PARTICLE_SCALE,
+    scaleCount,
+} from "./config";
 
 const stubMedia = (coarse: boolean, narrow: boolean): void => {
     vi.stubGlobal("matchMedia", (query: string) => ({
@@ -64,5 +73,30 @@ describe("scaleCount", () => {
         const scaled = scaleCount(configured, true);
         expect(scaled).toBeGreaterThan(0);
         expect(scaled).toBeLessThan(configured);
+    });
+});
+
+describe("adaptive mobile demotion", () => {
+    it("orders the tiers so the demotion actually reduces pixel work", () => {
+        expect(MOBILE_DEMOTED_PIXEL_RATIO).toBeLessThan(MOBILE_MAX_PIXEL_RATIO);
+    });
+
+    it("keeps both tiers at or below 1 so the canvas never oversamples", () => {
+        expect(MOBILE_MAX_PIXEL_RATIO).toBeLessThanOrEqual(1);
+        expect(MOBILE_DEMOTED_PIXEL_RATIO).toBeLessThanOrEqual(1);
+    });
+
+    it("demotes below 50fps, not below the 60fps target", () => {
+        // 16.7ms is one 60Hz vsync. A phone averaging worse than 20ms is already under 50fps,
+        // so waiting for a worse reading would only ship visible judder to good phones.
+        expect(DEMOTE_FRAME_MS).toBeGreaterThan(16.7);
+        expect(DEMOTE_FRAME_MS).toBeLessThanOrEqual(25);
+    });
+
+    it("judges judder by the share of late frames, not the mean", () => {
+        // A phone can vsync-lock most frames while still dropping a quarter of them; its mean
+        // frame time then looks fine and a mean-based test would never demote it.
+        expect(DEMOTE_LATE_RATIO).toBeGreaterThan(0);
+        expect(DEMOTE_LATE_RATIO).toBeLessThanOrEqual(0.5);
     });
 });

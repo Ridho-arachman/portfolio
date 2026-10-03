@@ -48,6 +48,10 @@ CLOUD_GEOMETRY_SEGMENTS,
     isMobileViewport,
     LAYERS,
     MARKER_LIFT,
+    DEMOTE_FRAME_MS,
+    DEMOTE_LATE_RATIO,
+    DEMOTE_SAMPLE_COUNT,
+    MOBILE_DEMOTED_PIXEL_RATIO,
     MOBILE_MAX_PIXEL_RATIO,
     MOBILE_PLANET_TEXTURE_SIZE,
     PLANET_CLOUDS_PNG,
@@ -325,8 +329,15 @@ export function createPlanetScene(options: {
     // so desktop keeps its exact previous behaviour through the false branches.
     const mobile = isMobileViewport();
     const count = (n: number): number => scaleCount(n, mobile);
+
+    // Adaptive floor for phones that cannot hold the frame budget at MOBILE_MAX_PIXEL_RATIO.
+    // GPU weakness is not something a viewport query can see (a Redmi Note 8 and a flagship
+    // are both `pointer: coarse` + narrow), so the only honest signal is the frame time we
+    // actually measure. One-way: it may drop once, never oscillate.
+    let mobileRatio = mobile ? MOBILE_MAX_PIXEL_RATIO : window.devicePixelRatio;
+    let demoted = false;
     const resolvePixelRatio = (): number =>
-        mobile ? Math.min(window.devicePixelRatio, MOBILE_MAX_PIXEL_RATIO) : window.devicePixelRatio;
+        mobile ? Math.min(window.devicePixelRatio, mobileRatio) : window.devicePixelRatio;
 
     if (!hasWebGL()) {
         onReady?.();
@@ -613,13 +624,56 @@ export function createPlanetScene(options: {
     let curS = STOPS_S[0].v;
     let entryElapsed = reducedMotion ? ENTRY_DUR : 0;
     let fade = 1;
+    let frameSamples = 0;
+    let lateFrames = 0;
+    let demoteChecks = 0;
+    let frozen = false;
 
     const frame = (): void => {
+        // A frozen globe keeps its last frame on the canvas and costs nothing per frame.
+        // Scroll damping above still runs, so the page stays responsive — only the animation stops.
+        if (frozen) return;
         rafId = requestAnimationFrame(frame);
 
         const now = performance.now();
         const dt = Math.min((now - previousNow) / 1000, 0.05);
         previousNow = now;
+
+        // Sample real frame cost, then step down once if this phone judders at MOBILE_MAX_PIXEL_RATIO.
+        // Skipped while the globe is invisible (no pixels are being shaded then, so the samples
+        // would say nothing) and on desktop (flag is false).
+        //
+        // The signal is the SHARE of late frames, not the median: a struggling phone still
+        // vsync-locks most frames at 16.7ms, so its median looks perfect while a quarter of
+        // its frames miss the budget. That tail is exactly what the eye reads as judder.
+        if (!demoted && mobile && fade > 0.01) {
+            if (dt * 1000 > DEMOTE_FRAME_MS) lateFrames += 1;
+            frameSamples += 1;
+            if (frameSamples >= DEMOTE_SAMPLE_COUNT) {
+                const juddering = lateFrames / frameSamples > DEMOTE_LATE_RATIO;
+                demoted = true;
+                if (juddering) {
+                    mobileRatio = MOBILE_DEMOTED_PIXEL_RATIO;
+                    applySize();
+                    demoteChecks = 1; // re-measure one window at the lower ratio
+                }
+                frameSamples = 0;
+                lateFrames = 0;
+            }
+        } else if (demoteChecks === 1 && fade > 0.01) {
+            // Second window, at the reduced ratio. Still juddering means fill rate is not the
+            // binding constraint on this phone, so the only way to guarantee smoothness is to
+            // stop animating: the canvas keeps its last frame, the page costs nothing, and
+            // scroll stays fluid. The globe is still there — it simply holds still.
+            if (dt * 1000 > DEMOTE_FRAME_MS) lateFrames += 1;
+            frameSamples += 1;
+            if (frameSamples >= DEMOTE_SAMPLE_COUNT) {
+                demoteChecks = 0;
+                if (lateFrames / frameSamples > DEMOTE_LATE_RATIO) frozen = true;
+                frameSamples = 0;
+                lateFrames = 0;
+            }
+        }
 
         planetTime.value += dt / 12;
         cloudTime.value += dt / 20;

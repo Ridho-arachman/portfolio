@@ -134,6 +134,25 @@ export const MOBILE_PARTICLE_SCALE = 0.55;
 // per-device benchmark tier that raises this when headroom allows.
 export const MOBILE_MAX_PIXEL_RATIO = 0.75;
 
+// ponytail: second-tier pixel ratio for phones whose measured frame time cannot hold the
+// budget at MOBILE_MAX_PIXEL_RATIO (measured at runtime, applied once). Ceiling: the globe
+// is clearly soft — roughly half the linear resolution. Upgrade path: drop the final-pass
+// composer on weak devices and give the pixels back before touching resolution again.
+export const MOBILE_DEMOTED_PIXEL_RATIO = 0.5;
+
+// Median frame time above which a phone is considered too slow, in ms. 20ms = 50fps, i.e.
+// already below the 60fps target with no headroom for scroll work.
+export const DEMOTE_FRAME_MS = 20;
+
+// Frames to average before deciding. Long enough to skip the first-frame shader-compile
+// spike, short enough that a good phone is never held back.
+export const DEMOTE_SAMPLE_COUNT = 90;
+
+// Share of frames allowed to miss the budget before the phone is judged to judder. A device
+// that still locks most frames to vsync but drops a quarter of them reads as stuttery even
+// though its average frame time looks fine, so the ratio — not the mean — is what we test.
+export const DEMOTE_LATE_RATIO = 0.25;
+
 // ponytail: mobile cap for the planet GLTF's own albedo texture. The source is 6000x6000
 // and three.js resizes it down to the device MAX_TEXTURE_SIZE anyway, which is still
 // 4096x4096 = ~67MB of VRAM — brutal on a 4GB phone. The globe is only ~300px on screen,
