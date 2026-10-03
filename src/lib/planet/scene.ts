@@ -639,6 +639,7 @@ export function createPlanetScene(options: {
     let curY = STOPS_Y[0].v;
     let curS = STOPS_S[0].v;
     let entryElapsed = reducedMotion ? ENTRY_DUR : 0;
+    let fade = 1;
 
     const frame = (): void => {
         rafId = requestAnimationFrame(frame);
@@ -677,7 +678,7 @@ export function createPlanetScene(options: {
                 0,
                 1,
             );
-            const fade = 1 - t * t * (3 - 2 * t);
+            fade = 1 - t * t * (3 - 2 * t);
             planetFade.value = fade;
             for (const material of planetFadeMaterials) material.opacity = fade;
             for (const object of planetFadeObjects) object.visible = fade > 0.01;
@@ -706,7 +707,12 @@ export function createPlanetScene(options: {
             bloomComposer.render();
         }
         camera.layers.set(LAYERS.ENTIRE_SCENE);
-        finalComposer.render();
+        // ponytail: once the globe has fully faded (scroll past SCROLL_FADE_END) every
+        // planet object is already `visible=false`, so drawing the composer again paints
+        // nothing but still costs a full-screen pass. Ceiling: the loop still runs (cheap
+        // state updates) so scroll-back reappears correctly. Upgrade path: halt the rAF
+        // entirely and resume from the scroll listener.
+        if (fade > 0.01) finalComposer.render();
     };
     rafId = requestAnimationFrame(frame);
 
