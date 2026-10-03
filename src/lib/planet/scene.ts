@@ -49,6 +49,7 @@ CLOUD_GEOMETRY_SEGMENTS,
     LAYERS,
     MARKER_LIFT,
     MOBILE_MAX_PIXEL_RATIO,
+    MOBILE_PLANET_TEXTURE_SIZE,
     PLANET_CLOUDS_PNG,
     PLANET_GLB,
     PLANET_LIGHTS_GLB,
@@ -81,6 +82,7 @@ import {
     STAR_FRAGMENT,
     STAR_VERTEX,
 } from "./shaders";
+import { capSceneTextures, isDrawableSource, loadScaledTexture } from "./textures";
 
 declare module "three" {
     /**
@@ -117,8 +119,6 @@ interface CloudShell {
     mesh: Mesh;
     spin: number;
 }
-
-type DrawableSource = HTMLImageElement | HTMLCanvasElement;
 
 function prefersReducedMotion(): boolean {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
@@ -180,13 +180,6 @@ function disposeComposer(composer: EffectComposer): void {
     for (const pass of composer.passes) {
         if (pass instanceof UnrealBloomPass) pass.dispose();
     }
-}
-
-function isDrawableSource(value: unknown): value is DrawableSource {
-    return (
-        (typeof HTMLImageElement !== "undefined" && value instanceof HTMLImageElement) ||
-        (typeof HTMLCanvasElement !== "undefined" && value instanceof HTMLCanvasElement)
-    );
 }
 
 /**
@@ -320,26 +313,6 @@ function buildLandMarkers(
 
     if (placed === 0) return null;
     return { positions: positions.subarray(0, placed * 3), seeds: seeds.subarray(0, placed) };
-}
-
-// ponytail: the source clouds PNG is 6000x6000 and decoding/uploading that costs seconds of
-// main-thread time on a throttled phone; createImageBitmap resizes off-thread instead. Ceiling
-// = 2048 cap (still denser than the ~500px globe). Upgrade path: ship a 2048 asset.
-async function loadScaledTexture(url: string, maxSize: number): Promise<Texture> {
-    const bitmap = await createImageBitmap(await (await fetch(url)).blob());
-    const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
-    const width = Math.round(bitmap.width * scale);
-    const height = Math.round(bitmap.height * scale);
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("planet: 2d context unavailable");
-    context.drawImage(bitmap, 0, 0, width, height);
-    bitmap.close();
-    const texture = new Texture(canvas);
-    texture.needsUpdate = true;
-    return texture;
 }
 
 export function createPlanetScene(options: {
@@ -721,6 +694,7 @@ export function createPlanetScene(options: {
     const load = async (): Promise<void> => {
         const lightsGltf = await gltfLoader.loadAsync(PLANET_LIGHTS_GLB);
         if (disposed) return;
+        if (mobile) capSceneTextures(lightsGltf.scene, MOBILE_PLANET_TEXTURE_SIZE);
         const lightsMesh = firstMesh(lightsGltf.scene);
         const nightTex = (lightsMesh !== null ? firstStandardMaterial(lightsMesh)?.map : null) ?? null;
         if (nightTex !== null) extraTextures.push(nightTex);
@@ -729,6 +703,7 @@ export function createPlanetScene(options: {
 
         const planetGltf = await gltfLoader.loadAsync(PLANET_GLB);
         if (disposed) return;
+        if (mobile) capSceneTextures(planetGltf.scene, MOBILE_PLANET_TEXTURE_SIZE);
         const planetSource = firstMesh(planetGltf.scene);
         if (planetSource === null) throw new Error("planet.glb contains no mesh");
         const sourceMaterial = firstStandardMaterial(planetSource);

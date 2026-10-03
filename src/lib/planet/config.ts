@@ -129,11 +129,17 @@ export function hexToVec3(hex: string): Vector3 {
 export const MOBILE_PARTICLE_SCALE = 0.55;
 
 // ponytail: mobile pixel-ratio ceiling. Ceiling: on a 3x phone the globe renders at
-// 1 device pixel per CSS pixel, so it looks softer than the desktop build — that is the
-// deliberate trade for hitting 60fps, since fill rate across 3 render targets is what
-// blows the 16.7ms frame budget. Upgrade path: per-device benchmark tier that raises this
-// when headroom allows.
-export const MOBILE_MAX_PIXEL_RATIO = 1;
+// 0.75 device pixels per CSS pixel, so it looks soft — that is the deliberate trade for
+// hitting 60fps on weak mobile GPUs (Adreno 610-class fill rate), not a bug. Upgrade path:
+// per-device benchmark tier that raises this when headroom allows.
+export const MOBILE_MAX_PIXEL_RATIO = 0.75;
+
+// ponytail: mobile cap for the planet GLTF's own albedo texture. The source is 6000x6000
+// and three.js resizes it down to the device MAX_TEXTURE_SIZE anyway, which is still
+// 4096x4096 = ~67MB of VRAM — brutal on a 4GB phone. The globe is only ~300px on screen,
+// so 1024 is already past the point of visible detail. Ceiling: faint softening on a
+// zoomed-in globe. Upgrade path: ship a 1024 asset instead of downscaling at runtime.
+export const MOBILE_PLANET_TEXTURE_SIZE = 1024;
 
 // ponytail: mobile cloud-shell tessellation. Ceiling: visible faceting on the cloud rim
 // at phone size (silhouette only — the shells are soft alpha, no hard edge).
