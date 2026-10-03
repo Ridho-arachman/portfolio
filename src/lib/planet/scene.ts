@@ -600,9 +600,6 @@ export function createPlanetScene(options: {
     const measureScroll = (): void => {
         scrollTop = window.scrollY;
         scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        lastScrollAt = performance.now();
-        window.clearTimeout(settleTimer);
-        settleTimer = window.setTimeout(applySize, SCROLL_SETTLE_MS);
     };
 
     // Detail is invisible while the page is moving, so mobile drops one resolution step for
@@ -629,13 +626,23 @@ export function createPlanetScene(options: {
             composer.setSize(width, height);
         }
         for (const uniform of resUniforms) uniform.value.set(width * pixelRatio, height * pixelRatio);
+    };
+
+    // Separate from measureScroll so it can re-apply the size the moment a gesture starts:
+    // applySize used to call measureScroll itself, which made an immediate call from here
+    // recurse, and the drop silently never happened until after the scroll had already ended.
+    const onScroll = (): void => {
         measureScroll();
+        lastScrollAt = performance.now();
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(applySize, SCROLL_SETTLE_MS);
+        applySize();
     };
 
     const resizeObserver = new ResizeObserver(applySize);
     resizeObserver.observe(canvas);
     window.addEventListener("resize", applySize);
-    window.addEventListener("scroll", measureScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     measureScroll();
     applySize();
 
