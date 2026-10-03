@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
+import { INLINE_LINK_PADDING } from "@/lib/tap-target";
 
 export function FooterBottom() {
   const { t } = useTranslation();
@@ -13,7 +15,10 @@ export function FooterBottom() {
           href="https://github.com/Ridho-arachman/portfolio/blob/main/LICENSE"
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-text-secondary hover:text-accent transition-colors"
+          className={cn(
+            INLINE_LINK_PADDING,
+            "font-medium text-text-secondary hover:text-accent transition-colors",
+          )}
         >
           {t.footer.license}
         </a>{" "}

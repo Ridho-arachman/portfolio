@@ -82,4 +82,10 @@ describe("FooterSocial", () => {
       expect(hrefs).not.toContain(stale);
     }
   });
+
+  it("membungkus baris ikon supaya lima entri tidak meluber dari kolom grid", () => {
+    const { container } = renderSocial();
+
+    expect(container.querySelector(".flex.gap-3")).toHaveClass("flex-wrap");
+  });
 });

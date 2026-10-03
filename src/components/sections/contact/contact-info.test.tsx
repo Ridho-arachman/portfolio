@@ -75,4 +75,26 @@ describe("ContactInfo", () => {
       testSiteSettings.instagramUrl,
     );
   });
+
+  it("memakai padding vertikal pada tautan email agar area hit >= 44px", () => {
+    renderInfo();
+
+    expect(screen.getByRole("link", { name: testSiteSettings.contactEmail })).toHaveClass(
+      "py-[13px]",
+    );
+  });
+
+  // Pil social punya border + background, jadi padding akan mengubah yang
+  // terlihat; pita `::before`-lah yang memperbesar area hit tanpa bergeser.
+  it("memakai pita hit-area di pil social, bukan padding", () => {
+    const { container } = renderInfo();
+
+    const pills = Array.from(container.querySelectorAll("a.rounded-full"));
+    expect(pills.length).toBeGreaterThan(0);
+    for (const pill of pills) {
+      expect(pill).toHaveClass("before:h-[44px]");
+      expect(pill).toHaveClass("before:absolute");
+      expect(pill).toHaveClass("relative");
+    }
+  });
 });

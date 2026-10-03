@@ -8,6 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProjectCardProps } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
+import { INLINE_LINK_PADDING } from "@/lib/tap-target";
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
   const { t, locale } = useTranslation();
@@ -95,7 +97,10 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           >
             <Link
               href={`/${locale}/projects/${project.slug}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold"
+              className={cn(
+                INLINE_LINK_PADDING,
+                "-my-3 inline-flex items-center gap-2 text-sm font-semibold",
+              )}
             >
               {t.projects.viewCaseStudy}
               <ArrowUpRight className="w-4 h-4 shrink-0 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />

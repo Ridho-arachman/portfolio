@@ -28,7 +28,7 @@ export function FooterLinks() {
       <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
         {t.footer.quickLinks}
       </h3>
-      <ul className="space-y-3">
+      <ul>
         {/* `quickLinks` menentukan isi DAN urutan. Key yang tidak dikenal ikut
             dilewati: isQuickLinkKey menolak key di luar enam nav key, filter
             kedua menolak key yang belum punya label di katalog pesan. */}
@@ -39,12 +39,24 @@ export function FooterLinks() {
           const path = QUICK_LINK_PATHS[key];
           const active = isActive(path);
           return (
-            <li key={key} className="animate-fade-in-up" style={{ animationDelay: `${200 + idx * 80}ms` }}>
+            // Tiga class ini satu rangkaian dan tidak boleh dipisah: `min-h-11`
+            // pada <a> memberi area sentuh 44px yang dibaca audit target-size
+            // (audit itu hanya melihat getBoundingClientRect, jadi pita
+            // TAP_TARGET_HIT_AREA tidak ikut terhitung), sedangkan margin -12px
+            // di <li> membatalkan 24px yang ditambahkan itu — margin-top
+            // collaps keluar lewat <ul>, margin-bottom lewat <li> terakhir —
+            // sehingga jarak antar label tetap 32px persis seperti `space-y-3`
+            // yang dihapus dari <ul>.
+            <li
+              key={key}
+              className="animate-fade-in-up -mb-3 first:-mt-3"
+              style={{ animationDelay: `${200 + idx * 80}ms` }}
+            >
               <Link
                 href={buildHref(path)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "transition-colors text-sm flex items-center gap-2 group",
+                  "min-h-11 transition-colors text-sm flex items-center gap-2 group",
                   active ? "text-accent font-medium" : "text-text-secondary hover:text-accent",
                 )}
               >

@@ -19,7 +19,12 @@ export function FooterSocial() {
       <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
         {t.footer.connect}
       </h3>
-      <div className="flex gap-3">
+      {/* `flex-wrap` wajib, bukan opsional: `resolveSocialLinks` bisa mengembalikan
+          lima entri (GitHub, LinkedIn, Instagram, X, Email) = 5*48 + 4*12 = 288px.
+          Kolom grid `md:grid-cols-3` hanya ~224px pada viewport 768px, jadi tanpa
+          wrap baris ini meluber 64px ke kanan dan dokumen ikut jadi 48px lebih
+          lebar — di semua rute publik, tepat di pita 640-1024px. */}
+      <div className="flex flex-wrap gap-3">
         {links.map(({ href, icon: Icon, label }, index) => (
           <div
             key={label}

@@ -7,6 +7,8 @@ import Link from "next/link";
 import { getContactResponseTime } from "./constants";
 import { useSiteSettings } from "@/components/providers/public-content-provider";
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
+import { INLINE_LINK_PADDING, TAP_TARGET_HIT_AREA } from "@/lib/tap-target";
 
 interface InfoItem {
   icon: LucideIcon;
@@ -49,7 +51,10 @@ export function ContactInfo() {
               {item.href ? (
                 <Link
                   href={item.href}
-                  className="text-text-primary font-medium break-all hover:text-accent transition-colors"
+                  className={cn(
+                    INLINE_LINK_PADDING,
+                    "text-text-primary font-medium break-all hover:text-accent transition-colors",
+                  )}
                 >
                   {item.value}
                 </Link>
@@ -76,7 +81,10 @@ export function ContactInfo() {
                 target={social.key === "email" ? undefined : "_blank"}
                 rel={social.key === "email" ? undefined : "noreferrer"}
                 aria-label={social.label}
-                className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                className={cn(
+                  TAP_TARGET_HIT_AREA,
+                  "inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-secondary/60 px-4 py-2 text-sm text-text-secondary transition-all hover:border-accent/50 hover:text-accent hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
+                )}
               >
                 <social.icon className="w-4 h-4" aria-hidden="true" />
                 {social.label}

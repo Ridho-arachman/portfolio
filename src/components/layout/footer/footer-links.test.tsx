@@ -67,4 +67,27 @@ describe("FooterLinks", () => {
       "aria-current",
     );
   });
+
+  it("memberi area sentuh 44px ke tiap quick link yang hanya 20px tinggi", () => {
+    const { container } = renderLinks();
+
+    const links = container.querySelectorAll("li > a");
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link).toHaveClass("min-h-11");
+    }
+  });
+
+  // Tanpa pasangan margin ini, `min-h-11` menambah 24px per item dan label bergeser.
+  it("menyeimbangkan tinggi ekstra dengan margin negatif di <li>", () => {
+    const { container } = renderLinks();
+
+    const ul = container.querySelector("ul");
+    expect(ul).not.toHaveClass("space-y-3");
+
+    for (const li of container.querySelectorAll("li")) {
+      expect(li).toHaveClass("-mb-3");
+      expect(li).toHaveClass("first:-mt-3");
+    }
+  });
 });
