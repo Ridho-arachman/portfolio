@@ -153,6 +153,18 @@ export const DEMOTE_SAMPLE_COUNT = 90;
 // though its average frame time looks fine, so the ratio — not the mean — is what we test.
 export const DEMOTE_LATE_RATIO = 0.25;
 
+// Quiet period before the first measurement. The opening of the page is texture decode
+// plus hydration; judging from that window misreads a busy load as a weak GPU.
+export const DEMOTE_WARMUP_MS = 2500;
+
+// Resolution held while a scroll gesture is in flight. Motion hides detail, so this buys frame
+// budget that the eye cannot tell is missing; the moment the page settles it is given back.
+export const SCROLL_PIXEL_RATIO = 0.5;
+
+// How long after the last scroll event the full resolution returns. Long enough that one
+// gesture re-sizes the renderer once rather than on every scroll event.
+export const SCROLL_SETTLE_MS = 180;
+
 // ponytail: mobile cap for the planet GLTF's own albedo texture. The source is 6000x6000
 // and three.js resizes it down to the device MAX_TEXTURE_SIZE anyway, which is still
 // 4096x4096 = ~67MB of VRAM — brutal on a 4GB phone. The globe is only ~300px on screen,

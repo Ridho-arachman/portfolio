@@ -51,8 +51,11 @@ CLOUD_GEOMETRY_SEGMENTS,
     DEMOTE_FRAME_MS,
     DEMOTE_LATE_RATIO,
     DEMOTE_SAMPLE_COUNT,
+    DEMOTE_WARMUP_MS,
     MOBILE_DEMOTED_PIXEL_RATIO,
     MOBILE_MAX_PIXEL_RATIO,
+    SCROLL_PIXEL_RATIO,
+    SCROLL_SETTLE_MS,
     MOBILE_PLANET_TEXTURE_SIZE,
     PLANET_CLOUDS_PNG,
     PLANET_GLB,
@@ -336,8 +339,15 @@ export function createPlanetScene(options: {
     // actually measure. One-way: it may drop once, never oscillate.
     let mobileRatio = mobile ? MOBILE_MAX_PIXEL_RATIO : window.devicePixelRatio;
     let demoted = false;
-    const resolvePixelRatio = (): number =>
-        mobile ? Math.min(window.devicePixelRatio, mobileRatio) : window.devicePixelRatio;
+    const resolvePixelRatio = (): number => {
+        if (!mobile) return window.devicePixelRatio;
+        const base = Math.min(window.devicePixelRatio, mobileRatio);
+        // Mid-gesture, spend one more step of resolution to keep the frame budget; give it
+        // back ~180ms after the scroll settles, when the extra sharpness is visible again.
+        return performance.now() - lastScrollAt < SCROLL_SETTLE_MS
+            ? Math.min(window.devicePixelRatio, SCROLL_PIXEL_RATIO)
+            : base;
+    };
 
     if (!hasWebGL()) {
         onReady?.();
@@ -580,21 +590,33 @@ export function createPlanetScene(options: {
     let lastHeight = 0;
     let scrollTop = 0;
     let scrollRange = 1;
+    let lastScrollAt = -Infinity;
+    let settleTimer = 0;
+    let lastRatio = 0;
 
     const measureScroll = (): void => {
         scrollTop = window.scrollY;
         scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        lastScrollAt = performance.now();
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(applySize, SCROLL_SETTLE_MS);
     };
 
+    // Detail is invisible while the page is moving, so mobile drops one resolution step for
+    // the duration of a scroll and puts it back once the gesture settles. This is the cheapest
+    // frame budget there is: it costs sharpness nobody can see mid-gesture, and it is not a
+    // permanent downgrade, so a phone that scrolls fine never pays for it.
     const applySize = (): void => {
         const rect = canvas.getBoundingClientRect();
         const width = Math.max(1, Math.round(rect.width || canvas.clientWidth || window.innerWidth));
         const height = Math.max(1, Math.round(rect.height || canvas.clientHeight || window.innerHeight));
-        if (width === lastWidth && height === lastHeight) return;
+        const ratio = resolvePixelRatio();
+        if (width === lastWidth && height === lastHeight && ratio === lastRatio) return;
         lastWidth = width;
         lastHeight = height;
+        lastRatio = ratio;
 
-        const pixelRatio = resolvePixelRatio();
+        const pixelRatio = ratio;
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(pixelRatio);
@@ -626,13 +648,9 @@ export function createPlanetScene(options: {
     let fade = 1;
     let frameSamples = 0;
     let lateFrames = 0;
-    let demoteChecks = 0;
-    let frozen = false;
+    const startedAt = performance.now();
 
     const frame = (): void => {
-        // A frozen globe keeps its last frame on the canvas and costs nothing per frame.
-        // Scroll damping above still runs, so the page stays responsive — only the animation stops.
-        if (frozen) return;
         rafId = requestAnimationFrame(frame);
 
         const now = performance.now();
@@ -646,30 +664,19 @@ export function createPlanetScene(options: {
         // The signal is the SHARE of late frames, not the median: a struggling phone still
         // vsync-locks most frames at 16.7ms, so its median looks perfect while a quarter of
         // its frames miss the budget. That tail is exactly what the eye reads as judder.
-        if (!demoted && mobile && fade > 0.01) {
+        //
+        // Warmed up first: the opening second is texture decode plus hydration, so judging
+        // from it demotes (or, in the revision that had it, froze) phones that are perfectly
+        // capable once the page has settled.
+        if (!demoted && mobile && fade > 0.01 && now - startedAt > DEMOTE_WARMUP_MS) {
             if (dt * 1000 > DEMOTE_FRAME_MS) lateFrames += 1;
             frameSamples += 1;
             if (frameSamples >= DEMOTE_SAMPLE_COUNT) {
-                const juddering = lateFrames / frameSamples > DEMOTE_LATE_RATIO;
-                demoted = true;
-                if (juddering) {
+                if (lateFrames / frameSamples > DEMOTE_LATE_RATIO) {
                     mobileRatio = MOBILE_DEMOTED_PIXEL_RATIO;
                     applySize();
-                    demoteChecks = 1; // re-measure one window at the lower ratio
                 }
-                frameSamples = 0;
-                lateFrames = 0;
-            }
-        } else if (demoteChecks === 1 && fade > 0.01) {
-            // Second window, at the reduced ratio. Still juddering means fill rate is not the
-            // binding constraint on this phone, so the only way to guarantee smoothness is to
-            // stop animating: the canvas keeps its last frame, the page costs nothing, and
-            // scroll stays fluid. The globe is still there — it simply holds still.
-            if (dt * 1000 > DEMOTE_FRAME_MS) lateFrames += 1;
-            frameSamples += 1;
-            if (frameSamples >= DEMOTE_SAMPLE_COUNT) {
-                demoteChecks = 0;
-                if (lateFrames / frameSamples > DEMOTE_LATE_RATIO) frozen = true;
+                demoted = true; // one measurement settles it; a healthy phone keeps 0.75
                 frameSamples = 0;
                 lateFrames = 0;
             }
@@ -914,6 +921,7 @@ export function createPlanetScene(options: {
 
         if (rafId) cancelAnimationFrame(rafId);
         rafId = 0;
+        window.clearTimeout(settleTimer);
 
         resizeObserver.disconnect();
         window.removeEventListener("resize", applySize);

@@ -3,10 +3,13 @@ import {
     CONFIG,
     DEMOTE_FRAME_MS,
     DEMOTE_LATE_RATIO,
+    DEMOTE_WARMUP_MS,
     isMobileViewport,
     MOBILE_DEMOTED_PIXEL_RATIO,
     MOBILE_MAX_PIXEL_RATIO,
     MOBILE_PARTICLE_SCALE,
+    SCROLL_PIXEL_RATIO,
+    SCROLL_SETTLE_MS,
     scaleCount,
 } from "./config";
 
@@ -98,5 +101,19 @@ describe("adaptive mobile demotion", () => {
         // frame time then looks fine and a mean-based test would never demote it.
         expect(DEMOTE_LATE_RATIO).toBeGreaterThan(0);
         expect(DEMOTE_LATE_RATIO).toBeLessThanOrEqual(0.5);
+    });
+
+    it("waits for the page to settle before judging the device", () => {
+        // Judging during texture decode and hydration reads a busy load as a weak GPU, which
+        // is how this ladder used to freeze the globe on phones that were perfectly capable.
+        expect(DEMOTE_WARMUP_MS).toBeGreaterThanOrEqual(1000);
+    });
+
+    it("spends resolution only while a scroll is in flight", () => {
+        // The scroll ratio must be the cheapest step available, and the settle window must be
+        // short enough that the sharpness comes straight back once the user stops.
+        expect(SCROLL_PIXEL_RATIO).toBeLessThan(MOBILE_MAX_PIXEL_RATIO);
+        expect(SCROLL_SETTLE_MS).toBeGreaterThanOrEqual(100);
+        expect(SCROLL_SETTLE_MS).toBeLessThanOrEqual(400);
     });
 });
