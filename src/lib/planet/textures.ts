@@ -80,9 +80,11 @@ export function downscaleTexture(texture: Texture, maxSize: number): Texture {
     // The replacement now holds the only reference that matters, so the original's GPU copy
     // can go: nothing else can still sample it.
     texture.dispose();
-    // An ImageBitmap is not garbage-collected promptly — the decoded pixels sit outside the
-    // JS heap until close(). This is the whole point of the cap, so leaking it would defeat it.
-    if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) image.close();
+    // ponytail: the original ImageBitmap is deliberately NOT closed here. GLTF reuses one
+    // decoded image across several texture slots, so closing it detaches pixels that
+    // three.js still uploads ("image source is detached", once per frame). Ceiling: the
+    // decoded 6000px bitmap lingers until GC. Upgrade path: decode GLTF textures straight
+    // to the capped size so no oversized bitmap is ever created.
     return scaled;
 }
 
