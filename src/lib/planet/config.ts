@@ -122,23 +122,105 @@ export function hexToVec3(hex: string): Vector3 {
     return new Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
 }
 
-/* -------------------------------------------------------------- mobile quality tier */
+/* -------------------------------------------------------------- quality tiers */
 
-// ponytail: mobile particle budget. Ceiling: 45% fewer points — motes and stars read as
-// texture, not geometry, at phone resolution. Upgrade path: per-device benchmark tier.
-export const MOBILE_PARTICLE_SCALE = 0.55;
+/**
+ * One row of the rendering cost model. Every quality knob the scene reads lives here, so
+ * the whole tier system is one table instead of a `mobile ? A : B` at each call site.
+ *
+ * `null` always means "no override, use the native value":
+ *  - `pixelRatio: null`         → the renderer's DPR (`window.devicePixelRatio`), unclamped
+ *  - `planetTextureSize: null`  → do not cap the GLTF albedo textures
+ *  - `scrollPixelRatio: null`   → never trade resolution for frame budget mid-scroll
+ *
+ * `bloomPasses` counts the offscreen composers drawn before the final one:
+ * 2 = torus + bloom (desktop), 1 = torus only, 0 = the final composer alone (mobile).
+ */
+export interface QualityProfile {
+    readonly pixelRatio: number | null;
+    readonly particleScale: number;
+    readonly cloudSegments: number;
+    readonly planetTextureSize: number | null;
+    readonly bloomPasses: 0 | 1 | 2;
+    readonly scrollPixelRatio: number | null;
+}
 
-// ponytail: mobile pixel-ratio ceiling. Ceiling: on a 3x phone the globe renders at
-// 0.75 device pixels per CSS pixel, so it looks soft — that is the deliberate trade for
-// hitting 60fps on weak mobile GPUs (Adreno 610-class fill rate), not a bug. Upgrade path:
-// per-device benchmark tier that raises this when headroom allows.
-export const MOBILE_MAX_PIXEL_RATIO = 0.75;
+/** Full quality. Nothing is capped, capped down, or skipped anywhere. */
+export const DESKTOP_PROFILE: QualityProfile = {
+    pixelRatio: null,
+    particleScale: 1,
+    cloudSegments: CLOUD_GEOMETRY_SEGMENTS,
+    planetTextureSize: null,
+    bloomPasses: 2,
+    scrollPixelRatio: null,
+};
 
-// ponytail: second-tier pixel ratio for phones whose measured frame time cannot hold the
-// budget at MOBILE_MAX_PIXEL_RATIO (measured at runtime, applied once). Ceiling: the globe
-// is clearly soft — roughly half the linear resolution. Upgrade path: drop the final-pass
-// composer on weak devices and give the pixels back before touching resolution again.
-export const MOBILE_DEMOTED_PIXEL_RATIO = 0.5;
+// ponytail: mobile cap for the planet GLTF's own albedo texture. The source is 6000x6000
+// and three.js resizes it down to the device MAX_TEXTURE_SIZE anyway, which is still
+// 4096x4096 = ~67MB of VRAM — brutal on a 4GB phone. The globe is only ~300px on screen,
+// so 1024 is already past the point of visible detail. Ceiling: faint softening on a
+// zoomed-in globe. Upgrade path: ship a 1024 asset instead of downscaling at runtime.
+export const MOBILE_PLANET_TEXTURE_SIZE = 1024;
+
+/**
+ * Baseline phone tier, reached purely from a viewport probe.
+ *
+ * ponytail: mobile drops both offscreen chains. Nothing is ever assigned TORUS_SCENE, so
+ * its RenderPass draws an empty scene and the gamma + UnrealBloom mip chain + copy after it
+ * resolve black -- ~13 full-screen passes, ~9.9 Mpix/frame at the 0.76 Mpix mobile buffer,
+ * for exactly zero image contribution. Ceiling: mobile gives up the marker halo. Upgrade
+ * path: put real objects on TORUS_SCENE, then re-enable mobile and buy the budget back
+ * with DPR instead.
+ */
+export const MOBILE_PROFILE: QualityProfile = {
+    // ponytail: pixel-ratio ceiling. On a 3x phone the globe renders at 0.75 device pixels
+    // per CSS pixel, so it looks soft — that is the deliberate trade for hitting 60fps on
+    // weak mobile GPUs (Adreno 610-class fill rate), not a bug. Upgrade path: per-device
+    // benchmark tier that raises this when headroom allows.
+    pixelRatio: 0.75,
+    // ponytail: particle budget. Ceiling: 45% fewer points — motes and stars read as texture,
+    // not geometry, at phone resolution. Upgrade path: per-device benchmark tier.
+    particleScale: 0.55,
+    // ponytail: cloud-shell tessellation. Ceiling: visible faceting on the cloud rim at
+    // phone size (silhouette only — the shells are soft alpha, no hard edge). Upgrade path:
+    // raise to 32 once a mid-range device is verified at 60fps.
+    cloudSegments: 24,
+    planetTextureSize: MOBILE_PLANET_TEXTURE_SIZE,
+    bloomPasses: 0,
+    // Resolution held while a scroll gesture is in flight. Motion hides detail, so this buys
+    // frame budget that the eye cannot tell is missing; the moment the page settles it is
+    // given back. ponytail: cheapest step available — costs sharpness nobody sees, and it is
+    // not a permanent downgrade, so a phone that scrolls fine never pays for it.
+    scrollPixelRatio: 0.5,
+};
+
+/**
+ * Second phone tier, for devices whose measured frame time cannot hold the budget at
+ * `MOBILE_PROFILE.pixelRatio` (measured at runtime, applied once — see `resolveProfile`).
+ *
+ * ponytail: the demotion touches resolution and nothing else, so the ceiling is exactly the
+ * one knob: the globe is clearly soft, roughly half the linear resolution, but tessellation,
+ * the texture cap and the composer choice are untouched. Upgrade path: drop the final-pass
+ * composer on weak devices and give the pixels back before touching resolution again.
+ */
+export const MOBILE_DEMOTED_PROFILE: QualityProfile = {
+    ...MOBILE_PROFILE,
+    pixelRatio: 0.5,
+};
+
+/**
+ * The one place a tier is chosen. `demoted` only means anything on mobile — desktop has no
+ * second tier, so it always resolves to `DESKTOP_PROFILE` no matter what the flag says.
+ */
+export function resolveProfile(input: { mobile: boolean; demoted: boolean }): QualityProfile {
+    if (!input.mobile) return DESKTOP_PROFILE;
+    return input.demoted ? MOBILE_DEMOTED_PROFILE : MOBILE_PROFILE;
+}
+
+/** Point budget for a tier. `DESKTOP_PROFILE.particleScale` of 1 makes this the identity. */
+export function particleCount(n: number, profile: QualityProfile): number {
+    return Math.round(n * profile.particleScale);
+}
 
 // Median frame time above which a phone is considered too slow, in ms. 20ms = 50fps, i.e.
 // already below the 60fps target with no headroom for scroll work.
@@ -157,30 +239,9 @@ export const DEMOTE_LATE_RATIO = 0.25;
 // plus hydration; judging from that window misreads a busy load as a weak GPU.
 export const DEMOTE_WARMUP_MS = 2500;
 
-// Resolution held while a scroll gesture is in flight. Motion hides detail, so this buys frame
-// budget that the eye cannot tell is missing; the moment the page settles it is given back.
-export const SCROLL_PIXEL_RATIO = 0.5;
-
 // How long after the last scroll event the full resolution returns. Long enough that one
 // gesture re-sizes the renderer once rather than on every scroll event.
 export const SCROLL_SETTLE_MS = 180;
-
-// ponytail: mobile cap for the planet GLTF's own albedo texture. The source is 6000x6000
-// and three.js resizes it down to the device MAX_TEXTURE_SIZE anyway, which is still
-// 4096x4096 = ~67MB of VRAM — brutal on a 4GB phone. The globe is only ~300px on screen,
-// so 1024 is already past the point of visible detail. Ceiling: faint softening on a
-// zoomed-in globe. Upgrade path: ship a 1024 asset instead of downscaling at runtime.
-export const MOBILE_PLANET_TEXTURE_SIZE = 1024;
-
-// ponytail: mobile cloud-shell tessellation. Ceiling: visible faceting on the cloud rim
-// at phone size (silhouette only — the shells are soft alpha, no hard edge).
-// Upgrade path: raise to 32 once a mid-range device is verified at 60fps.
-export const MOBILE_CLOUD_SEGMENTS = 24;
-
-/** Cloud shell segments for the current tier. Desktop returns `n` untouched. */
-export function cloudSegments(n: number, mobile: boolean): number {
-    return mobile ? MOBILE_CLOUD_SEGMENTS : n;
-}
 
 /**
  * True only for a coarse pointer on a narrow viewport. Both halves are required: a
@@ -194,11 +255,6 @@ export function isMobileViewport(): boolean {
         window.matchMedia("(pointer: coarse)").matches &&
         window.matchMedia("(max-width: 768px)").matches
     );
-}
-
-/** Point budget for the current tier. Desktop returns `n` untouched. */
-export function scaleCount(n: number, mobile: boolean): number {
-    return mobile ? Math.round(n * MOBILE_PARTICLE_SCALE) : n;
 }
 
 /** Piecewise smoothstep interpolation across keyframe stops. */

@@ -37,10 +37,12 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { CopyShader } from "three/examples/jsm/shaders/CopyShader.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import {
-CLOUD_GEOMETRY_SEGMENTS,
-    cloudSegments,
     clamp,
     CONFIG,
+    DEMOTE_FRAME_MS,
+    DEMOTE_LATE_RATIO,
+    DEMOTE_SAMPLE_COUNT,
+    DEMOTE_WARMUP_MS,
     DRACO_DECODER_PATH,
     ENTRY_DUR,
     ENTRY_START_Y,
@@ -48,22 +50,15 @@ CLOUD_GEOMETRY_SEGMENTS,
     isMobileViewport,
     LAYERS,
     MARKER_LIFT,
-    DEMOTE_FRAME_MS,
-    DEMOTE_LATE_RATIO,
-    DEMOTE_SAMPLE_COUNT,
-    DEMOTE_WARMUP_MS,
-    MOBILE_DEMOTED_PIXEL_RATIO,
-    MOBILE_MAX_PIXEL_RATIO,
-    SCROLL_PIXEL_RATIO,
-    SCROLL_SETTLE_MS,
-    MOBILE_PLANET_TEXTURE_SIZE,
+    particleCount,
     PLANET_CLOUDS_PNG,
     PLANET_GLB,
     PLANET_LIGHTS_GLB,
+    resolveProfile,
     sample,
-    scaleCount,
     SCROLL_FADE_END,
     SCROLL_FADE_START,
+    SCROLL_SETTLE_MS,
     STAR_SPHERE_RADIUS,
     STOPS_S,
     STOPS_X,
@@ -328,16 +323,18 @@ export function createPlanetScene(options: {
 }): PlanetSceneHandle {
     const { canvas, onReady } = options;
 
-    // The only place the mobile tier is decided. Every knob below reads this one flag,
-    // so desktop keeps its exact previous behaviour through the false branches.
+    // The viewport probe is the ONLY place a tier is decided: `resolveProfile` maps it (plus
+    // the one-way demotion flag below) onto a row of the quality table in config.ts. Every
+    // knob from here on reads `profile.*`, so desktop keeps its exact previous behaviour
+    // through the table's `null`s rather than through scattered false branches.
     const mobile = isMobileViewport();
-    const count = (n: number): number => scaleCount(n, mobile);
+    let profile = resolveProfile({ mobile, demoted: false });
+    const count = (n: number): number => particleCount(n, profile);
 
-    // Adaptive floor for phones that cannot hold the frame budget at MOBILE_MAX_PIXEL_RATIO.
-    // GPU weakness is not something a viewport query can see (a Redmi Note 8 and a flagship
-    // are both `pointer: coarse` + narrow), so the only honest signal is the frame time we
-    // actually measure. One-way: it may drop once, never oscillate.
-    let mobileRatio = mobile ? MOBILE_MAX_PIXEL_RATIO : window.devicePixelRatio;
+    // One-way adaptive demotion for phones that cannot hold the frame budget at
+    // MOBILE_PROFILE.pixelRatio. GPU weakness is not something a viewport query can see (a
+    // Redmi Note 8 and a flagship are both `pointer: coarse` + narrow), so the only honest
+    // signal is the frame time we actually measure. It may drop once, never oscillate.
     let demoted = false;
     // Declared up here because resolvePixelRatio() runs long before the resize block below:
     // putting these next to their first user would throw a TDZ ReferenceError on line ~345,
@@ -346,13 +343,14 @@ export function createPlanetScene(options: {
     let settleTimer = 0;
     let lastRatio = 0;
     const resolvePixelRatio = (): number => {
-        if (!mobile) return window.devicePixelRatio;
-        const base = Math.min(window.devicePixelRatio, mobileRatio);
+        const ceiling = profile.pixelRatio;
+        if (ceiling === null) return window.devicePixelRatio;
+        const scroll = profile.scrollPixelRatio;
         // Mid-gesture, spend one more step of resolution to keep the frame budget; give it
-        // back ~180ms after the scroll settles, when the extra sharpness is visible again.
-        return performance.now() - lastScrollAt < SCROLL_SETTLE_MS
-            ? Math.min(window.devicePixelRatio, SCROLL_PIXEL_RATIO)
-            : base;
+        // back SCROLL_SETTLE_MS after the scroll settles, when the extra sharpness is visible.
+        return scroll !== null && performance.now() - lastScrollAt < SCROLL_SETTLE_MS
+            ? Math.min(window.devicePixelRatio, scroll)
+            : Math.min(window.devicePixelRatio, ceiling);
     };
 
     if (!hasWebGL()) {
@@ -420,17 +418,12 @@ export function createPlanetScene(options: {
 
     // `ShaderPass` deep-copies the shader's uniforms, so the pass owns the live handles.
     const finalUniforms = finalPass.uniforms;
-    // ponytail: mobile drops the whole torus chain. Nothing is ever assigned layer 1
-    // (TORUS_SCENE), so its RenderPass draws an empty scene and the gamma + UnrealBloom
-    // mip chain + copy after it resolve black -- ~13 full-screen passes, ~9.9 Mpix/frame
-    // at the 0.76 Mpix mobile buffer, for exactly zero image contribution. FinalPass sums
-    // the target in, and an empty chain contributes 1x1 black. Ceiling: mobile gives up
-    // that bloom. Upgrade path: put real objects on TORUS_SCENE, then re-enable mobile
-    // and buy the budget back with DPR instead.
-    finalUniforms.torusTexture.value = mobile ? blackTexture : torusComposer.renderTarget1.texture;
-    // Mobile never renders bloomComposer, so its target would stay uninitialised.
-    // The 1x1 black texture is exactly what an empty bloom pass contributes.
-    finalUniforms.bloomTexture.value = mobile ? blackTexture : bloomComposer.renderTarget1.texture;
+    // A composer this profile never renders would leave its target uninitialised, and an empty
+    // chain contributes exactly 1x1 black — so a skipped composer feeds FinalPass blackTexture.
+    finalUniforms.torusTexture.value =
+        profile.bloomPasses > 0 ? torusComposer.renderTarget1.texture : blackTexture;
+    finalUniforms.bloomTexture.value =
+        profile.bloomPasses > 1 ? bloomComposer.renderTarget1.texture : blackTexture;
     finalUniforms.haloTexture.value = blackTexture;
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -667,9 +660,10 @@ export function createPlanetScene(options: {
         const dt = Math.min((now - previousNow) / 1000, 0.05);
         previousNow = now;
 
-        // Sample real frame cost, then step down once if this phone judders at MOBILE_MAX_PIXEL_RATIO.
-        // Skipped while the globe is invisible (no pixels are being shaded then, so the samples
-        // would say nothing) and on desktop (flag is false).
+        // Sample real frame cost, then step down one tier if this phone judders at
+        // MOBILE_PROFILE.pixelRatio. Skipped while the globe is invisible (no pixels are
+        // being shaded then, so the samples would say nothing) and on desktop
+        // (`profile.pixelRatio === null` is the marker for a tier that has nowhere to step).
         //
         // The signal is the SHARE of late frames, not the median: a struggling phone still
         // vsync-locks most frames at 16.7ms, so its median looks perfect while a quarter of
@@ -678,12 +672,12 @@ export function createPlanetScene(options: {
         // Warmed up first: the opening second is texture decode plus hydration, so judging
         // from it demotes (or, in the revision that had it, froze) phones that are perfectly
         // capable once the page has settled.
-        if (!demoted && mobile && fade > 0.01 && now - startedAt > DEMOTE_WARMUP_MS) {
+        if (!demoted && profile.pixelRatio !== null && fade > 0.01 && now - startedAt > DEMOTE_WARMUP_MS) {
             if (dt * 1000 > DEMOTE_FRAME_MS) lateFrames += 1;
             frameSamples += 1;
             if (frameSamples >= DEMOTE_SAMPLE_COUNT) {
                 if (lateFrames / frameSamples > DEMOTE_LATE_RATIO) {
-                    mobileRatio = MOBILE_DEMOTED_PIXEL_RATIO;
+                    profile = resolveProfile({ mobile, demoted: true });
                     applySize();
                 }
                 demoted = true; // one measurement settles it; a healthy phone keeps 0.75
@@ -736,17 +730,15 @@ export function createPlanetScene(options: {
         glowMesh.quaternion.copy(camera.quaternion);
         motes.position.copy(camera.position);
 
-        // ponytail: mobile intentionally renders only the final composer; both chains
-        // resolve to black there and FinalPass adds black in. Ceiling: mobile gives up the
-        // marker halo. Upgrade path: assign real objects to TORUS_SCENE, then re-enable
-        // mobile and reclaim the budget via DPR.
-        if (!mobile) {
+        if (profile.bloomPasses > 0) {
             camera.layers.set(LAYERS.TORUS_SCENE);
             torusComposer.render();
-            // ponytail: mobile skips the whole bloom composer — one scene render plus an
-            // UnrealBloomPass mip chain, every frame. Ceiling: land markers lose this pass's
-            // additive halo (they still draw in finalComposer). Upgrade path: run the bloom
-            // target at half resolution instead of dropping it.
+        }
+        // ponytail: mobile skips the whole bloom composer — one scene render plus an
+        // UnrealBloomPass mip chain, every frame. Ceiling: land markers lose this pass's
+        // additive halo (they still draw in finalComposer). Upgrade path: run the bloom
+        // target at half resolution instead of dropping it.
+        if (profile.bloomPasses > 1) {
             camera.layers.set(LAYERS.BLOOM_SCENE);
             bloomComposer.render();
         }
@@ -765,7 +757,9 @@ export function createPlanetScene(options: {
     const load = async (): Promise<void> => {
         const lightsGltf = await gltfLoader.loadAsync(PLANET_LIGHTS_GLB);
         if (disposed) return;
-        if (mobile) capSceneTextures(lightsGltf.scene, MOBILE_PLANET_TEXTURE_SIZE);
+        if (profile.planetTextureSize !== null) {
+            capSceneTextures(lightsGltf.scene, profile.planetTextureSize);
+        }
         const lightsMesh = firstMesh(lightsGltf.scene);
         const nightTex = (lightsMesh !== null ? firstStandardMaterial(lightsMesh)?.map : null) ?? null;
         if (nightTex !== null) extraTextures.push(nightTex);
@@ -774,7 +768,9 @@ export function createPlanetScene(options: {
 
         const planetGltf = await gltfLoader.loadAsync(PLANET_GLB);
         if (disposed) return;
-        if (mobile) capSceneTextures(planetGltf.scene, MOBILE_PLANET_TEXTURE_SIZE);
+        if (profile.planetTextureSize !== null) {
+            capSceneTextures(planetGltf.scene, profile.planetTextureSize);
+        }
         const planetSource = firstMesh(planetGltf.scene);
         if (planetSource === null) throw new Error("planet.glb contains no mesh");
         const sourceMaterial = firstStandardMaterial(planetSource);
@@ -855,8 +851,8 @@ export function createPlanetScene(options: {
             const mesh = new Mesh(
                 new SphereGeometry(
                     CONFIG.planetRadius * layer.h,
-                    cloudSegments(CLOUD_GEOMETRY_SEGMENTS, mobile),
-                    cloudSegments(CLOUD_GEOMETRY_SEGMENTS, mobile),
+                    profile.cloudSegments,
+                    profile.cloudSegments,
                 ),
                 material,
             );
@@ -935,7 +931,7 @@ export function createPlanetScene(options: {
 
         resizeObserver.disconnect();
         window.removeEventListener("resize", applySize);
-        window.removeEventListener("scroll", measureScroll);
+        window.removeEventListener("scroll", onScroll);
         controls.dispose();
 
         disposeObject(scene);
