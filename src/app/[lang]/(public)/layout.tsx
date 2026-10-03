@@ -4,6 +4,7 @@ import { AscendChrome } from '@/components/sections/ascend/ascend-chrome';
 import { PublicContentProvider } from '@/components/providers/public-content-provider';
 import { FloatingSwitcher } from '@/components/ui/floating-switcher';
 import { StructuredData } from '@/components/seo/structured-data';
+import { VisitTracker } from '@/components/visit-tracker';
 import { Locale, DEFAULT_LOCALE, isValidLocale } from '@/lib/i18n';
 import { getPublicContent } from '@/lib/public-content';
 
@@ -37,6 +38,7 @@ export default async function PublicLayout({
       </main>
       <Footer />
       <FloatingSwitcher />
+      <VisitTracker />
     </PublicContentProvider>
   );
 }
