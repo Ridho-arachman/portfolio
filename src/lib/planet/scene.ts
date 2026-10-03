@@ -339,6 +339,12 @@ export function createPlanetScene(options: {
     // actually measure. One-way: it may drop once, never oscillate.
     let mobileRatio = mobile ? MOBILE_MAX_PIXEL_RATIO : window.devicePixelRatio;
     let demoted = false;
+    // Declared up here because resolvePixelRatio() runs long before the resize block below:
+    // putting these next to their first user would throw a TDZ ReferenceError on line ~345,
+    // which planet-canvas.tsx swallows — the globe then silently never renders at all.
+    let lastScrollAt = -Infinity;
+    let settleTimer = 0;
+    let lastRatio = 0;
     const resolvePixelRatio = (): number => {
         if (!mobile) return window.devicePixelRatio;
         const base = Math.min(window.devicePixelRatio, mobileRatio);
@@ -590,9 +596,6 @@ export function createPlanetScene(options: {
     let lastHeight = 0;
     let scrollTop = 0;
     let scrollRange = 1;
-    let lastScrollAt = -Infinity;
-    let settleTimer = 0;
-    let lastRatio = 0;
 
     const measureScroll = (): void => {
         scrollTop = window.scrollY;
