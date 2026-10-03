@@ -6,8 +6,13 @@ export type DrawableSource = HTMLImageElement | HTMLCanvasElement;
 /** Everything `drawImage` accepts here: the clouds PNG's `ImageBitmap`, or a GLTF texture's image. */
 type ResizeSource = ImageBitmap | DrawableSource;
 
-export function isDrawableSource(value: unknown): value is DrawableSource {
+// GLTFLoader is free to hand back an `ImageBitmap` instead of an `HTMLImageElement`
+// depending on the loader path it takes, and an ImageBitmap fails every `instanceof`
+// check below — so it has to be part of this guard or oversized textures silently
+// skip the cap and land at the device MAX_TEXTURE_SIZE anyway.
+export function isDrawableSource(value: unknown): value is ResizeSource {
     return (
+        (typeof ImageBitmap !== "undefined" && value instanceof ImageBitmap) ||
         (typeof HTMLImageElement !== "undefined" && value instanceof HTMLImageElement) ||
         (typeof HTMLCanvasElement !== "undefined" && value instanceof HTMLCanvasElement)
     );
@@ -75,6 +80,9 @@ export function downscaleTexture(texture: Texture, maxSize: number): Texture {
     // The replacement now holds the only reference that matters, so the original's GPU copy
     // can go: nothing else can still sample it.
     texture.dispose();
+    // An ImageBitmap is not garbage-collected promptly — the decoded pixels sit outside the
+    // JS heap until close(). This is the whole point of the cap, so leaking it would defeat it.
+    if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) image.close();
     return scaled;
 }
 
