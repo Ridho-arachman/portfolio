@@ -15,7 +15,7 @@ export function ExperienceListItem({
   exp,
   index = 0,
 }: ExperienceListItemProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   return (
     // 1. Outer Wrapper: Animasi Scroll Reveal (Fade In + Slide Up)
@@ -26,7 +26,7 @@ export function ExperienceListItem({
       transition={prefersReducedMotion ? undefined : { duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
       className="h-full"
     >
-      <Link href={`/experience/${exp.slug}`} className="group block h-full">
+      <Link href={`/${locale}/experience/${exp.slug}`} className="group block h-full">
         {/* 2. Inner Wrapper: Animasi Hover Lift (Naik sedikit saat di-hover) */}
         <m.div
           whileHover={prefersReducedMotion ? undefined : { y: -4 }}
@@ -65,7 +65,7 @@ export function ExperienceListItem({
             {/* 2. Card Content */}
             <div className="p-6">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors">
+                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
                   {exp.role}
                 </h3>
                 <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-accent group-hover:translate-x-1 transition-all mt-1" />
@@ -74,7 +74,9 @@ export function ExperienceListItem({
               <div className="space-y-1.5 mb-4">
                 <p className="text-sm font-medium text-text-secondary flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 shrink-0" />
-                  {exp.company} • {exp.location}
+                  <span className="line-clamp-1">
+                    {exp.company} • {exp.location}
+                  </span>
                 </p>
                 <p className="text-xs font-medium text-text-muted flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
