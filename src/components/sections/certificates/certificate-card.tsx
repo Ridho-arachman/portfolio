@@ -76,7 +76,7 @@ export function CertificateCard({
             {/* 2. Card Content */}
             <div className="p-6">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors">
+                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
                   {cert.title}
                 </h3>
                 <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-accent group-hover:translate-x-1 transition-all mt-1" />
@@ -85,7 +85,7 @@ export function CertificateCard({
               <div className="space-y-1.5 mb-4">
                 <p className="text-sm font-medium text-text-secondary flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5 shrink-0" />
-                  {cert.issuer}
+                  <span className="line-clamp-1">{cert.issuer}</span>
                 </p>
                 <p className="text-xs font-medium text-text-muted flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
@@ -93,9 +93,9 @@ export function CertificateCard({
                 </p>
               </div>
 
-              {/* Skills Tags */}
+              {/* Skills Tags - capped so a long list cannot stretch the card */}
               <div className="flex flex-wrap gap-2">
-                {cert.skills.map((skill) => (
+                {cert.skills.slice(0, 4).map((skill) => (
                   <Badge
                     key={skill}
                     variant="outline"
@@ -104,6 +104,14 @@ export function CertificateCard({
                     {skill}
                   </Badge>
                 ))}
+                {cert.skills.length > 4 && (
+                  <Badge
+                    variant="outline"
+                    className="bg-accent/10 text-accent border-accent/30 font-bold"
+                  >
+                    +{cert.skills.length - 4}
+                  </Badge>
+                )}
               </div>
 
               {/* Gallery Preview */}

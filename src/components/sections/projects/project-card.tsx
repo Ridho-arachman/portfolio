@@ -41,9 +41,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
 
         {/* Shadcn UI Card Content */}
         <CardContent className="p-6 space-y-4">
-          {/* Tags using Shadcn Badge */}
+          {/* Tags - capped so a long list cannot stretch the card */}
           <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
+            {project.tags.slice(0, 4).map((tag) => (
               <Badge
                 key={tag}
                 variant="outline"
@@ -52,13 +52,21 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 {tag}
               </Badge>
             ))}
+            {project.tags.length > 4 && (
+              <Badge
+                variant="outline"
+                className="bg-accent/10 text-accent border-accent/30 font-bold"
+              >
+                +{project.tags.length - 4}
+              </Badge>
+            )}
           </div>
 
-          <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors">
+          <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
             {project.title}
           </h3>
 
-          <p className="text-sm text-text-secondary leading-relaxed">
+          <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
             {project.description}
           </p>
 

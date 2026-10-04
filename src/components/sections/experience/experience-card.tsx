@@ -10,7 +10,7 @@ import { ExperienceCardProps } from "./constants";
 import { useTranslation } from "@/hooks/use-translation";
 
 export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const teaserDescription = exp.description.slice(0, 2);
   const isOrg = exp.type === "ORGANIZATION";
   const typeLabel = isOrg ? t.experience.organization : t.experience.company;
@@ -61,14 +61,16 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
 
                   {/* 2. Card Content (Shadcn UI CardContent) */}
                   <div>
-                    <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors mb-1">
+                    <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors mb-1 line-clamp-2">
                       {exp.role}
                     </h3>
                     <p
                       className={`text-sm font-medium text-text-secondary flex items-center gap-1.5 ${isLeft ? "md:justify-end" : "justify-start"}`}
                     >
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
-                      {exp.company} • {exp.location}
+                      <span className="line-clamp-1">
+                        {exp.company} • {exp.location}
+                      </span>
                     </p>
                     <p
                       className={`text-xs font-medium text-text-muted mt-1 flex items-center gap-1.5 ${isLeft ? "md:justify-end" : "justify-start"}`}
@@ -90,7 +92,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                         <span
                           className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0 ${isLeft ? "order-first" : ""}`}
                         />
-                        <span>{point}</span>
+                        <span className="line-clamp-2">{point}</span>
                       </div>
                     ))}
                   </div>
@@ -129,7 +131,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                       className={`w-full rounded-full font-medium text-sm transition-all duration-300 ${isLeft ? "md:flex-row-reverse" : ""} min-h-[48px] min-w-[48px]`}
                     >
                       <Link
-                        href={`/experience/${exp.slug}`}
+                        href={`/${locale}/experience/${exp.slug}`}
                         onClick={() => {}}
                       >
                         {t.experience.viewDetail}
