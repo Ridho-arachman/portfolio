@@ -66,13 +66,18 @@ const getProjects = unstable_cache(
 // kolom Date akan kembali jadi string. Jadi daftar id kategori yang masih hidup
 // diambil terpisah di sini — hasilnya cuma kolom id, tidak ada kolom Date,
 // sehingga aman dipakai di jalur cache.
+//
+// Yang dikembalikan WAJIB array, bukan Set: `unstable_cache` menyimpan nilai
+// sebagai JSON, dan `JSON.stringify(new Set([...]))` jadi `{}`. Setelah cache
+// terisi, `Set` akan hilang dan `.has()` di bawah melempar TypeError → 500 di
+// halaman /projects.
 const getLiveCategoryIds = unstable_cache(
   async () => {
     const rows = await prisma.category.findMany({
       where: notDeleted,
       select: { id: true },
     });
-    return new Set(rows.map((row) => row.id));
+    return rows.map((row) => row.id);
   },
   ["public-project-live-category-ids"],
   { revalidate: 3600, tags: ["categories"] },
@@ -83,12 +88,13 @@ export default async function ProjectsPage() {
     getProjects(),
     getLiveCategoryIds(),
   ]);
+  const liveCategories = new Set(liveCategoryIds);
 
   return (
     <ProjectsPageContent
       projects={projects.map((project) => ({
         ...project,
-        category: liveCategoryIds.has(project.categoryId)
+        category: liveCategories.has(project.categoryId)
           ? project.category
           : null,
       }))}

@@ -1,9 +1,8 @@
 "use client";
 
-"use client";
-
 import { AlertTriangle, ArrowLeft, FolderTree } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_CATEGORIES } from "./constants";
@@ -53,6 +52,12 @@ export function CategoryFormPage({
   categoryId?: string;
 }) {
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+
+  // Pindah ke daftar hanya setelah mutation sukses. Mendorong router sebelum
+  // request selesai akan membuat navigasi terjadi walau save-nya gagal, dan
+  // toast error-nya mendarat di halaman yang salah.
+  const goToList = () => router.push("/admin/categories");
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
@@ -141,8 +146,14 @@ export function CategoryFormPage({
       onSubmit={
         mode === "edit" && categoryData
           ? (data: CategoryFormPayload) =>
-              updateMutation.mutate({ id: categoryData.id, data: mapFormToUpdate(data) })
-          : (data: CategoryFormPayload) => createMutation.mutate(mapFormToCreate(data))
+              updateMutation.mutate(
+                { id: categoryData.id, data: mapFormToUpdate(data) },
+                { onSuccess: goToList },
+              )
+          : (data: CategoryFormPayload) =>
+              createMutation.mutate(mapFormToCreate(data), {
+                onSuccess: goToList,
+              })
       }
     />
   );
