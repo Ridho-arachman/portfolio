@@ -1,4 +1,13 @@
-export { type AdminCertificate } from "@/types/domain";
+import type { AdminCertificate } from "@/types/domain";
+
+export type { AdminCertificate };
+
+/** Bentuk `GET /api/admin/certificates/[id]`: baris certificate plus daftar
+ *  tautan m-n yang dibutuhkan form admin untuk prefill multi-select. */
+export type AdminCertificateWithRelations = AdminCertificate & {
+  projects: { id: string; title: string }[];
+  experiences: { id: string; title: string }[];
+};
 
 export const ADMIN_CERTIFICATES = {
   title: "Certificates",
@@ -47,6 +56,12 @@ export const ADMIN_CERTIFICATES = {
   fieldSummaryPlaceholder:
     "One point per line.\nThese render on the certificate detail page.",
   fieldSummaryHint: "One point per line — rendered on the detail page.",
+  fieldProjects: "Projects",
+  searchProjects: "Search projects...",
+  noProjects: "No projects available yet.",
+  fieldExperiences: "Experiences",
+  searchExperiences: "Search experiences...",
+  noExperiences: "No experiences available yet.",
   fieldIsPublished: "Published",
   fieldOrder: "Order",
   fieldOrderHint: "Lower values appear first.",

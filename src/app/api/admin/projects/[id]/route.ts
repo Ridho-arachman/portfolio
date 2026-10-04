@@ -6,6 +6,7 @@ import { slugify } from "@/utils/slug";
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 import { projectUpdateSchema } from "@/schema/project";
 import { PROJECT_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
 import {
@@ -29,7 +30,6 @@ export async function GET(
       // ke respons. Insiden 86d09b0.
       include: {
         category: {
-          where: notDeleted,
           select: {
             id: true,
             name: true,
@@ -38,6 +38,12 @@ export async function GET(
             order: true,
           },
         },
+        // Dipakai form admin untuk prefill multi-select. Select ini tetap
+        // membaca baris di-trash: `set` pada relasi m-n mengganti SELURUH
+        // tautan, jadi tautan ke entitas yang sudah di-trash harus tetap ikut
+        // terkirim atau hilang diam-diam setiap kali form disimpan.
+        certificates: { select: { id: true, title: true } },
+        experiences: { select: { id: true, title: true } },
       },
     });
 
@@ -79,6 +85,19 @@ export async function PUT(
     const slug =
       data.slug || (data.title ? slugify(data.title) : undefined);
 
+    const unknownRelation = await findUnknownRelationMessage([
+      {
+        label: "category",
+        model: "category",
+        ids: data.categoryId === undefined ? undefined : [data.categoryId],
+      },
+      { label: "certificate", model: "certificate", ids: data.certificateIds },
+      { label: "experience", model: "experience", ids: data.experienceIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
+    }
+
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
     // Only when the translations key is present: an absent key leaves the
     // stored column untouched so existing manual overrides are never lost.
@@ -119,7 +138,17 @@ export async function PUT(
         }),
         ...(data.order !== undefined && { order: data.order }),
         ...(data.categoryId !== undefined && {
-          categoryId: data.categoryId || null,
+          categoryId: data.categoryId,
+        }),
+        ...(data.certificateIds !== undefined && {
+          certificates: {
+            set: data.certificateIds.map((id) => ({ id })),
+          },
+        }),
+        ...(data.experienceIds !== undefined && {
+          experiences: {
+            set: data.experienceIds.map((id) => ({ id })),
+          },
         }),
         ...(data.translations !== undefined && {
           translations: translations ?? Prisma.DbNull,

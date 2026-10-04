@@ -12,6 +12,7 @@ import {
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,16 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const certificate = await prisma.certificate.findUnique({ where: { id, ...notDeleted } });
+    const certificate = await prisma.certificate.findUnique({
+      where: { id, ...notDeleted },
+      // `set` pada relasi m-n mengganti SELURUH tautan, jadi prefill form
+      // harus ikut memuat entitas yang sudah di-trash — memfilternya di sini
+      // membuat setiap penyimpanan diam-diam membuang tautan itu.
+      include: {
+        projects: { select: { id: true, title: true } },
+        experiences: { select: { id: true, title: true } },
+      },
+    });
 
     if (!certificate) {
       return errorResponse("Certificate not found", 404);
@@ -62,6 +72,14 @@ export async function PUT(
     const data = parsed.data;
     const slug =
       data.slug || (data.title ? slugify(data.title) : undefined);
+
+    const unknownRelation = await findUnknownRelationMessage([
+      { label: "project", model: "project", ids: data.projectIds },
+      { label: "experience", model: "experience", ids: data.experienceIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
+    }
 
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
     // Only when the translations key is present: an absent key leaves the
@@ -106,6 +124,12 @@ export async function PUT(
           isPublished: data.isPublished,
         }),
         ...(data.order !== undefined && { order: data.order }),
+        ...(data.projectIds !== undefined && {
+          projects: { set: data.projectIds.map((id) => ({ id })) },
+        }),
+        ...(data.experienceIds !== undefined && {
+          experiences: { set: data.experienceIds.map((id) => ({ id })) },
+        }),
         ...(data.translations !== undefined && {
           translations: translations ?? Prisma.DbNull,
         }),

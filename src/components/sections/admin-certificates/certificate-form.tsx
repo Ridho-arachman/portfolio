@@ -13,13 +13,16 @@ import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
+import { EntityMultiSelect } from "@/components/ui/entity-multi-select";
+import { useAdminProjects } from "@/hooks/use-projects";
+import { useAdminExperiences } from "@/hooks/use-experience";
 import {
   certificateFormSchema,
   type CertificateFormValues,
   type CertificateCreateValues,
 } from "@/schema/certificate";
 import { idOverrides } from "@/schema/content-translations";
-import { ADMIN_CERTIFICATES, type AdminCertificate, toDateInputValue } from "./constants";
+import { ADMIN_CERTIFICATES, type AdminCertificateWithRelations, toDateInputValue } from "./constants";
 import { slugify } from "@/utils/slug";
 
 export function CertificateForm({
@@ -29,7 +32,7 @@ export function CertificateForm({
   onSubmit,
 }: {
   mode: "create" | "edit";
-  initialData?: AdminCertificate;
+  initialData?: AdminCertificateWithRelations;
   isLoading: boolean;
   onSubmit: (data: CertificateCreateValues) => void;
 }) {
@@ -40,7 +43,6 @@ export function CertificateForm({
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<CertificateFormValues>({
     resolver: zodResolver(certificateFormSchema),
@@ -58,6 +60,8 @@ export function CertificateForm({
           gallery: initialData.gallery ?? [],
           skills: initialData.skills.join(", "),
           summary: initialData.summary.join("\n"),
+          projectIds: initialData.projects.map((p) => p.id),
+          experienceIds: initialData.experiences.map((e) => e.id),
           isPublished: initialData.isPublished,
           order: initialData.order,
           idTitle: initialData.translations?.id?.title ?? "",
@@ -75,6 +79,8 @@ export function CertificateForm({
           gallery: [],
           skills: "",
           summary: "",
+          projectIds: [],
+          experienceIds: [],
           isPublished: true,
           order: 0,
           idTitle: "",
@@ -84,8 +90,16 @@ export function CertificateForm({
 
   const titleValue = useWatch({ control, name: "title" });
   const isPublished = useWatch({ control, name: "isPublished" });
-  const thumbnail = watch("thumbnail");
-  const gallery = watch("gallery") ?? [];
+  const thumbnail = useWatch({ control, name: "thumbnail" });
+  const gallery = useWatch({ control, name: "gallery" }) ?? [];
+  const projectIds = useWatch({ control, name: "projectIds" }) ?? [];
+  const experienceIds = useWatch({ control, name: "experienceIds" }) ?? [];
+
+  // `pageSize: 100` adalah batas `parsePagination`; daftar admin ini sudah
+  // memfilter baris di-trash, jadi baris trash tidak pernah muncul sebagai
+  // opsi yang bisa dipilih.
+  const { data: projects } = useAdminProjects({ pageSize: 100 });
+  const { data: experiences } = useAdminExperiences({ pageSize: 100 });
 
   useEffect(() => {
     if (!slugTouched.current) {
@@ -116,6 +130,8 @@ export function CertificateForm({
         .filter(Boolean),
       isPublished: values.isPublished,
       order: values.order,
+      projectIds: values.projectIds,
+      experienceIds: values.experienceIds,
       translations: idOverrides({
         title: values.idTitle ?? "",
         summary: (values.idSummary ?? "")
@@ -318,6 +334,38 @@ export function CertificateForm({
                     id="skills"
                     placeholder={ADMIN_CERTIFICATES.fieldSkillsPlaceholder}
                     {...register("skills")}
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <EntityMultiSelect
+                    label={ADMIN_CERTIFICATES.fieldProjects}
+                    options={(projects?.data ?? []).map((project) => ({
+                      id: project.id,
+                      label: project.title,
+                    }))}
+                    value={projectIds}
+                    onChange={(ids) =>
+                      setValue("projectIds", ids, { shouldValidate: true })
+                    }
+                    searchPlaceholder={ADMIN_CERTIFICATES.searchProjects}
+                    emptyLabel={ADMIN_CERTIFICATES.noProjects}
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <EntityMultiSelect
+                    label={ADMIN_CERTIFICATES.fieldExperiences}
+                    options={(experiences?.data ?? []).map((experience) => ({
+                      id: experience.id,
+                      label: experience.title,
+                    }))}
+                    value={experienceIds}
+                    onChange={(ids) =>
+                      setValue("experienceIds", ids, { shouldValidate: true })
+                    }
+                    searchPlaceholder={ADMIN_CERTIFICATES.searchExperiences}
+                    emptyLabel={ADMIN_CERTIFICATES.noExperiences}
                   />
                 </div>
 

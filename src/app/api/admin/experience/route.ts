@@ -8,6 +8,7 @@ import {successResponse,
   errorResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 import { experienceCreateSchema } from "@/schema/experience";
 import { EXPERIENCE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
 import {
@@ -72,6 +73,14 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug ?? slugify(data.title);
 
+    const unknownRelation = await findUnknownRelationMessage([
+      { label: "project", model: "project", ids: data.projectIds },
+      { label: "certificate", model: "certificate", ids: data.certificateIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
+    }
+
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
     const translations = await withAutoIdTranslations(
       translatableBase({ ...data }, EXPERIENCE_TRANSLATABLE_FIELDS),
@@ -79,15 +88,28 @@ export async function POST(req: Request) {
       EXPERIENCE_TRANSLATABLE_FIELDS,
     );
 
+    // `projectIds`/`certificateIds` bukan kolom, jadi harus dilepas dari spread
+    // sebelum masuk ke Prisma — memberikannya sebagai key data akan ditolak
+    // runtime sebagai unknown arg.
+    const { projectIds, certificateIds, ...columns } = data;
+
     const experience = await prisma.experience.create({
       data: {
-        ...data,
+        ...columns,
         slug,
         startDate: new Date(data.startDate),
         endDate: data.endDate ? new Date(data.endDate) : null,
         description: data.description ?? [],
         gallery: data.gallery ?? [],
         translations: translations ?? undefined,
+        ...(projectIds !== undefined && {
+          projects: { connect: projectIds.map((id) => ({ id })) },
+        }),
+        ...(certificateIds !== undefined && {
+          certificates: {
+            connect: certificateIds.map((id) => ({ id })),
+          },
+        }),
       },
     });
 

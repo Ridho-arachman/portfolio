@@ -6,10 +6,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_PROJECTS } from "./constants";
 import { ProjectForm } from "./project-form";
 import { useAdminProject, useCreateProject, useUpdateProject } from "@/hooks/use-projects";
-import type { AdminProject } from "./constants";
+import type { AdminProjectWithRelations, ProjectFormPayload } from "./constants";
 import type { ProjectCreateValues, ProjectUpdateValues } from "@/schema/project";
 
-function mapFormToCreate(data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">): ProjectCreateValues {
+function mapFormToCreate(data: ProjectFormPayload): ProjectCreateValues {
   return {
     title: data.title,
     slug: data.slug,
@@ -25,12 +25,14 @@ function mapFormToCreate(data: Omit<AdminProject, "id" | "createdAt" | "updatedA
     highlights: data.highlights ?? undefined,
     isPublished: data.isPublished,
     order: data.order,
-    categoryId: data.categoryId ?? undefined,
+    categoryId: data.categoryId,
+    certificateIds: data.certificateIds,
+    experienceIds: data.experienceIds,
     translations: data.translations ?? undefined,
   };
 }
 
-function mapFormToUpdate(data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">): ProjectUpdateValues {
+function mapFormToUpdate(data: ProjectFormPayload): ProjectUpdateValues {
   return {
     title: data.title,
     slug: data.slug,
@@ -46,7 +48,9 @@ function mapFormToUpdate(data: Omit<AdminProject, "id" | "createdAt" | "updatedA
     highlights: data.highlights ?? undefined,
     isPublished: data.isPublished,
     order: data.order,
-    categoryId: data.categoryId ?? undefined,
+    categoryId: data.categoryId,
+    certificateIds: data.certificateIds,
+    experienceIds: data.experienceIds,
     translations: data.translations ?? undefined,
   };
 }
@@ -65,7 +69,7 @@ export function ProjectFormPage({
     mode === "edit" ? (projectId ?? "") : "",
   );
 
-  const project = projectData as AdminProject | undefined;
+  const project = projectData as AdminProjectWithRelations | undefined;
 
   if (mode === "edit" && isLoading) {
     return (

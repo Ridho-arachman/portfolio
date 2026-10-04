@@ -14,12 +14,20 @@ import { zodResolver } from "@/lib/zod-resolver";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
+import { EntityMultiSelect } from "@/components/ui/entity-multi-select";
+import { useAdminCategories } from "@/hooks/use-categories";
+import { useAdminCertificates } from "@/hooks/use-certificates";
+import { useAdminExperiences } from "@/hooks/use-experience";
 import {
   projectFormSchema,
   type ProjectFormValues,
 } from "@/schema/project";
 import { idOverrides } from "@/schema/content-translations";
-import { ADMIN_PROJECTS, type AdminProject } from "./constants";
+import {
+  ADMIN_PROJECTS,
+  type AdminProjectWithRelations,
+  type ProjectFormPayload,
+} from "./constants";
 import { slugify } from "@/utils/slug";
 
 export function ProjectForm({
@@ -29,9 +37,9 @@ export function ProjectForm({
   onSubmit,
 }: {
   mode: "create" | "edit";
-  initialData?: AdminProject;
+  initialData?: AdminProjectWithRelations;
   isLoading: boolean;
-  onSubmit: (data: Omit<AdminProject, "id" | "createdAt" | "updatedAt">) => void;
+  onSubmit: (data: ProjectFormPayload) => void;
 }) {
   const router = useRouter();
   const slugTouched = useRef(mode === "edit");
@@ -56,6 +64,9 @@ export function ProjectForm({
           repoUrl: initialData.repoUrl ?? "",
           npmUrl: initialData.npmUrl ?? "",
           technologies: initialData.technologies.join(", "),
+          categoryId: initialData.categoryId ?? "",
+          certificateIds: initialData.certificates.map((c) => c.id),
+          experienceIds: initialData.experiences.map((e) => e.id),
           isPublished: initialData.isPublished,
           order: initialData.order,
           idTitle: initialData.translations?.id?.title ?? "",
@@ -74,6 +85,9 @@ export function ProjectForm({
           repoUrl: "",
           npmUrl: "",
           technologies: "",
+          categoryId: "",
+          certificateIds: [],
+          experienceIds: [],
           isPublished: true,
           order: 0,
           idTitle: "",
@@ -87,6 +101,15 @@ export function ProjectForm({
   const isPublished = useWatch({ control, name: "isPublished" });
   const thumbnail = useWatch({ control, name: "thumbnail" });
   const gallery = useWatch({ control, name: "gallery" }) ?? [];
+  const certificateIds = useWatch({ control, name: "certificateIds" }) ?? [];
+  const experienceIds = useWatch({ control, name: "experienceIds" }) ?? [];
+
+  // `pageSize: 100` adalah batas `parsePagination`; daftar admin ini sudah
+  // memfilter baris di-trash, jadi baris trash tidak pernah muncul sebagai
+  // opsi yang bisa dipilih.
+  const { data: categories } = useAdminCategories({ pageSize: 100 });
+  const { data: certificates } = useAdminCertificates({ pageSize: 100 });
+  const { data: experiences } = useAdminExperiences({ pageSize: 100 });
 
   useEffect(() => {
     if (!slugTouched.current) {
@@ -115,7 +138,9 @@ export function ProjectForm({
       role: null,
       year: null,
       highlights: [],
-      categoryId: null,
+      categoryId: values.categoryId,
+      certificateIds: values.certificateIds,
+      experienceIds: values.experienceIds,
       translations: idOverrides({
         title: values.idTitle ?? "",
         description: values.idDescription ?? "",
@@ -201,6 +226,72 @@ export function ProjectForm({
                       {errors.slug.message}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="categoryId">
+                    {ADMIN_PROJECTS.fieldCategory}
+                  </Label>
+                  <select
+                    id="categoryId"
+                    aria-invalid={errors.categoryId ? true : undefined}
+                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-invalid:border-destructive"
+                    {...register("categoryId")}
+                  >
+                    <option value="">
+                      {ADMIN_PROJECTS.fieldCategoryPlaceholder}
+                    </option>
+                    {(categories?.data ?? []).map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.categoryId ? (
+                    <p className="text-xs text-destructive">
+                      {errors.categoryId.message}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-text-muted">
+                      {ADMIN_PROJECTS.fieldCategoryHint}
+                    </p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <EntityMultiSelect
+                    label={ADMIN_PROJECTS.fieldCertificates}
+                    options={(certificates?.data ?? []).map((certificate) => ({
+                      id: certificate.id,
+                      label: certificate.title,
+                    }))}
+                    value={certificateIds}
+                    onChange={(ids) =>
+                      setValue("certificateIds", ids, {
+                        shouldValidate: true,
+                      })
+                    }
+                    searchPlaceholder={ADMIN_PROJECTS.searchCertificates}
+                    emptyLabel={ADMIN_PROJECTS.noCertificates}
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <EntityMultiSelect
+                    label={ADMIN_PROJECTS.fieldExperiences}
+                    options={(experiences?.data ?? []).map((experience) => ({
+                      id: experience.id,
+                      label: experience.title,
+                    }))}
+                    value={experienceIds}
+                    onChange={(ids) =>
+                      setValue("experienceIds", ids, {
+                        shouldValidate: true,
+                      })
+                    }
+                    searchPlaceholder={ADMIN_PROJECTS.searchExperiences}
+                    emptyLabel={ADMIN_PROJECTS.noExperiences}
+                  />
                 </div>
 
                 <div className="space-y-2">

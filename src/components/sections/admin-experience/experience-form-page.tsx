@@ -12,9 +12,15 @@ import {
 import type { ExperienceFormValues, ExperienceCreateValues, ExperienceUpdateValues } from "@/schema/experience";
 import { idOverrides } from "@/schema/content-translations";
 import { ADMIN_EXPERIENCE } from "./constants";
+import type { AdminExperienceWithRelations } from "./constants";
 import { ExperienceForm } from "./experience-form";
 
 const idLines = (value?: string) => value?.split("\n").map((l) => l.trim()).filter(Boolean) ?? [];
+
+const relationIds = (values: ExperienceFormValues) => ({
+  projectIds: values.projectIds,
+  certificateIds: values.certificateIds,
+});
 
 function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
   const [startDate, endDate] = values.period.split(" - ").map(s => s.trim());
@@ -34,6 +40,7 @@ function mapFormToCreate(values: ExperienceFormValues): ExperienceCreateValues {
     description: values.description.split("\n").filter(Boolean),
     isPublished: values.isPublished,
     order: values.order,
+    ...relationIds(values),
     translations: idOverrides({
       title: values.idTitle ?? "",
       description: idLines(values.idDescription),
@@ -59,6 +66,7 @@ function mapFormToUpdate(values: ExperienceFormValues): ExperienceUpdateValues {
     description: values.description.split("\n").filter(Boolean),
     isPublished: values.isPublished,
     order: values.order,
+    ...relationIds(values),
     translations: idOverrides({
       title: values.idTitle ?? "",
       description: idLines(values.idDescription),
@@ -142,7 +150,7 @@ export function ExperienceFormPage({
     <ExperienceForm
       key={experience?.id ?? "create"}
       mode={mode}
-      initialData={experience}
+      initialData={experience as AdminExperienceWithRelations | undefined}
       onSubmit={mode === "create" ? handleCreate : handleUpdate}
       isLoading={createMutation.isPending || updateMutation.isPending}
     />

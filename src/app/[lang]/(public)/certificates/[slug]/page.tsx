@@ -3,6 +3,8 @@ import {
   mapCertificateToData,
   type CertificateListData,
 } from "@/components/sections/certificates/constants";
+import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import { mapExperience } from "@/lib/utils/experience-mapper";
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
@@ -19,6 +21,18 @@ export const dynamic = 'force-dynamic';
 async function getCertificate(slug: string) {
   return prisma.certificate.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
+    // Guard di level query, bukan filter susulan: project/experience draft atau
+    // yang ada di trash tidak boleh muncul sebagai "related" di halaman publik.
+    include: {
+      projects: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+      experiences: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+    },
   });
 }
 
@@ -87,5 +101,18 @@ export default async function CertificateDetailPage({ params }: { params: Promis
   const allMapped = allData.map((c) => mapCertificateToData(c, validLocale, labels));
   const { prev, next } = getAdjacent(allMapped, slug);
 
-  return <CertificateDetailPageContent cert={mapCertificateToData(cert, validLocale, labels)} prev={prev} next={next} />;
+  const relatedProjects = cert.projects.map((p) => mapDbProjectToProject(p, validLocale));
+  const relatedExperiences = cert.experiences.map((e) =>
+    mapExperience(e, validLocale, messages.experience.current),
+  );
+
+  return (
+    <CertificateDetailPageContent
+      cert={mapCertificateToData(cert, validLocale, labels)}
+      prev={prev}
+      next={next}
+      relatedProjects={relatedProjects}
+      relatedExperiences={relatedExperiences}
+    />
+  );
 }

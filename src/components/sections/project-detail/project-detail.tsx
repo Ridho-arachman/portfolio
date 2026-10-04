@@ -2,19 +2,33 @@
 
 import { useRef, useState } from "react";
 import type { Project } from "./constants";
+import type { CertificateListData } from "@/components/sections/certificates/constants";
+import type { ExperienceListData } from "@/components/sections/experience-list/constants";
 import { ProjectDetailHero } from "./project-detail-hero";
 import { ProjectDetailContent } from "./project-detail-content";
 import { ProjectDetailGallery } from "./project-detail-gallery";
 import { ProjectDetailNavigation } from "./project-detail-navigation";
 import { ProjectDetailLightbox } from "./project-detail-lightbox";
+import {
+  ProjectRelatedCertificates,
+  ProjectRelatedExperiences,
+} from "./project-detail-related";
 
 interface ProjectDetailProps {
   project: Project;
   prev: Project | null;
   next: Project | null;
+  relatedCertificates: CertificateListData[];
+  relatedExperiences: ExperienceListData[];
 }
 
-export function ProjectDetail({ project, prev, next }: ProjectDetailProps) {
+export function ProjectDetail({
+  project,
+  prev,
+  next,
+  relatedCertificates,
+  relatedExperiences,
+}: ProjectDetailProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -35,6 +49,11 @@ export function ProjectDetail({ project, prev, next }: ProjectDetailProps) {
             project={project}
             onSelect={setSelectedImage}
           />
+        </div>
+
+        <div className="relative z-10">
+          <ProjectRelatedCertificates certificates={relatedCertificates} />
+          <ProjectRelatedExperiences experiences={relatedExperiences} />
         </div>
 
         <div className="relative z-10">

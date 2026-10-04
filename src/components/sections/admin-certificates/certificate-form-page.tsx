@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_CERTIFICATES } from "./constants";
 import { CertificateForm } from "./certificate-form";
 import { useAdminCertificate, useCreateCertificate, useUpdateCertificate } from "@/hooks/use-certificates";
-import type { AdminCertificate } from "./constants";
+import type { AdminCertificateWithRelations } from "./constants";
 
 export function CertificateFormPage({
   mode,
@@ -32,7 +32,7 @@ export function CertificateFormPage({
   const updateMutation = useUpdateCertificate();
 
   const isLoading = mode === "edit" && isLoadingCertificate;
-  const certificateData = certificate as AdminCertificate | undefined;
+  const certificateData = certificate as AdminCertificateWithRelations | undefined;
 
   if (!mounted || isLoading) {
     return (

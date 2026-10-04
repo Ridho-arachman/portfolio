@@ -32,12 +32,15 @@ export async function GET(
         isPublished: true,
         categoryId: true,
         category: {
-          where: notDeleted,
           select: {
             id: true,
             name: true,
             slug: true,
             description: true,
+            // `category` sekarang relasi wajib, jadi Prisma tidak bisa
+            // memfilternya di query. Route ini tidak di-cache, jadi `deletedAt`
+            // aman dibaca lalu dibuang lagi di bawah.
+            deletedAt: true,
           },
         },
       },
@@ -47,7 +50,11 @@ export async function GET(
       return errorResponse("Not found", 404);
     }
 
-    return successResponse(project);
+    const { deletedAt, ...category } = project.category;
+    return successResponse({
+      ...project,
+      category: deletedAt ? null : category,
+    });
   } catch {
     return errorResponse("Internal server error", 500);
   }

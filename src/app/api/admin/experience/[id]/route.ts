@@ -11,6 +11,7 @@ import {
 import { requireAdminSession } from "@/lib/session";
 import { applyRateLimit } from "@/lib/rate-limit";
 import {successResponse, errorResponse, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,16 @@ export async function GET(
     await requireAdminSession();
     const { id } = await params;
 
-    const experience = await prisma.experience.findUnique({ where: { id, ...notDeleted } });
+    const experience = await prisma.experience.findUnique({
+      where: { id, ...notDeleted },
+      // `set` pada relasi m-n mengganti SELURUH tautan, jadi prefill form
+      // harus ikut memuat entitas yang sudah di-trash — memfilternya di sini
+      // membuat setiap penyimpanan diam-diam membuang tautan itu.
+      include: {
+        projects: { select: { id: true, title: true } },
+        certificates: { select: { id: true, title: true } },
+      },
+    });
 
     if (!experience) {
       return errorResponse("Experience not found", 404);
@@ -58,6 +68,14 @@ export async function PUT(
     const existing = await prisma.experience.findUnique({ where: { id, ...notDeleted } });
     if (!existing) {
       return errorResponse("Experience not found", 404);
+    }
+
+    const unknownRelation = await findUnknownRelationMessage([
+      { label: "project", model: "project", ids: data.projectIds },
+      { label: "certificate", model: "certificate", ids: data.certificateIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
     }
 
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
@@ -99,6 +117,12 @@ export async function PUT(
         }),
         ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.order !== undefined && { order: data.order }),
+        ...(data.projectIds !== undefined && {
+          projects: { set: data.projectIds.map((id) => ({ id })) },
+        }),
+        ...(data.certificateIds !== undefined && {
+          certificates: { set: data.certificateIds.map((id) => ({ id })) },
+        }),
         ...(data.translations !== undefined && {
           translations: translations ?? Prisma.DbNull,
         }),

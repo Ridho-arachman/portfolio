@@ -23,6 +23,9 @@ vi.mock("@/lib/prisma", () => ({
       count: vi.fn(),
       create: vi.fn(),
     },
+    category: { findMany: vi.fn() },
+    certificate: { findMany: vi.fn() },
+    experience: { findMany: vi.fn() },
     rateLimit: {
       findUnique: vi.fn(),
       create: vi.fn(),
@@ -52,6 +55,7 @@ const validBody = {
   highlights: [],
   isPublished: true,
   order: 1,
+  categoryId: "cat-1",
 };
 
 function makeRequest(body: unknown) {
@@ -75,6 +79,17 @@ describe("POST /api/admin/projects", () => {
         "X-RateLimit-Reset": String(Math.ceil(Date.now() / 1000) + 60),
       },
     } as Awaited<ReturnType<typeof applyRateLimit>>);
+    // Default: semua id yang dikirim ada, supaya test lain tidak gagal karena
+    // efek samping validasi id.
+    vi.mocked(prisma.category.findMany).mockResolvedValue([
+      { id: "cat-1" },
+    ] as Awaited<ReturnType<typeof prisma.category.findMany>>);
+    vi.mocked(prisma.certificate.findMany).mockResolvedValue(
+      [] as Awaited<ReturnType<typeof prisma.certificate.findMany>>,
+    );
+    vi.mocked(prisma.experience.findMany).mockResolvedValue(
+      [] as Awaited<ReturnType<typeof prisma.experience.findMany>>,
+    );
   });
 
   it("revalidates /projects and the new detail path on success", async () => {
@@ -110,5 +125,70 @@ describe("POST /api/admin/projects", () => {
     expect(res.status).toBe(400);
     expect(vi.mocked(revalidatePath).mock.calls.length).toBe(0);
     expect(vi.mocked(revalidateTag).mock.calls.length).toBe(0);
+  });
+
+  it("rejects a missing categoryId because the column is NOT NULL", async () => {
+    const res = await POST(
+      makeRequest({ ...validBody, categoryId: undefined }),
+    );
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe("Category is required");
+    expect(prisma.project.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects an empty categoryId before touching the database", async () => {
+    const res = await POST(makeRequest({ ...validBody, categoryId: "" }));
+
+    expect(res.status).toBe(400);
+    expect(prisma.project.create).not.toHaveBeenCalled();
+  });
+
+  // Relasi m-n memakai tabel join implisit: `connect` dengan id yang tidak ada
+  // akan menyimpan baris join yang menunjuk entitas fiktif, bukan melempar
+  // error. Karena itu id harus dicek di trust boundary.
+  it("answers 400 naming an unknown certificate id instead of writing a broken link", async () => {
+    vi.mocked(prisma.certificate.findMany).mockResolvedValue(
+      [] as Awaited<ReturnType<typeof prisma.certificate.findMany>>,
+    );
+
+    const res = await POST(
+      makeRequest({ ...validBody, certificateIds: ["does-not-exist"] }),
+    );
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe(
+      "Unknown certificate ids: does-not-exist",
+    );
+    expect(prisma.project.create).not.toHaveBeenCalled();
+  });
+
+  it("connects the supplied relation ids on create", async () => {
+    vi.mocked(prisma.certificate.findMany).mockResolvedValue([
+      { id: "c1" },
+    ] as Awaited<ReturnType<typeof prisma.certificate.findMany>>);
+    vi.mocked(prisma.experience.findMany).mockResolvedValue([
+      { id: "e1" },
+    ] as Awaited<ReturnType<typeof prisma.experience.findMany>>);
+    vi.mocked(prisma.project.create).mockResolvedValue({
+      id: "p1",
+      slug: "audit-fix-project",
+    } as Awaited<ReturnType<typeof prisma.project.create>>);
+
+    const res = await POST(
+      makeRequest({
+        ...validBody,
+        certificateIds: ["c1"],
+        experienceIds: ["e1"],
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    const written = vi.mocked(prisma.project.create).mock.calls[0]?.[0]?.data;
+    expect(written).toMatchObject({
+      categoryId: "cat-1",
+      certificates: { connect: [{ id: "c1" }] },
+      experiences: { connect: [{ id: "e1" }] },
+    });
   });
 });

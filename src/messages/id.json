@@ -209,7 +209,9 @@
     "prev": "Proyek Sebelumnya",
     "next": "Proyek Selanjutnya",
     "notFound": "Tidak Ditemukan",
-    "galleryImage": "Galeri {index}"
+    "galleryImage": "Galeri {index}",
+    "relatedCertificates": "Sertifikat Terkait",
+    "relatedExperiences": "Pengalaman Terkait"
   },
   "experience": {
     "title": "Pengalaman",
@@ -247,7 +249,9 @@
     "prev": "Pengalaman Sebelumnya",
     "next": "Pengalaman Selanjutnya",
     "notFound": "Tidak Ditemukan",
-    "metaDescription": "Detail pengalaman {title} di {company}."
+    "metaDescription": "Detail pengalaman {title} di {company}.",
+    "relatedProjects": "Proyek Terkait",
+    "relatedCertificates": "Sertifikat Terkait"
   },
   "certificates": {
     "title": "Sertifikat",
@@ -275,7 +279,9 @@
     "verifyBtn": "Verifikasi Sertifikat",
     "prev": "Sertifikat Sebelumnya",
     "next": "Sertifikat Selanjutnya",
-    "notFound": "Tidak Ditemukan"
+    "notFound": "Tidak Ditemukan",
+    "relatedProjects": "Proyek Terkait",
+    "relatedExperiences": "Pengalaman Terkait"
   },
   "contact": {
     "title": "Hubungi Saya",

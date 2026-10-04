@@ -51,6 +51,12 @@ vi.mocked(requireAdminSession).mockResolvedValue({
   user: { id: "test-admin-id", role: "ADMIN" },
 } as unknown as Awaited<ReturnType<typeof requireAdminSession>>);
 
+// `categoryId` wajib di project, jadi semua fixture di bawah butuh kategori.
+// Kategori ini dibuat sekali di `beforeAll` dan dibersihkan oleh
+// `cleanupExtraRows` (slug-nya diawali `categorySlug`), terpisah dari kategori
+// milik test trash-lifecycle yang memakai `categorySlug` persis.
+let projectCategoryId = "";
+
 function projectData(overrides: Record<string, unknown> = {}) {
   return {
     title: `${prefix} Project`,
@@ -62,6 +68,7 @@ function projectData(overrides: Record<string, unknown> = {}) {
     highlights: ["Typed"],
     isPublished: true,
     order: 1,
+    categoryId: projectCategoryId,
     ...overrides,
   };
 }
@@ -140,6 +147,10 @@ beforeAll(async () => {
   await prisma.category.deleteMany({ where: { slug: categorySlug } });
   await prisma.message.deleteMany({ where: { email: { startsWith: prefix } } });
   await cleanupExtraRows();
+  const category = await prisma.category.create({
+    data: { name: `${prefix} Category for projects`, slug: `${categorySlug}-for-projects` },
+  });
+  projectCategoryId = category.id;
 });
 
 afterAll(async () => {

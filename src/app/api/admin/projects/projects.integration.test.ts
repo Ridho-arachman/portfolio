@@ -17,6 +17,7 @@ import { POST as createRoute } from "./route";
 const unique = Date.now();
 const prefix = `it-proj-${unique}`;
 const mockedRequire = vi.mocked(requireAdminSession);
+let categoryId: string;
 
 function validBody(overrides: Record<string, unknown> = {}) {
   return {
@@ -28,6 +29,9 @@ function validBody(overrides: Record<string, unknown> = {}) {
     highlights: ["Fast", "Typed"],
     isPublished: true,
     order: 1,
+    // `Project.categoryId` NOT NULL + `Restrict`, jadi setiap create butuh
+    // kategori yang benar-benar ada.
+    categoryId,
     ...overrides,
   };
 }
@@ -44,10 +48,27 @@ function post(body: unknown) {
 
 beforeAll(async () => {
   await prisma.project.deleteMany({ where: { slug: { startsWith: prefix } } });
+  await prisma.category.deleteMany({
+    where: { slug: { startsWith: prefix } },
+  });
+  const category = await prisma.category.create({
+    data: { name: `${prefix} Web Dev`, slug: `${prefix}-web-dev` },
+  });
+  categoryId = category.id;
 });
 
 afterAll(async () => {
   await prisma.project.deleteMany({ where: { slug: { startsWith: prefix } } });
+  // `Restrict`: baris project harus hilang sebelum kategorinya boleh dihapus.
+  await prisma.certificate.deleteMany({
+    where: { slug: { startsWith: prefix } },
+  });
+  await prisma.experience.deleteMany({
+    where: { slug: { startsWith: prefix } },
+  });
+  await prisma.category.deleteMany({
+    where: { slug: { startsWith: prefix } },
+  });
   await prisma.$disconnect();
 });
 
@@ -90,6 +111,68 @@ describe("POST /api/admin/projects", () => {
   it("rejects an invalid thumbnail URL with 400", async () => {
     const res = await post(validBody({ thumbnail: "not-a-url" }));
     expect(res.status).toBe(400);
+  });
+
+  it("rejects a project with no category with 400", async () => {
+    const res = await post(validBody({ categoryId: "" }));
+    expect(res.status).toBe(400);
+  });
+
+  // Relasi m-n memakai tabel join implisit: tanpa pengecekan di trust boundary,
+  // `connect` dengan id yang tidak ada akan succeeds dan menyimpan join row
+  // yang menunjuk entitas fiktif.
+  it("rejects unknown relation ids with 400 instead of a broken join row", async () => {
+    const res = await post(
+      validBody({ certificateIds: ["cert-does-not-exist"] }),
+    );
+
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe(
+      "Unknown certificate ids: cert-does-not-exist",
+    );
+  });
+
+  it("connects certificates and experiences and stores the category", async () => {
+    const certificate = await prisma.certificate.create({
+      data: {
+        slug: `${prefix}-cert`,
+        title: `${prefix} Cert`,
+        issuer: "Issuer",
+        issueDate: new Date("2024-01-01"),
+        skills: [],
+        summary: [],
+      },
+    });
+    const experience = await prisma.experience.create({
+      data: {
+        slug: `${prefix}-exp`,
+        title: `${prefix} Exp`,
+        company: "Acme",
+        type: "WORK",
+        location: "Jakarta",
+        startDate: new Date("2024-01-01"),
+        description: [],
+        gallery: [],
+      },
+    });
+
+    const res = await post(
+      validBody({
+        slug: `${prefix}-linked`,
+        certificateIds: [certificate.id],
+        experienceIds: [experience.id],
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    const row = await prisma.project.findUnique({
+      where: { slug: `${prefix}-linked` },
+      include: { certificates: true, experiences: true, category: true },
+    });
+    expect(row?.categoryId).toBe(categoryId);
+    expect(row?.certificates.map((c) => c.id)).toEqual([certificate.id]);
+    expect(row?.experiences.map((e) => e.id)).toEqual([experience.id]);
   });
 
   it("returns 404 when updating an unknown project", async () => {

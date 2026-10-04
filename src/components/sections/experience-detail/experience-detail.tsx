@@ -2,20 +2,34 @@
 
 import { useRef, useState } from "react";
 import type { ExperienceListData } from "./constants";
+import type { Project } from "@/components/sections/projects/constants";
+import type { CertificateListData } from "@/components/sections/certificates/constants";
 import { useExperienceDetail } from "./use-experience-detail";
 import { ExperienceDetailHero } from "./experience-detail-hero";
 import { ExperienceDetailContent } from "./experience-detail-content";
 import { ExperienceDetailGallery } from "./experience-detail-gallery";
 import { ExperienceDetailNavigation } from "./experience-detail-navigation";
 import { ExperienceDetailLightbox } from "./experience-detail-lightbox";
+import {
+  ExperienceRelatedCertificates,
+  ExperienceRelatedProjects,
+} from "./experience-detail-related";
 
 interface ExperienceDetailProps {
   exp: ExperienceListData;
   prev: ExperienceListData | null;
   next: ExperienceListData | null;
+  relatedProjects: Project[];
+  relatedCertificates: CertificateListData[];
 }
 
-export function ExperienceDetail({ exp, prev, next }: ExperienceDetailProps) {
+export function ExperienceDetail({
+  exp,
+  prev,
+  next,
+  relatedProjects,
+  relatedCertificates,
+}: ExperienceDetailProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { headerY, headerScale, headerOpacity } = useExperienceDetail(containerRef);
@@ -40,6 +54,10 @@ export function ExperienceDetail({ exp, prev, next }: ExperienceDetailProps) {
               onSelect={setSelectedImage}
             />
           </div>
+
+          <ExperienceRelatedProjects projects={relatedProjects} />
+
+          <ExperienceRelatedCertificates certificates={relatedCertificates} />
 
           <ExperienceDetailNavigation prev={prev} next={next} />
         </div>

@@ -2,9 +2,9 @@
 
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useEntityId } from "@/hooks/use-entity-id";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,9 @@ import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@/lib/zod-resolver";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { MultiImageUpload } from "@/components/ui/multi-image-upload";
+import { EntityMultiSelect } from "@/components/ui/entity-multi-select";
+import { useAdminProjects } from "@/hooks/use-projects";
+import { useAdminCertificates } from "@/hooks/use-certificates";
 import {
   experienceFormSchema,
   type ExperienceFormValues,
@@ -22,7 +25,7 @@ import { formatExperiencePeriod } from "@/lib/utils/experience-mapper";
 import {
   ADMIN_EXPERIENCE,
   EXPERIENCE_TYPES,
-  type AdminExperience,
+  type AdminExperienceWithRelations,
   type ExperienceType,
 } from "./constants";
 
@@ -33,17 +36,17 @@ export function ExperienceForm({
   isLoading = false,
 }: {
   mode: "create" | "edit";
-  initialData?: AdminExperience;
+  initialData?: AdminExperienceWithRelations;
   onSubmit: (values: ExperienceFormValues) => void;
   isLoading?: boolean;
 }) {
-  const slugTouched = useRef(mode === "edit");
+  const [slugTouched] = useState(mode === "edit");
 
   const {
     register,
     handleSubmit,
+    control,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceFormSchema),
@@ -63,6 +66,8 @@ export function ExperienceForm({
           thumbnail: initialData.thumbnail ?? "",
           gallery: initialData.gallery ?? [],
           description: initialData.description.join("\n"),
+          projectIds: initialData.projects.map((p) => p.id),
+          certificateIds: initialData.certificates.map((c) => c.id),
           isPublished: initialData.isPublished,
           order: initialData.order,
           idTitle: initialData.translations?.id?.title ?? "",
@@ -79,6 +84,8 @@ export function ExperienceForm({
           thumbnail: "",
           gallery: [],
           description: "",
+          projectIds: [],
+          certificateIds: [],
           isPublished: true,
           order: 0,
           idTitle: "",
@@ -86,16 +93,24 @@ export function ExperienceForm({
         },
   });
 
-  const role = watch("role");
-  const thumbnail = watch("thumbnail");
-  const gallery = watch("gallery") ?? [];
-  const isPublished = watch("isPublished");
+  const role = useWatch({ control, name: "role" });
+  const thumbnail = useWatch({ control, name: "thumbnail" });
+  const gallery = useWatch({ control, name: "gallery" }) ?? [];
+  const projectIds = useWatch({ control, name: "projectIds" }) ?? [];
+  const certificateIds = useWatch({ control, name: "certificateIds" }) ?? [];
+  const isPublished = useWatch({ control, name: "isPublished" });
+
+  // `pageSize: 100` adalah batas `parsePagination`; daftar admin ini sudah
+  // memfilter baris di-trash, jadi baris trash tidak pernah muncul sebagai
+  // opsi yang bisa dipilih.
+  const { data: projects } = useAdminProjects({ pageSize: 100 });
+  const { data: certificates } = useAdminCertificates({ pageSize: 100 });
 
   useEffect(() => {
-    if (!slugTouched.current && role) {
+    if (!slugTouched && role) {
       setValue("slug", slugify(role), { shouldValidate: true });
     }
-  }, [role, setValue]);
+  }, [role, setValue, slugTouched]);
 
   const entityId = useEntityId(initialData?.id);
 
@@ -140,7 +155,7 @@ export function ExperienceForm({
             placeholder={ADMIN_EXPERIENCE.form.slugPlaceholder}
             {...register("slug")}
             aria-invalid={errors.slug ? "true" : "false"}
-            disabled={slugTouched.current}
+            disabled={slugTouched}
           />
           {errors.slug && (
             <p className="mt-1 text-sm text-destructive">{errors.slug.message}</p>
@@ -243,6 +258,38 @@ export function ExperienceForm({
           {errors.description && (
             <p className="mt-1 text-sm text-destructive">{errors.description.message}</p>
           )}
+        </div>
+
+        <div className="sm:col-span-2">
+          <EntityMultiSelect
+            label={ADMIN_EXPERIENCE.form.projectsLabel}
+            options={(projects?.data ?? []).map((project) => ({
+              id: project.id,
+              label: project.title,
+            }))}
+            value={projectIds}
+            onChange={(ids) =>
+              setValue("projectIds", ids, { shouldValidate: true })
+            }
+            searchPlaceholder={ADMIN_EXPERIENCE.form.searchProjects}
+            emptyLabel={ADMIN_EXPERIENCE.form.noProjects}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <EntityMultiSelect
+            label={ADMIN_EXPERIENCE.form.certificatesLabel}
+            options={(certificates?.data ?? []).map((certificate) => ({
+              id: certificate.id,
+              label: certificate.title,
+            }))}
+            value={certificateIds}
+            onChange={(ids) =>
+              setValue("certificateIds", ids, { shouldValidate: true })
+            }
+            searchPlaceholder={ADMIN_EXPERIENCE.form.searchCertificates}
+            emptyLabel={ADMIN_EXPERIENCE.form.noCertificates}
+          />
         </div>
 
         <div className="sm:col-span-2 flex flex-col gap-4 rounded-2xl border border-dashed border-glass-border p-4">

@@ -9,6 +9,7 @@ import {successResponse,
   errorResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 import { certificateCreateSchema } from "@/schema/certificate";
 import { CERTIFICATE_TRANSLATABLE_FIELDS } from "@/schema/content-translations";
 import {
@@ -72,6 +73,14 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug || slugify(data.title);
 
+    const unknownRelation = await findUnknownRelationMessage([
+      { label: "project", model: "project", ids: data.projectIds },
+      { label: "experience", model: "experience", ids: data.experienceIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
+    }
+
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
     const translations = await withAutoIdTranslations(
       translatableBase({ ...data }, CERTIFICATE_TRANSLATABLE_FIELDS),
@@ -95,6 +104,14 @@ export async function POST(req: Request) {
         isPublished: data.isPublished,
         order: data.order,
         translations: translations ?? Prisma.DbNull,
+        ...(data.projectIds !== undefined && {
+          projects: { connect: data.projectIds.map((id) => ({ id })) },
+        }),
+        ...(data.experienceIds !== undefined && {
+          experiences: {
+            connect: data.experienceIds.map((id) => ({ id })),
+          },
+        }),
       },
     });
 

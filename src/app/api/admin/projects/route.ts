@@ -15,6 +15,7 @@ import {successResponse,
   errorResponse,
   paginatedResponse,
   parsePagination, errorResponseFrom } from "@/lib/api-helpers";
+import { findUnknownRelationMessage } from "@/lib/relation-ids";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,15 @@ export async function POST(req: Request) {
     const data = parsed.data;
     const slug = data.slug || slugify(data.title);
 
+    const unknownRelation = await findUnknownRelationMessage([
+      { label: "category", model: "category", ids: [data.categoryId] },
+      { label: "certificate", model: "certificate", ids: data.certificateIds },
+      { label: "experience", model: "experience", ids: data.experienceIds },
+    ]);
+    if (unknownRelation) {
+      return errorResponse(unknownRelation, 400);
+    }
+
     // Auto-fill blank Indonesian overrides; translator failure keeps blanks.
     const translations = await withAutoIdTranslations(
       translatableBase({ ...data }, PROJECT_TRANSLATABLE_FIELDS),
@@ -90,8 +100,18 @@ export async function POST(req: Request) {
         highlights: data.highlights,
         isPublished: data.isPublished,
         order: data.order,
-        categoryId: data.categoryId || null,
+        categoryId: data.categoryId,
         translations: translations ?? Prisma.DbNull,
+        ...(data.certificateIds !== undefined && {
+          certificates: {
+            connect: data.certificateIds.map((id) => ({ id })),
+          },
+        }),
+        ...(data.experienceIds !== undefined && {
+          experiences: {
+            connect: data.experienceIds.map((id) => ({ id })),
+          },
+        }),
       },
     });
 

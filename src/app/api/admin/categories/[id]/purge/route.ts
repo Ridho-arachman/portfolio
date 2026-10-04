@@ -9,6 +9,22 @@ import { successResponse, errorResponse, errorResponseFrom } from "@/lib/api-hel
 
 export const dynamic = "force-dynamic";
 
+// `Project.categoryId` = Restrict, jadi hard delete kategori yang masih dipakai
+// project melempar P2003. Tanpa intervensi, `handleApiError` sudah memetakan
+// P2003 ke 409 — tapi pesannya generik ("Record is referenced by other
+// records") dan tidak memberi tahu admin apa yang harus dilakukan. Soft delete
+// aman: itu UPDATE, jadi tidak pernah menyentuh FK, dan selalu bisa di-restore.
+function isRestrictViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { code?: unknown }).code === "P2003"
+  );
+}
+
+const CATEGORY_IN_USE =
+  "This category is still used by one or more projects. Reassign those projects to another category, or remove the projects, then purge it.";
+
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -52,6 +68,9 @@ export async function DELETE(
       return errorResponseFrom(error, "Category operation failed");
     }
     logSecurityEvent({ action: "purge:category", actorId, entityId, ip, ok: false });
+    if (isRestrictViolation(error)) {
+      return errorResponse(CATEGORY_IN_USE, 409);
+    }
     return errorResponseFrom(error, "Category operation failed");
   }
 }

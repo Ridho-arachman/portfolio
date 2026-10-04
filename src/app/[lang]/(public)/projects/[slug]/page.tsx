@@ -2,6 +2,8 @@ import { ProjectDetailPageContent } from "./project-detail-content";
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import { mapCertificateToData } from "@/components/sections/certificates/constants";
+import { mapExperience } from "@/lib/utils/experience-mapper";
 import type { Project } from "@/components/sections/projects/constants";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -16,6 +18,19 @@ export const dynamic = 'force-dynamic';
 async function fetchProject(slug: string) {
   return prisma.project.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
+    // Relasi ikut difilter di sini, bukan sesudahnya: project draft atau
+    // yang ada di trash tidak boleh muncul sebagai "related" di halaman
+    // certificate/experience publik. Guard yang sama seperti entitas utama.
+    include: {
+      certificates: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+      experiences: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+    },
   });
 }
 
@@ -87,9 +102,28 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  const messages = await getMessages(locale);
   const project = mapDbProjectToProject(dbProject, locale);
   const allProjects = allDbProjects.map((p) => mapDbProjectToProject(p, locale));
   const { prev, next } = getAdjacentProjects(allProjects, slug);
 
-  return <ProjectDetailPageContent project={project} prev={prev} next={next} />;
+  const relatedCertificates = dbProject.certificates.map((cert) =>
+    mapCertificateToData(cert, locale, {
+      issued: messages.certificates.issuedOn,
+      expires: messages.certificates.expiresOn,
+    }),
+  );
+  const relatedExperiences = dbProject.experiences.map((exp) =>
+    mapExperience(exp, locale, messages.experience.current),
+  );
+
+  return (
+    <ProjectDetailPageContent
+      project={project}
+      prev={prev}
+      next={next}
+      relatedCertificates={relatedCertificates}
+      relatedExperiences={relatedExperiences}
+    />
+  );
 }

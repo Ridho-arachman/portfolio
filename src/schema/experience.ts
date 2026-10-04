@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { slugRegex } from "./project";
+import { relationIdList, relationIds, slugRegex } from "./project";
 import { experienceTranslationsSchema } from "./content-translations";
 
 // Client-side form validation for the admin experience form.
@@ -33,6 +33,8 @@ export const experienceFormSchema = z.object({
           .some((line) => line.trim().length > 0),
       "Add at least one achievement",
     ),
+  projectIds: relationIdList,
+  certificateIds: relationIdList,
   isPublished: z.boolean().default(true),
   order: z.number().int().min(0),
   idTitle: z.string().optional(),
@@ -64,6 +66,8 @@ export const experienceCreateSchema = z.object({
   isCurrent: z.boolean(),
   description: z.array(z.string()),
   gallery: z.array(z.string()),
+  projectIds: relationIds,
+  certificateIds: relationIds,
   isPublished: z.boolean().default(true),
   order: z.number().int("Order must be a whole number").min(0),
   translations: experienceTranslationsSchema.optional(),
@@ -97,6 +101,8 @@ export const experienceUpdateSchema = z.object({
   isPublished: z.boolean().optional(),
   description: z.array(z.string()).optional(),
   gallery: z.array(z.string()).optional(),
+  projectIds: relationIds,
+  certificateIds: relationIds,
   order: z.number().int("Order must be a whole number").min(0).optional(),
   translations: experienceTranslationsSchema.optional(),
 });

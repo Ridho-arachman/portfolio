@@ -30,6 +30,13 @@ export const EXPERIENCE_TYPES = [
 
 export { type AdminExperience, type ExperienceType };
 
+/** Bentuk `GET /api/admin/experience/[id]`: baris experience plus daftar tautan
+ *  m-n yang dibutuhkan form admin untuk prefill multi-select. */
+export type AdminExperienceWithRelations = AdminExperience & {
+  projects: { id: string; title: string }[];
+  certificates: { id: string; title: string }[];
+};
+
 export const ADMIN_EXPERIENCE = {
   // List page
   title: "Experiences",
@@ -68,6 +75,12 @@ export const ADMIN_EXPERIENCE = {
     galleryPlaceholder: "Upload images to show in the experience gallery",
     descriptionLabel: "Description (one bullet per line)",
     descriptionPlaceholder: "Led frontend team\nBuilt dashboard with React",
+    projectsLabel: "Projects",
+    searchProjects: "Search projects...",
+    noProjects: "No projects available yet.",
+    certificatesLabel: "Certificates",
+    searchCertificates: "Search certificates...",
+    noCertificates: "No certificates available yet.",
     isPublishedLabel: "Published",
     isPublishedDescription: "Visible on public site when enabled",
     orderLabel: "Display Order",

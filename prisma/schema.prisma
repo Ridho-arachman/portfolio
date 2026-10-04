@@ -98,20 +98,20 @@ model RateLimit {
 // =============================================================================
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique // e.g., "Web Development", "Mobile App"
-  slug        String    @unique // e.g., "web-dev"
-  description String?
-  order       Int       @default(0)
+  id           String    @id @default(cuid())
+  name         String    @unique // e.g., "Web Development", "Mobile App"
+  slug         String    @unique // e.g., "web-dev"
+  description  String?
+  order        Int       @default(0)
   // Override copy per locale: { "id": { "name"?, "description"? } }.
   // Kolom di atas (name/description) adalah konten DEFAULT_LOCALE (en).
   // Resolver: src/lib/localized-content.ts. Kolom ini ditambah tanpa
   // migration/generate di batch ini — Batch 1 menjalankan diff+generate
   // terakhir mencakup seluruh schema.
   translations Json?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   projects Project[]
 
@@ -121,10 +121,10 @@ model Category {
 }
 
 model Project {
-  id           String    @id @default(cuid())
+  id           String        @id @default(cuid())
   title        String
-  slug         String    @unique // Untuk URL friendly: /projects/nextjs-portfolio
-  description  String    @db.Text
+  slug         String        @unique // Untuk URL friendly: /projects/nextjs-portfolio
+  description  String        @db.Text
   thumbnail    String // URL gambar cover
   liveUrl      String? // Link demo (opsional)
   repoUrl      String? // Link GitHub (opsional)
@@ -134,17 +134,24 @@ model Project {
   role         String? // e.g., "Frontend Developer"
   year         String? // e.g., "2024"
   highlights   String[] // Bullet points pencapaian
-  isPublished  Boolean   @default(true)
-  order        Int       @default(0) // Untuk sorting manual di admin
-  categoryId   String?
-  category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  isPublished  Boolean       @default(true)
+  order        Int           @default(0) // Untuk sorting manual di admin
+  // Wajib: setiap project hanya boleh masuk satu kategori. `Restrict` (bukan
+  // SetNull) karena kolomnya tidak nullable — hapus kategori yang masih dipakai
+  // project harus gagal, bukan diam-diam melepas kategorisasi project.
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  // Relasi opsional many-to-many. Ditampilkan di kedua sisi: detail project
+  // menampilkan certificate/experience terkait, dan sebaliknya.
+  certificates Certificate[] @relation("ProjectCertificates")
+  experiences  Experience[]  @relation("ProjectExperiences")
   // Override copy per locale: { "id": { "title": "...", "highlights": ["..."] } }.
   // Kolom di atas (title/description/role/highlights) adalah konten DEFAULT_LOCALE
   // (en). Key yang absen atau kosong berarti "warisi kolom base" — lihat
   // src/lib/localized-content.ts. Verified lewat zod di trust boundary admin.
   translations Json?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   deletedAt    DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])
@@ -196,27 +203,30 @@ model Skill {
 }
 
 model Experience {
-  id          String         @id @default(cuid())
-  slug        String         @unique // URL friendly: /experience/frontend-dev-intern
-  title       String // e.g., "Frontend Developer Intern", "Ketua Himpunan"
-  company     String // e.g., "PT Tech Startup", "Himpunan Mahasiswa SI"
-  thumbnail   String? // URL gambar cover experience
-  type        ExperienceType // Kategori pengalaman
-  location    String // e.g., "Jakarta, Indonesia" atau "Remote"
-  startDate   DateTime // Tanggal mulai
-  endDate     DateTime? // Tanggal selesai (Nullable = Masih berlangsung / "Present")
-  isCurrent   Boolean        @default(false) // Flag helper untuk UI badge "Present"
-  description String[] // Array of strings untuk bullet points pencapaian
-  gallery     String[] // Array of image URLs untuk gallery detail
-  isPublished Boolean        @default(true) // Published/Draft toggle
-  order       Int            @default(0) // Untuk sorting manual di Admin Dashboard
+  id           String         @id @default(cuid())
+  slug         String         @unique // URL friendly: /experience/frontend-dev-intern
+  title        String // e.g., "Frontend Developer Intern", "Ketua Himpunan"
+  company      String // e.g., "PT Tech Startup", "Himpunan Mahasiswa SI"
+  thumbnail    String? // URL gambar cover experience
+  type         ExperienceType // Kategori pengalaman
+  location     String // e.g., "Jakarta, Indonesia" atau "Remote"
+  startDate    DateTime // Tanggal mulai
+  endDate      DateTime? // Tanggal selesai (Nullable = Masih berlangsung / "Present")
+  isCurrent    Boolean        @default(false) // Flag helper untuk UI badge "Present"
+  description  String[] // Array of strings untuk bullet points pencapaian
+  gallery      String[] // Array of image URLs untuk gallery detail
+  isPublished  Boolean        @default(true) // Published/Draft toggle
+  order        Int            @default(0) // Untuk sorting manual di Admin Dashboard
+  // Relasi opsional many-to-many, displayed dua arah di halaman publik.
+  projects     Project[]      @relation("ProjectExperiences")
+  certificates Certificate[]  @relation("ExperienceCertificates")
   // Override copy per locale, shape { "id": { "title", "description": [] } }.
   // `company`/`location` sengaja tidak ada di sini: itu proper noun, bukan copy.
   // Base = DEFAULT_LOCALE. Resolver: src/lib/localized-content.ts
   translations Json?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  deletedAt   DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])
   @@index([type])
@@ -255,8 +265,8 @@ model Visit {
 // =============================================================================
 
 model Certificate {
-  id            String    @id @default(cuid())
-  slug          String    @unique // URL friendly: /certificates/aws-cloud-practitioner
+  id            String       @id @default(cuid())
+  slug          String       @unique // URL friendly: /certificates/aws-cloud-practitioner
   title         String // e.g., "AWS Certified Cloud Practitioner"
   issuer        String // e.g., "Amazon Web Services"
   thumbnail     String? // URL gambar cover sertifikat
@@ -270,11 +280,14 @@ model Certificate {
   // Override copy per locale, shape { "id": { "title", "summary": [] } }.
   // `issuer`/`skills` tidak ada di sini: proper noun dan istilah teknis.
   // Base = DEFAULT_LOCALE. Resolver: src/lib/localized-content.ts
-  translations Json?
-  order         Int       @default(0) // Untuk sorting manual di Admin Dashboard
-  isPublished   Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  translations  Json?
+  order         Int          @default(0) // Untuk sorting manual di Admin Dashboard
+  // Relasi opsional many-to-many, displayed dua arah di halaman publik.
+  projects      Project[]    @relation("ProjectCertificates")
+  experiences   Experience[] @relation("ExperienceCertificates")
+  isPublished   Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   deletedAt     DateTime? // Soft delete: baris tetap ada, hanya disembunyikan
 
   @@index([slug])

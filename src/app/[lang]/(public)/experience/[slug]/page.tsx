@@ -2,6 +2,8 @@ import { ExperienceDetailPageContent } from "./experience-detail-content";
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { mapExperiences, mapExperience } from "@/lib/utils/experience-mapper";
+import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import { mapCertificateToData } from "@/components/sections/certificates/constants";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getMessages } from "@/lib/translations";
@@ -59,6 +61,18 @@ export default async function ExperienceDetailPage({
 
   const rawExperience = await prisma.experience.findFirst({
     where: { slug, isPublished: true, ...notDeleted },
+    // Guard di level query, bukan filter susulan: project/certificate draft atau
+    // yang ada di trash tidak boleh muncul sebagai "related" di halaman publik.
+    include: {
+      projects: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+      certificates: {
+        where: { isPublished: true, ...notDeleted },
+        orderBy: { order: "asc" },
+      },
+    },
   });
 
   if (!rawExperience) {
@@ -86,5 +100,23 @@ export default async function ExperienceDetailPage({
   const prev = index > 0 ? allMapped[index - 1] : null;
   const next = index < allMapped.length - 1 ? allMapped[index + 1] : null;
 
-  return <ExperienceDetailPageContent exp={exp} prev={prev} next={next} />;
+  const relatedProjects = rawExperience.projects.map((p) =>
+    mapDbProjectToProject(p, locale),
+  );
+  const relatedCertificates = rawExperience.certificates.map((cert) =>
+    mapCertificateToData(cert, locale, {
+      issued: messages.certificates.issuedOn,
+      expires: messages.certificates.expiresOn,
+    }),
+  );
+
+  return (
+    <ExperienceDetailPageContent
+      exp={exp}
+      prev={prev}
+      next={next}
+      relatedProjects={relatedProjects}
+      relatedCertificates={relatedCertificates}
+    />
+  );
 }

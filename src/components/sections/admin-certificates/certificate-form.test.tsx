@@ -1,14 +1,15 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import type { AdminCertificate } from "@/types/domain";
+import { renderWithQuery } from "@/test-fixtures/render";
+import type { AdminCertificateWithRelations } from "./constants";
 import { CertificateForm } from "./certificate-form";
 
 const ISO_ISSUE = "2024-03-15T00:00:00.000Z";
 const ISO_EXPIRY = "2026-03-15T00:00:00.000Z";
 
-const existing: AdminCertificate = {
+const existing: AdminCertificateWithRelations = {
   id: "c1",
   slug: "aws-certified",
   title: "AWS Certified",
@@ -26,6 +27,8 @@ const existing: AdminCertificate = {
   createdAt: ISO_ISSUE,
   updatedAt: ISO_ISSUE,
   translations: null,
+  projects: [],
+  experiences: [],
 };
 
 const save = () => screen.getByRole("button", { name: /save certificate/i });
@@ -34,7 +37,7 @@ describe("CertificateForm in edit mode", () => {
   it("submits without the admin retyping a value the API discards", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(
+    renderWithQuery(
       <CertificateForm
         mode="edit"
         initialData={existing}
@@ -53,7 +56,7 @@ describe("CertificateForm in edit mode", () => {
   });
 
   it("prefills both date inputs in the native YYYY-MM-DD format", () => {
-    render(
+    renderWithQuery(
       <CertificateForm
         mode="edit"
         initialData={{ ...existing, expiryDate: ISO_EXPIRY }}
@@ -69,7 +72,7 @@ describe("CertificateForm in edit mode", () => {
   it("sends a cleared expiryDate so the API nulls the column", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(
+    renderWithQuery(
       <CertificateForm
         mode="edit"
         initialData={{ ...existing, expiryDate: ISO_EXPIRY }}
@@ -88,7 +91,7 @@ describe("CertificateForm in edit mode", () => {
   it("blocks submit when the issue date is missing", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(<CertificateForm mode="edit" initialData={existing} isLoading={false} onSubmit={onSubmit} />);
+    renderWithQuery(<CertificateForm mode="edit" initialData={existing} isLoading={false} onSubmit={onSubmit} />);
 
     await user.clear(screen.getByLabelText("Issue Date"));
     await user.click(save());
@@ -102,7 +105,7 @@ describe("CertificateForm in edit mode", () => {
   it("rejects a javascript: credentialUrl before it can be saved", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(
+    renderWithQuery(
       <CertificateForm
         mode="edit"
         initialData={existing}

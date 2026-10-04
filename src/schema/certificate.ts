@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { slugRegex } from "./project";
+import { relationIdList, relationIds, slugRegex } from "./project";
 import { certificateTranslationsSchema } from "./content-translations";
 
 // z.url() accepts every scheme the URL parser understands (javascript:, data:,
@@ -51,6 +51,8 @@ export const certificateFormSchema = z.object({
       (value) => value.split("\n").some((line) => line.trim().length > 0),
       "Add at least one summary point",
     ),
+  projectIds: relationIdList,
+  experienceIds: relationIdList,
   isPublished: z.boolean(),
   order: z.coerce.number().int("Order must be a whole number").min(0),
   idTitle: z.string().optional(),
@@ -80,6 +82,8 @@ export const certificateCreateSchema = z.object({
   expiryDate: optionalDateString.optional(),
   skills: z.array(z.string()),
   summary: z.array(z.string()),
+  projectIds: relationIds,
+  experienceIds: relationIds,
   isPublished: z.boolean(),
   order: z.number().int("Order must be a whole number").min(0),
   translations: certificateTranslationsSchema.optional(),
@@ -108,6 +112,8 @@ export const certificateUpdateSchema = z.object({
   expiryDate: optionalDateString.optional(),
   skills: z.array(z.string()).optional(),
   summary: z.array(z.string()).optional(),
+  projectIds: relationIds,
+  experienceIds: relationIds,
   isPublished: z.boolean().optional(),
   order: z.number().int("Order must be a whole number").min(0).optional(),
   translations: certificateTranslationsSchema.optional(),

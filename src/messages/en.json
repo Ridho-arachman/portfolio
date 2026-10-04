@@ -209,7 +209,9 @@
     "prev": "Previous Project",
     "next": "Next Project",
     "notFound": "Not Found",
-    "galleryImage": "Gallery {index}"
+    "galleryImage": "Gallery {index}",
+    "relatedCertificates": "Related Certificates",
+    "relatedExperiences": "Related Experience"
   },
   "experience": {
     "title": "Experience",
@@ -247,7 +249,9 @@
     "prev": "Previous Experience",
     "next": "Next Experience",
     "notFound": "Not Found",
-    "metaDescription": "Details of the {title} experience at {company}."
+    "metaDescription": "Details of the {title} experience at {company}.",
+    "relatedProjects": "Related Projects",
+    "relatedCertificates": "Related Certificates"
   },
   "certificates": {
     "title": "Certificates",
@@ -275,7 +279,9 @@
     "verifyBtn": "Verify Certificate",
     "prev": "Previous Certificate",
     "next": "Next Certificate",
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "relatedProjects": "Related Projects",
+    "relatedExperiences": "Related Experience"
   },
   "contact": {
     "title": "Get In Touch",

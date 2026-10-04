@@ -1,4 +1,27 @@
-export { type AdminProject } from "@/types/domain";
+import type { AdminProject } from "@/types/domain";
+
+export type { AdminProject };
+
+/**
+ * Bentuk `GET /api/admin/projects/[id]`: baris project plus dua daftar tautan
+ * m-n yang dibutuhkan form admin untuk prefill multi-select.
+ */
+export type AdminProjectWithRelations = AdminProject & {
+  certificates: { id: string; title: string }[];
+  experiences: { id: string; title: string }[];
+};
+
+/** Dipakai `ProjectForm.onSubmit`; dipisah dari `AdminProject` karena id
+ *  relasi tidak pernah ikut disimpan sebagai kolom, dan `categoryId` di sini
+ *  bukan `string | null` karena form mewajibkan satu kategori. */
+export type ProjectFormPayload = Omit<
+  AdminProject,
+  "id" | "createdAt" | "updatedAt" | "categoryId"
+> & {
+  categoryId: string;
+  certificateIds: string[];
+  experienceIds: string[];
+};
 
 export const ADMIN_PROJECTS = {
   title: "Projects",
@@ -41,6 +64,15 @@ export const ADMIN_PROJECTS = {
   fieldNpmUrlPlaceholder: "https://www.npmjs.com/package/user-repo",
   fieldTechnologies: "Technologies",
   fieldTechnologiesPlaceholder: "Comma separated: Next.js, Tailwind, Prisma",
+  fieldCategory: "Category",
+  fieldCategoryPlaceholder: "Select a category...",
+  fieldCategoryHint: "Every project belongs to exactly one category.",
+  fieldCertificates: "Certificates",
+  searchCertificates: "Search certificates...",
+  noCertificates: "No certificates available yet.",
+  fieldExperiences: "Experiences",
+  searchExperiences: "Search experiences...",
+  noExperiences: "No experiences available yet.",
   fieldGallery: "Gallery Images",
   fieldGalleryPlaceholder: "Upload images to show in the project gallery",
   fieldIsPublished: "Published",

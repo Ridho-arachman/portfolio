@@ -168,6 +168,8 @@ describe("certificateFormSchema", () => {
     isPublished: true,
     order: 1,
     gallery: [],
+    projectIds: ["p1"],
+    experienceIds: [],
   };
 
   it("accepts valid input", () => {
@@ -300,6 +302,8 @@ describe("experienceFormSchema", () => {
     gallery: [],
     description: "Built the marketing landing page",
     order: 0,
+    projectIds: [],
+    certificateIds: ["c1"],
   };
 
   it("accepts valid input", () => {
@@ -396,21 +400,45 @@ describe("categoryCreateSchema/categoryUpdateSchema", () => {
 });
 
 describe("projectFormSchema", () => {
-  it("accepts optional Indonesian role and highlights", () => {
-    const valid = {
-      title: "Web3 Portfolio Platform",
-      slug: "web3-portfolio",
-      description: "A portfolio built with Web3 tooling.",
-      thumbnail: "https://images.example.com/cover.jpg",
-      technologies: "Next.js, Tailwind",
-      gallery: [],
-      isPublished: true,
-      order: 0,
-      idRole: "Frontend Developer",
-      idHighlights: "Merilis ke produksi",
-    };
+  const valid = {
+    title: "Web3 Portfolio Platform",
+    slug: "web3-portfolio",
+    description: "A portfolio built with Web3 tooling.",
+    thumbnail: "https://images.example.com/cover.jpg",
+    technologies: "Next.js, Tailwind",
+    gallery: [],
+    categoryId: "cat-1",
+    certificateIds: [],
+    experienceIds: [],
+    isPublished: true,
+    order: 0,
+  };
 
-    expect(projectFormSchema.safeParse(valid).success).toBe(true);
+  it("accepts optional Indonesian role and highlights", () => {
+    expect(
+      projectFormSchema.safeParse({
+        ...valid,
+        idRole: "Frontend Developer",
+        idHighlights: "Merilis ke produksi",
+      }).success,
+    ).toBe(true);
+  });
+
+  // `categoryId` NOT NULL di DB, jadi form juga harus mewajibkannya — kalau
+  // tidak, payload create akan ditolak API dengan pesan yang tidak membantu.
+  it("requires a category", () => {
+    expect(projectFormSchema.safeParse({ ...valid, categoryId: "" }).success).toBe(
+      false,
+    );
+    expect(
+      projectFormSchema.safeParse({ ...valid, categoryId: undefined }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an empty id inside a relation list", () => {
+    expect(
+      projectFormSchema.safeParse({ ...valid, certificateIds: [""] }).success,
+    ).toBe(false);
   });
 });
 

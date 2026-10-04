@@ -201,11 +201,13 @@ export const getMessages = unstable_cache(
       return bundledDoc;
     }
   },
+// v5: projectDetail/certificateDetail/experienceDetail dapat kunci heading
+  // relasi baru (relatedCertificates / relatedExperiences / relatedProjects).
   // v4: experienceDetail.metaDescription, projectDetail.galleryImage, dan
-  // faq.sourceLabel ditambah (literal EN hardcode pindah ke messages) —
+  // faq.sourceLabel ditambahkan (literal EN hardcode pindah ke messages) —
   // dokumen lama ("messages-v3") di Data Cache Vercel (persisten antar-deploy)
   // tidak punya kunci baru itu sehingga t.*.undefined. Naikkan versi setiap
   // kali shape top-level messages berubah.
-  ["messages-v4"],
+  ["messages-v5"],
   { revalidate: 3600, tags: ["translations"] },
 );

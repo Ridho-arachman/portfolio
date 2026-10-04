@@ -39,8 +39,8 @@ vi.mock("@/lib/translate", () => ({
 }));
 
 vi.mock("@/lib/prisma", () => {
-  const model = () => ({
-    findMany: vi.fn(async () => []),
+  const model = (findManyResult: unknown[] = []) => ({
+    findMany: vi.fn(async () => findManyResult),
     count: vi.fn(async () => 0),
     findUnique: vi.fn(async () => ({ id: "row-1", slug: "stable-slug" })),
     create: vi.fn(async (args: { data: Record<string, unknown> }) => {
@@ -58,7 +58,9 @@ vi.mock("@/lib/prisma", () => {
       project: model(),
       experience: model(),
       certificate: model(),
-      category: model(),
+      // `POST /api/admin/projects` kini memvalidasi `categoryId` lebih dulu,
+      // jadi findMany harus melaporkan category itu ada.
+      category: model([{ id: "row-1" }]),
       rateLimit: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     },
   };
@@ -114,6 +116,7 @@ const entities: Entity[] = [
       highlights: [],
       isPublished: true,
       order: 0,
+      categoryId: "row-1",
     },
     update: {
       title: "English Project Title",

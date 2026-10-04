@@ -42,7 +42,6 @@ const getProjects = unstable_cache(
       // kolom Date kembali jadi string setelah warm. Insiden 86d09b0.
       include: {
         category: {
-          where: notDeleted,
           select: {
             id: true,
             name: true,
@@ -61,8 +60,38 @@ const getProjects = unstable_cache(
   { revalidate: 3600, tags: ["projects", "categories"] },
 );
 
-export default async function ProjectsPage() {
-  const projects = await getProjects();
+// `category` kini relasi wajib, jadi Prisma tidak bisa memfilternya di query
+// (`where` hanya berlaku untuk relasi to-one yang nullable). Membaca
+// `deletedAt` di dalam `getProjects` juga dilarang: payload-nya di-cache dan
+// kolom Date akan kembali jadi string. Jadi daftar id kategori yang masih hidup
+// diambil terpisah di sini — hasilnya cuma kolom id, tidak ada kolom Date,
+// sehingga aman dipakai di jalur cache.
+const getLiveCategoryIds = unstable_cache(
+  async () => {
+    const rows = await prisma.category.findMany({
+      where: notDeleted,
+      select: { id: true },
+    });
+    return new Set(rows.map((row) => row.id));
+  },
+  ["public-project-live-category-ids"],
+  { revalidate: 3600, tags: ["categories"] },
+);
 
-  return <ProjectsPageContent projects={projects} />;
+export default async function ProjectsPage() {
+  const [projects, liveCategoryIds] = await Promise.all([
+    getProjects(),
+    getLiveCategoryIds(),
+  ]);
+
+  return (
+    <ProjectsPageContent
+      projects={projects.map((project) => ({
+        ...project,
+        category: liveCategoryIds.has(project.categoryId)
+          ? project.category
+          : null,
+      }))}
+    />
+  );
 }
