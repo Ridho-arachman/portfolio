@@ -39,13 +39,24 @@ describe("formatMonthYear", () => {
   it("still formats a live Date from a cold cache", () => {
     expect(formatMonthYear(new Date(ISO_ISSUE), "en")).toBe("Mar 2024");
   });
+
+  it("stays in UTC when the server runs behind UTC", () => {
+    const original = process.env.TZ;
+    process.env.TZ = "America/New_York";
+    try {
+      expect(formatMonthYear(ISO_ISSUE, "en")).toBe("Mar 2024");
+      expect(formatMonthYear("2024-01-01T00:00:00.000Z", "en")).toBe("Jan 2024");
+    } finally {
+      if (original === undefined) delete process.env.TZ;
+      else process.env.TZ = original;
+    }
+  });
 });
 
-describe("mapCertificateToData with warm cache dates", () => {
+describe("mapCertificateToData", () => {
   it("maps a certificate whose issueDate is a string instead of throwing", () => {
     const data = mapCertificateToData(cachedCert(ISO_ISSUE), "en", LABELS);
 
-    expect(data.issueDate).toBe("Mar 2024");
     expect(data.period).toBe("Issued on Mar 2024");
   });
 
@@ -57,7 +68,7 @@ describe("mapCertificateToData with warm cache dates", () => {
       LABELS,
     );
 
-    expect(data.issueDate).toBe("Mar 2024");
+    expect(data.period).toBe("Issued on Mar 2024");
   });
 
   it("formats both dates when expiryDate is also a string", () => {
@@ -70,9 +81,49 @@ describe("mapCertificateToData with warm cache dates", () => {
     expect(data.period).toBe("Issued on Mar 2024 · Expires on Mar 2026");
   });
 
+  it("formats the period in UTC when the server runs behind UTC", () => {
+    const original = process.env.TZ;
+    process.env.TZ = "America/New_York";
+    try {
+      const data = mapCertificateToData(
+        cachedCert("2024-01-01T00:00:00.000Z"),
+        "en",
+        LABELS,
+      );
+
+      expect(data.period).toBe("Issued on Jan 2024");
+    } finally {
+      if (original === undefined) delete process.env.TZ;
+      else process.env.TZ = original;
+    }
+  });
+
   it("localises the month name for the id locale", () => {
     const data = mapCertificateToData(cachedCert(ISO_ISSUE), "id", LABELS);
 
-    expect(data.issueDate).toBe("Mar 2024");
+    expect(data.period).toBe("Issued on Mar 2024");
+  });
+
+  it("gives two cuids distinct identities", () => {
+    const a = mapCertificateToData(cachedCert(ISO_ISSUE), "en", LABELS);
+    const b = mapCertificateToData(
+      { ...cachedCert(ISO_ISSUE), id: "c2", slug: "gcp-cloud" },
+      "en",
+      LABELS,
+    );
+
+    expect(a.slug).toBe("aws-cloud");
+    expect(b.slug).toBe("gcp-cloud");
+    expect(new Set([a.slug, b.slug]).size).toBe(2);
+  });
+
+  it("carries credentialUrl through, so no caller has to re-add it", () => {
+    const data = mapCertificateToData(
+      { ...cachedCert(ISO_ISSUE), credentialUrl: "https://verify.example/aws" },
+      "en",
+      LABELS,
+    );
+
+    expect(data.credentialUrl).toBe("https://verify.example/aws");
   });
 });

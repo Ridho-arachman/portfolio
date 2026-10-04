@@ -19,7 +19,7 @@ import {
   type CertificateCreateValues,
 } from "@/schema/certificate";
 import { idOverrides } from "@/schema/content-translations";
-import { ADMIN_CERTIFICATES, type AdminCertificate } from "./constants";
+import { ADMIN_CERTIFICATES, type AdminCertificate, toDateInputValue } from "./constants";
 import { slugify } from "@/utils/slug";
 
 export function CertificateForm({
@@ -50,8 +50,8 @@ export function CertificateForm({
           title: initialData.title,
           slug: initialData.slug,
           issuer: initialData.issuer,
-          issueDate: initialData.issueDate,
-          period: initialData.period ?? "",
+          issueDate: toDateInputValue(initialData.issueDate),
+          expiryDate: toDateInputValue(initialData.expiryDate),
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
           thumbnail: initialData.thumbnail ?? "",
@@ -68,7 +68,7 @@ export function CertificateForm({
           slug: "",
           issuer: "",
           issueDate: "",
-          period: "",
+          expiryDate: "",
           credentialId: "",
           credentialUrl: "",
           thumbnail: "",
@@ -101,7 +101,7 @@ export function CertificateForm({
       title: values.title,
       issuer: values.issuer,
       issueDate: values.issueDate,
-      period: values.period,
+      expiryDate: values.expiryDate,
       credentialId: values.credentialId || undefined,
       credentialUrl: values.credentialUrl || undefined,
       thumbnail: values.thumbnail,
@@ -223,7 +223,7 @@ export function CertificateForm({
                   </Label>
                   <Input
                     id="issueDate"
-                    placeholder={ADMIN_CERTIFICATES.fieldIssueDatePlaceholder}
+                    type="date"
                     aria-invalid={errors.issueDate ? true : undefined}
                     {...register("issueDate")}
                   />
@@ -235,16 +235,22 @@ export function CertificateForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="period">{ADMIN_CERTIFICATES.fieldPeriod}</Label>
+                  <Label htmlFor="expiryDate">
+                    {ADMIN_CERTIFICATES.fieldExpiryDate}
+                  </Label>
                   <Input
-                    id="period"
-                    placeholder={ADMIN_CERTIFICATES.fieldPeriodPlaceholder}
-                    aria-invalid={errors.period ? true : undefined}
-                    {...register("period")}
+                    id="expiryDate"
+                    type="date"
+                    aria-invalid={errors.expiryDate ? true : undefined}
+                    {...register("expiryDate")}
                   />
-                  {errors.period && (
+                  {errors.expiryDate ? (
                     <p className="text-xs text-destructive">
-                      {errors.period.message}
+                      {errors.expiryDate.message}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-text-muted">
+                      {ADMIN_CERTIFICATES.fieldExpiryDatePlaceholder}
                     </p>
                   )}
                 </div>

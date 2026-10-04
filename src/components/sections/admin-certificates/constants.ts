@@ -29,9 +29,10 @@ export const ADMIN_CERTIFICATES = {
   fieldIssuer: "Issuer",
   fieldIssuerPlaceholder: "e.g. Amazon Web Services (AWS)",
   fieldIssueDate: "Issue Date",
-  fieldIssueDatePlaceholder: "e.g. March 2024",
-  fieldPeriod: "Period",
-  fieldPeriodPlaceholder: "e.g. Issued Mar 2024 · No Expiration",
+  fieldExpiryDate: "Expiry Date (optional)",
+  fieldExpiryDatePlaceholder: "Leave empty if it never expires",
+  issuedLabel: "Issued on",
+  expiresLabel: "Expires on",
   fieldCredentialId: "Credential ID (optional)",
   fieldCredentialIdPlaceholder: "e.g. AWS-CP-8F3K2Q1X",
   fieldCredentialUrl: "Credential URL (optional)",
@@ -57,3 +58,30 @@ export const ADMIN_CERTIFICATES = {
   fieldIdSummaryPlaceholder:
     "Satu poin per baris.\nIni tampil di halaman detail sertifikat.",
 } as const;
+
+const monthYear = new Intl.DateTimeFormat("en", {
+  month: "short",
+  year: "numeric",
+});
+
+/**
+ * Mirrors the public `formatPeriod` in components/sections/certificates. Kept
+ * local because the admin is single-locale and owns its own copy strings.
+ */
+export function formatCertificatePeriod(
+  issueDate: string,
+  expiryDate: string | null,
+): string {
+  const issued = `${ADMIN_CERTIFICATES.issuedLabel} ${monthYear.format(
+    new Date(issueDate),
+  )}`;
+  if (!expiryDate) return issued;
+  return `${issued} · ${ADMIN_CERTIFICATES.expiresLabel} ${monthYear.format(
+    new Date(expiryDate),
+  )}`;
+}
+
+/** Native `<input type="date">` only accepts "YYYY-MM-DD"; Prisma sends ISO. */
+export function toDateInputValue(iso: string | null): string {
+  return iso ? iso.slice(0, 10) : "";
+}

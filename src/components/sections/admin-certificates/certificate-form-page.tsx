@@ -2,6 +2,7 @@
 
 import { AlertTriangle, ArrowLeft, Award } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ADMIN_CERTIFICATES } from "./constants";
@@ -17,6 +18,7 @@ export function CertificateFormPage({
   certificateId?: string;
 }) {
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
@@ -94,6 +96,10 @@ export function CertificateFormPage({
     );
   }
 
+  // Leave only on success: pushing before the mutation resolves would navigate
+  // away on failure and land the error toast on the list page.
+  const goToList = () => router.push("/admin/certificates");
+
   return (
     <CertificateForm
       key={certificateData?.id ?? "create"}
@@ -102,8 +108,12 @@ export function CertificateFormPage({
       isLoading={createMutation.isPending || updateMutation.isPending}
       onSubmit={
         mode === "edit" && certificateData
-          ? (data) => updateMutation.mutate({ id: certificateData.id, data })
-          : (data) => createMutation.mutate(data)
+          ? (data) =>
+              updateMutation.mutate(
+                { id: certificateData.id, data },
+                { onSuccess: goToList },
+              )
+          : (data) => createMutation.mutate(data, { onSuccess: goToList })
       }
     />
   );

@@ -29,7 +29,7 @@ export function CertificatesPageContent({ data }: CertificatesPageContentProps) 
           badge={t.certificates.subtitle}
           title={t.certificates.title}
           titleAccent=""
-          description={t.certificates.subtitle}
+          description={t.certificates.headerDesc}
           iconSet="certificates"
         />
 
@@ -44,7 +44,7 @@ export function CertificatesPageContent({ data }: CertificatesPageContentProps) 
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {visibleData.map((cert, index) => (
-                <CertificateCard key={cert.id} cert={cert} index={index} />
+                <CertificateCard key={cert.slug} cert={cert} index={index} />
               ))}
             </div>
           )}

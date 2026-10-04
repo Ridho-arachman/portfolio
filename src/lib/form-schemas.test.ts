@@ -3,7 +3,7 @@ import { contactFormSchema, createContactFormSchema } from "@/schema/contact";
 import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
 import { loginFormSchema } from "@/schema/login";
-import { certificateFormSchema } from "@/schema/certificate";
+import { certificateCreateSchema, certificateFormSchema, certificateUpdateSchema } from "@/schema/certificate";
 import { experienceFormSchema } from "@/schema/experience";
 import {
   categoryCreateSchema,
@@ -160,8 +160,8 @@ describe("certificateFormSchema", () => {
     title: "AWS Certified Cloud Practitioner",
     slug: "aws-certified-cloud-practitioner",
     issuer: "Amazon Web Services",
-    issueDate: "March 2024",
-    period: "Issued Mar 2024 · No Expiration",
+    issueDate: "2024-03-15",
+    expiryDate: "",
     thumbnail: "https://images.example.com/cover.jpg",
     skills: "Cloud Computing, AWS",
     summary: "Passed the practitioner exam",
@@ -172,6 +172,16 @@ describe("certificateFormSchema", () => {
 
   it("accepts valid input", () => {
     expect(certificateFormSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("drops a period key instead of pretending to save it", () => {
+    const parsed = certificateFormSchema.safeParse({
+      ...valid,
+      period: "Issued Mar 2024 · No Expiration",
+    });
+
+    expect(parsed.success).toBe(true);
+    expect(parsed.data).not.toHaveProperty("period");
   });
 
   it("rejects an invalid slug", () => {
@@ -198,6 +208,82 @@ describe("certificateFormSchema", () => {
   it("rejects a summary without any line", () => {
     expect(
       certificateFormSchema.safeParse({ ...valid, summary: "   \n   " }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an issueDate the API could not turn into a real date", () => {
+    for (const issueDate of ["", "soon", "2024-13-45"]) {
+      expect(
+        certificateFormSchema.safeParse({ ...valid, issueDate }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("treats an empty expiryDate as never expiring", () => {
+    expect(
+      certificateFormSchema.safeParse({ ...valid, expiryDate: "" }).success,
+    ).toBe(true);
+  });
+
+  it("rejects an unparseable expiryDate", () => {
+    expect(
+      certificateFormSchema.safeParse({ ...valid, expiryDate: "soon" }).success,
+    ).toBe(false);
+  });
+
+  it("accepts http and https credentialUrl values", () => {
+    for (const credentialUrl of [
+      "https://aws.amazon.com/certification",
+      "http://example.com/verify",
+    ]) {
+      expect(
+        certificateFormSchema.safeParse({ ...valid, credentialUrl }).success,
+      ).toBe(true);
+    }
+  });
+
+  it("rejects javascript: and data: credentialUrl values", () => {
+    for (const credentialUrl of [
+      "javascript:alert(1)",
+      "JavaScript:alert(1)",
+      "data:text/html,<script>alert(1)</script>",
+    ]) {
+      expect(
+        certificateFormSchema.safeParse({ ...valid, credentialUrl }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("rejects javascript: and data: thumbnails", () => {
+    for (const thumbnail of ["javascript:alert(1)", "data:image/svg+xml,<svg/>"]) {
+      expect(
+        certificateFormSchema.safeParse({ ...valid, thumbnail }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("guards the server schemas, not just the form", () => {
+    for (const credentialUrl of ["javascript:alert(1)", "data:text/html,x"]) {
+      expect(
+        certificateCreateSchema.safeParse({ ...valid, credentialUrl }).success,
+      ).toBe(false);
+      expect(
+        certificateUpdateSchema.safeParse({ credentialUrl }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("rejects a garbage issueDate on the server too", () => {
+    expect(
+      certificateCreateSchema.safeParse({
+        title: valid.title,
+        issuer: valid.issuer,
+        issueDate: "soon",
+        skills: [],
+        summary: [],
+        isPublished: true,
+        order: 1,
+      }).success,
     ).toBe(false);
   });
 });

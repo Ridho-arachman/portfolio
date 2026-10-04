@@ -15,7 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ADMIN_CERTIFICATES } from "./constants";
+import { ADMIN_CERTIFICATES, formatCertificatePeriod } from "./constants";
 import { useAdminCertificates, useDeleteCertificate } from "@/hooks/use-certificates";
 import { usePagination } from "@/hooks/use-pagination";
 import { Pagination } from "@/components/ui/pagination";
@@ -123,14 +123,23 @@ export function CertificatesList() {
               {filtered.map((certificate) => (
                 <li key={certificate.id}>
                   <div className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/5 sm:px-5">
-                    <Image
-                      src={certificate.thumbnail ?? ""}
-                      alt={certificate.title}
-                      width={320}
-                      height={224}
-                      unoptimized
-                      className="hidden h-14 w-20 shrink-0 rounded-lg border border-glass-border object-cover sm:block"
-                    />
+                    {certificate.thumbnail ? (
+                      <Image
+                        src={certificate.thumbnail}
+                        alt={certificate.title}
+                        width={320}
+                        height={224}
+                        unoptimized
+                        className="hidden h-14 w-20 shrink-0 rounded-lg border border-glass-border object-cover sm:block"
+                      />
+                    ) : (
+                      <div
+                        aria-hidden="true"
+                        className="hidden h-14 w-20 shrink-0 items-center justify-center rounded-lg border border-dashed border-glass-border sm:flex"
+                      >
+                        <Award className="h-5 w-5 text-text-muted" />
+                      </div>
+                    )}
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -160,7 +169,12 @@ export function CertificatesList() {
                         {certificate.issuer}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-text-muted">
-                        <span>{certificate.period}</span>
+                        <span>
+                          {formatCertificatePeriod(
+                            certificate.issueDate,
+                            certificate.expiryDate,
+                          )}
+                        </span>
                         {certificate.skills.length > 0 && (
                           <span className="flex flex-wrap gap-1">
                             {certificate.skills.slice(0, 3).map((skill) => (

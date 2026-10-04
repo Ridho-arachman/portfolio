@@ -1,11 +1,11 @@
 import { HomePageContent } from "./home-content";
 import { HeroSection } from "@/components/sections/hero";
 import { mapDbProjectToProject } from "@/components/sections/projects/map-project";
+import { mapCertificateToData } from "@/components/sections/certificates/constants";
 import prisma from "@/lib/prisma";
 import { notDeleted } from "@/lib/soft-delete";
 import { getMessages } from "@/lib/translations";
 import { getPublicContent } from "@/lib/public-content";
-import { localizeCertificate } from "@/lib/localized-content";
 import { Locale, isValidLocale, DEFAULT_LOCALE, getAlternatePaths } from "@/lib/i18n";
 import { unstable_cache } from "next/cache";
 import { Metadata } from "next";
@@ -94,7 +94,6 @@ export default async function Home({ params }: HomePageProps) {
   const locale = resolvedParams.lang as Locale;
   const validLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
   const messages = await getMessages(validLocale);
-  const monthYear = new Intl.DateTimeFormat(validLocale, { month: "short", year: "numeric" });
   const [certificates, projects, counts, skills] = await Promise.all([
     getCertificates(),
     getProjects(),
@@ -106,23 +105,12 @@ export default async function Home({ params }: HomePageProps) {
     <HomePageContent
       counts={counts}
       projects={projects.map((p) => mapDbProjectToProject(p, validLocale))}
-      certificates={certificates.map((c) => {
-        const localized = localizeCertificate(c, validLocale);
-
-        return {
-          id: Number(c.id),
-          slug: c.slug,
-          title: localized.title,
-          issuer: c.issuer,
-          credentialId: c.credentialId ?? undefined,
-          issueDate: new Date(c.issueDate).toISOString(),
-          period: (() => { const issued = `${messages.certificates.issuedOn} ${monthYear.format(new Date(c.issueDate))}`; if (!c.expiryDate) return issued; return `${issued} · ${messages.certificates.expiresOn} ${monthYear.format(new Date(c.expiryDate))}`; })(),
-          thumbnail: c.thumbnail ?? "",
-          gallery: c.gallery,
-          skills: c.skills,
-          summary: localized.summary,
-        };
-      })}
+      certificates={certificates.map((c) =>
+        mapCertificateToData(c, validLocale, {
+          issued: messages.certificates.issuedOn,
+          expires: messages.certificates.expiresOn,
+        }),
+      )}
     >
       <HeroSection locale={validLocale} skills={skills} />
     </HomePageContent>
