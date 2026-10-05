@@ -35,7 +35,7 @@ export function ExperienceListItem({
         >
           {/* Shadcn UI Card */}
           <Card
-            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden backdrop-blur-xl hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
+            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
             style={{ borderWidth: 0, boxShadow: "none" }}
           >
             {/* 1. Thumbnail Image */}
@@ -51,7 +51,7 @@ export function ExperienceListItem({
               {/* Type Badge (Shadcn UI) - Inline rendering untuk menghindari error React */}
               <Badge
                 variant="outline"
-                className="absolute top-4 left-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 backdrop-blur-md border-glass-border text-xs font-semibold text-accent"
+                className="absolute top-4 left-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 border-glass-border text-xs font-semibold text-accent"
               >
                 {exp.type === "ORGANIZATION" ? (
                   <Award className="w-3.5 h-3.5" />

@@ -345,6 +345,24 @@
     border-color: var(--color-glass-highlight);
   }
 
+  /* Glow blob untuk background section. Versi sebelumnya `blur-[120px]` pada
+     elemen 500-600px: gaussian 120px tidak bisa di-cache per frame, jadi
+     browser menghitung ulang tiap region itu repaint saat scroll. Diukur di
+     /en/projects (mobile 412x823, CPU throttle 4x): frame >33ms turun 36→11. */
+  .glow-blob-accent {
+    background: radial-gradient(
+      circle,
+      var(--color-accent) 0%,
+      transparent 70%
+    );
+    opacity: 0.06;
+  }
+
+  .glow-blob-white {
+    background: radial-gradient(circle, #fff 0%, transparent 70%);
+    opacity: 0.05;
+  }
+
   .glass-strong {
     background: var(--color-glass-bg);
     border: 1px solid var(--color-glass-border);

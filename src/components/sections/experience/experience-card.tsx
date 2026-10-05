@@ -31,7 +31,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
         <div className="group h-full">
           <div className="relative h-full">
             <div className="relative h-full">
-              <Card className="relative h-full rounded-2xl border border-glass-border bg-glass-bg backdrop-blur-xl overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
+              <Card className="relative h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
                 style={{ borderWidth: 0, boxShadow: "none" }}
               >
                 <CardContent className="p-6 space-y-4 h-full">
@@ -48,7 +48,7 @@ export function ExperienceCard({ exp, index, isLeft }: ExperienceCardProps) {
                     {/* Type Badge (Shadcn UI) - Inline rendering untuk hindari error React */}
                     <Badge
                       variant="outline"
-                      className={`absolute top-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 backdrop-blur-md border-glass-border text-xs font-semibold text-accent ${isLeft ? "right-4" : "left-4"}`}
+                      className={`absolute top-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 border-glass-border text-xs font-semibold text-accent ${isLeft ? "right-4" : "left-4"}`}
                     >
                       {isOrg ? (
                         <Award className="w-3.5 h-3.5" />

@@ -29,7 +29,7 @@ export function CertificateCard({
         >
           {/* Shadcn UI Card */}
           <Card
-            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden backdrop-blur-xl hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
+            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
             style={{ borderWidth: 0, boxShadow: "none" }}
           >
             {/* 1. Thumbnail Image */}
@@ -55,7 +55,7 @@ export function CertificateCard({
               {/* Certificate Badge (Shadcn UI) */}
               <Badge
                 variant="outline"
-                className="absolute top-4 left-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 backdrop-blur-md border-glass-border text-xs font-semibold text-accent"
+                className="absolute top-4 left-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-bg-primary/80 border-glass-border text-xs font-semibold text-accent"
               >
                 <Award className="w-3.5 h-3.5" />
                 {t.certificates.badgeCertificate}
@@ -65,7 +65,7 @@ export function CertificateCard({
               {cert.credentialId && (
                 <Badge
                   variant="outline"
-                  className="absolute top-4 right-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 backdrop-blur-md border-emerald-500/30 text-xs font-semibold text-emerald-400"
+                  className="absolute top-4 right-4 z-20 gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border-emerald-500/30 text-xs font-semibold text-emerald-400"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   {t.certificates.badgeVerified}

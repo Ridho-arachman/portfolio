@@ -3,8 +3,8 @@ import { ProjectsBackgroundProps } from "./constants";
 export function ProjectsBackground({}: ProjectsBackgroundProps) {
   return (
     <>
-      <div className="absolute top-0 right-0 w-125 h-125 bg-accent/5 rounded-full blur-[120px] pointer-events-none animate-float" />
-      <div className="absolute bottom-0 left-0 w-150 h-150 bg-white/5 rounded-full blur-[120px] pointer-events-none animate-float-delayed" />
+      <div className="glow-blob-accent pointer-events-none absolute top-0 right-0 w-125 h-125 rounded-full" />
+      <div className="glow-blob-white pointer-events-none absolute bottom-0 left-0 w-150 h-150 rounded-full" />
     </>
   );
 }
