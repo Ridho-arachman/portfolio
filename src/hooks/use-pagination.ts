@@ -25,9 +25,23 @@ export function usePagination(options: UsePaginationOptions = {}) {
     "pageSize",
     parseAsInteger.withDefault(defaultPageSize),
   );
-  const [search, setSearch] = useQueryState(
+  const [search, setSearchValue] = useQueryState(
     "search",
     parseAsString.withDefault(defaultSearch),
+  );
+
+  // Mengubah `search` harus sekaligus mengembalikan `page` ke 1. Keduanya query
+  // param terpisah, jadi tanpa ini mencari dari halaman 3 membuat server menerima
+  // `page=3` lalu mengambil baris 21-30 dari hasil yang mungkin cuma satu baris —
+  // daftar tampil kosong, persis seperti search tidak berfungsi. Bug ini tersembunyi
+  // selama data masih muat satu halaman. Miliki koupling-nya di sini supaya
+  // setiap daftar ikut benar tanpa harus mengingatinya.
+  const setSearch = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      setPage(1);
+    },
+    [setSearchValue, setPage],
   );
 
   const goToPage = useCallback(
