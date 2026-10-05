@@ -56,7 +56,7 @@ describe("GET /api/admin/settings", () => {
 
     expect(res.status).toBe(200);
     const { data } = await res.json();
-    expect(data).toEqual(envSiteSettings());
+    expect(data).toEqual({ ...envSiteSettings(), translations: null });
 
     for (const key of Object.keys(envSiteSettings())) {
       if (key === "quickLinks") {
@@ -65,7 +65,10 @@ describe("GET /api/admin/settings", () => {
         ]);
       } else {
         expect(data[key], `${key} must be a non-empty string`).toEqual(expect.any(String));
-        expect(data[key].length, `${key} must not be blank`).toBeGreaterThan(0);
+        // `NEXT_PUBLIC_INSTAGRAM_URL` default-nya `""` dan tidak diset di CI; blank-nya disengaja.
+        if (key !== "instagramUrl") {
+          expect(data[key].length, `${key} must not be blank`).toBeGreaterThan(0);
+        }
       }
     }
   });
@@ -172,7 +175,7 @@ describe("POST /api/admin/settings/reset", () => {
     const res = await reset({});
 
     expect(res.status).toBe(200);
-    expect((await res.json()).data).toEqual(envSiteSettings());
+    expect((await res.json()).data).toEqual({ ...envSiteSettings(), translations: null });
 
     const row = await readRow();
     expect(row).toMatchObject({
@@ -193,7 +196,7 @@ describe("POST /api/admin/settings/reset", () => {
     const res = await reset();
 
     expect(res.status).toBe(200);
-    expect((await res.json()).data).toEqual(envSiteSettings());
+    expect((await res.json()).data).toEqual({ ...envSiteSettings(), translations: null });
   });
 
   it("rejects a malformed body with 400 instead of silently resetting everything", async () => {
