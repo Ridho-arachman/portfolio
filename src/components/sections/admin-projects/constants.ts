@@ -64,6 +64,13 @@ export const ADMIN_PROJECTS = {
   fieldNpmUrlPlaceholder: "https://www.npmjs.com/package/user-repo",
   fieldTechnologies: "Technologies",
   fieldTechnologiesPlaceholder: "Comma separated: Next.js, Tailwind, Prisma",
+  fieldRole: "Role",
+  fieldRolePlaceholder: "e.g. Frontend Developer",
+  fieldYear: "Year",
+  fieldYearPlaceholder: "e.g. 2024",
+  fieldHighlights: "Highlights",
+  fieldHighlightsPlaceholder:
+    "One point per line\nShipped to production\nLed the frontend team",
   fieldCategory: "Category",
   fieldCategoryPlaceholder: "Select a category...",
   fieldCategoryHint: "Every project belongs to exactly one category.",

@@ -64,6 +64,9 @@ export function ProjectForm({
           repoUrl: initialData.repoUrl ?? "",
           npmUrl: initialData.npmUrl ?? "",
           technologies: initialData.technologies.join(", "),
+          highlights: initialData.highlights.join("\n"),
+          role: initialData.role ?? "",
+          year: initialData.year ?? "",
           categoryId: initialData.categoryId ?? "",
           certificateIds: initialData.certificates.map((c) => c.id),
           experienceIds: initialData.experiences.map((e) => e.id),
@@ -85,6 +88,9 @@ export function ProjectForm({
           repoUrl: "",
           npmUrl: "",
           technologies: "",
+          highlights: "",
+          role: "",
+          year: "",
           categoryId: "",
           certificateIds: [],
           experienceIds: [],
@@ -135,9 +141,12 @@ export function ProjectForm({
         .filter(Boolean),
       isPublished: values.isPublished,
       order: values.order,
-      role: null,
-      year: null,
-      highlights: [],
+      role: values.role || null,
+      year: values.year || null,
+      highlights: (values.highlights ?? "")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean),
       categoryId: values.categoryId,
       certificateIds: values.certificateIds,
       experienceIds: values.experienceIds,
@@ -465,6 +474,24 @@ export function ProjectForm({
                   )}
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="role">{ADMIN_PROJECTS.fieldRole}</Label>
+                  <Input
+                    id="role"
+                    placeholder={ADMIN_PROJECTS.fieldRolePlaceholder}
+                    {...register("role")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="year">{ADMIN_PROJECTS.fieldYear}</Label>
+                  <Input
+                    id="year"
+                    placeholder={ADMIN_PROJECTS.fieldYearPlaceholder}
+                    {...register("year")}
+                  />
+                </div>
+
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="technologies">
                     {ADMIN_PROJECTS.fieldTechnologies}
@@ -473,6 +500,18 @@ export function ProjectForm({
                     id="technologies"
                     placeholder={ADMIN_PROJECTS.fieldTechnologiesPlaceholder}
                     {...register("technologies")}
+                  />
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="highlights">
+                    {ADMIN_PROJECTS.fieldHighlights}
+                  </Label>
+                  <Textarea
+                    id="highlights"
+                    rows={4}
+                    placeholder={ADMIN_PROJECTS.fieldHighlightsPlaceholder}
+                    {...register("highlights")}
                   />
                 </div>
               </div>
