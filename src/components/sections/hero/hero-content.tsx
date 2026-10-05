@@ -93,7 +93,7 @@ export function HeroContent({ locale, skills }: { locale: Locale; skills: HeroSk
       </div>
 
       <div
-        className="ascend-reveal px-6 pt-[clamp(24px,3vw,40px)] pb-[clamp(36px,6vw,64px)]"
+        className="ascend-reveal px-6 pt-[clamp(40px,5vw,64px)] pb-[clamp(36px,6vw,64px)]"
         data-reveal
         style={{ "--rd": "420ms" } as React.CSSProperties}
       >
