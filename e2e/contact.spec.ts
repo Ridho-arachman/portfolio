@@ -17,18 +17,13 @@ test("shows validation errors on empty submit", async ({ page }) => {
 
   await page.getByRole("button", { name: "Send Message" }).click();
 
-  await expect(
-    page.getByText("Name must be at least 2 characters"),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Please enter a valid email address"),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Subject must be at least 3 characters"),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Message must be at least 10 characters"),
-  ).toBeVisible();
+  // Form publik memakai `createContactFormSchema(t.contact.form.validation)`,
+  // jadi yang tampil adalah pesan i18n, bukan string default di `schema/contact.ts`
+  // yang hanya dipakai `POST /api/contact`.
+  await expect(page.getByText("Name is required")).toBeVisible();
+  await expect(page.getByText("Email is required")).toBeVisible();
+  await expect(page.getByText("Subject is required")).toBeVisible();
+  await expect(page.getByText("Message is required")).toBeVisible();
 });
 
 test("submits a valid message and shows success", async ({ page }) => {

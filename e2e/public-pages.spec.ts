@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// `/en/about` sengaja tidak ada di sini: halaman itu tidak punya h1/h2 di
+// dalam <main>, jadi `h1, h2` pertama yang diassert justru heading milik
+// chrome. `/en` memakai "Developer" karena h1 hero berisi judul yang bisa
+// ditimpa site settings, dan nilainya berbeda antara production dan E2E.
 const PUBLIC_ROUTES: Array<[path: string, heading: string]> = [
-  ["/en", "Ridho Arachman"],
-  ["/en/about", "About"],
+  ["/en", "Developer"],
   ["/en/projects", "Projects"],
   ["/en/experience", "Experiences"],
   ["/en/certificates", "Certificates"],
@@ -23,12 +26,22 @@ for (const [path, heading] of PUBLIC_ROUTES) {
 test("home page shows hero call to action", async ({ page }) => {
   await page.goto("/en");
 
-  await expect(
-    page.getByRole("heading", { level: 1 }),
-  ).toContainText("Ridho Arachman");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Developer",
+  );
   await expect(page.getByText("Available for hire", { exact: true })).toBeVisible();
+  // `.first()` karena ada dua link "View Projects": CTA hero dan section showcase.
   await expect(
-    page.getByRole("link", { name: "View Projects" }),
+    page.getByRole("link", { name: "View Projects" }).first(),
+  ).toBeVisible();
+});
+
+test("/en/about renders its main content", async ({ page }) => {
+  const response = await page.goto("/en/about");
+  expect(response?.status()).toBe(200);
+
+  await expect(
+    page.locator("main").getByRole("heading").first(),
   ).toBeVisible();
 });
 
