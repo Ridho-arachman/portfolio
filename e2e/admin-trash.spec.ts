@@ -49,7 +49,7 @@ function projectPayload(project: { title: string; slug: string }) {
 
 async function createProject(page: Page, project: { title: string; slug: string }) {
   const response = await page.request.post("/api/admin/projects", {
-    data: projectPayload(project),
+    data: { ...projectPayload(project), categoryId },
   });
   expect(response.status(), "seed project harus dibuat").toBe(201);
   const body = (await response.json()) as { data: ProjectRow };
@@ -108,6 +108,27 @@ async function openTrash(page: Page) {
 
 test.beforeEach(async ({ request }) => {
   await seedAdminViaApi(request);
+});
+
+let categoryId: string;
+
+// `categoryId` NOT NULL di `POST /api/admin/projects`, dan job E2E hanya
+// `prisma db push` tanpa seed, jadi tidak ada kategori untuk diambil.
+test.beforeAll(async () => {
+  const category = await prisma.category.create({
+    data: {
+      name: `E2E Trash ${RUN_TOKEN}`,
+      slug: `${SLUG_PREFIX}cat-${RUN_TOKEN}`,
+    },
+    select: { id: true },
+  });
+  categoryId = category.id;
+});
+
+test.afterAll(async () => {
+  await prisma.category.deleteMany({
+    where: { slug: { startsWith: `${SLUG_PREFIX}cat-` } },
+  });
 });
 
 test.afterEach(async () => {
@@ -217,7 +238,7 @@ test("a trashed project keeps holding its slug until it is purged", async ({
   await softDelete(page, target.id);
 
   const blocked = await page.request.post("/api/admin/projects", {
-    data: projectPayload(TARGET),
+    data: { ...projectPayload(TARGET), categoryId },
   });
   expect(blocked.status(), "slug masih dipegang baris di trash").toBe(409);
   expect((await blocked.json()) as { error: string }).toHaveProperty(
@@ -228,7 +249,7 @@ test("a trashed project keeps holding its slug until it is purged", async ({
   expect((await purge(page, target.id, true)).status()).toBe(200);
 
   const reused = await page.request.post("/api/admin/projects", {
-    data: projectPayload(TARGET),
+    data: { ...projectPayload(TARGET), categoryId },
   });
   expect(reused.status(), "setelah purge slug harus bisa dipakai lagi").toBe(201);
   const body = (await reused.json()) as { data: ProjectRow };
