@@ -62,7 +62,7 @@ export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
 
   return (
     <Providers>
-      <div className="flex flex-col min-h-screen overflow-x-hidden">
+      <div className="flex flex-col min-h-svh overflow-x-hidden">
         <PageHero
           badge={t.projects.badge}
           title={t.projects.title}

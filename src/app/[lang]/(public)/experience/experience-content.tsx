@@ -24,7 +24,7 @@ export function ExperiencePageContent({ experiences }: ExperiencePageContentProp
 
   return (
     <Providers>
-      <div className="flex flex-col min-h-screen overflow-x-hidden">
+      <div className="flex flex-col min-h-svh overflow-x-hidden">
         <PageHero
           badge={t.experience.badge}
           title={t.experience.headerTitle}

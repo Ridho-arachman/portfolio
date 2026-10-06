@@ -46,7 +46,7 @@ export function PageHero({
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+      className="relative min-h-svh flex items-center justify-center overflow-hidden pt-20"
     >
       {/* Latar belakang parallax */}
       <AboutHeroBackground

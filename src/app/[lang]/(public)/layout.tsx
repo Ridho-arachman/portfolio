@@ -33,7 +33,7 @@ export default async function PublicLayout({
       <Navbar />
         <AscendChrome />
         <StructuredData settings={settings} />
-      <main id="main-content" role="main" className="min-h-screen pt-20">
+      <main id="main-content" role="main" className="min-h-svh pt-20">
         {children}
       </main>
       <Footer />
