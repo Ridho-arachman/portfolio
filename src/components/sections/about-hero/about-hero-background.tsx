@@ -14,19 +14,25 @@ export function AboutHeroBackground({
           scroll repaint recomputed it. Same fix, same reason, as the list pages in 7176220 —
           that commit was measured on a weak-GPU phone, this shared hero was simply missed.
           The inline opacity restores the old bg-accent/10 strength that glow-blob-accent's
-          0.06 would otherwise dim it to. Do not put blur back. */}
+          0.06 would otherwise dim it to. Do not put blur back.
+
+          will-change on every layer that scrolls: without it each one is re-rasterised in
+          full on each frame, because a translated layer without its own compositor surface
+          is repainted rather than moved. A viewport-wide tiled grid plus two large radial
+          gradients at 60Hz is fill-rate work, which is what a weak phone's GPU cannot afford.
+          It costs ~5MB of layer memory, far less than re-rastering it every frame. */}
       <div
-        className="glow-blob-accent pointer-events-none absolute top-0 left-1/4 w-150 h-150 rounded-full"
+        className="glow-blob-accent pointer-events-none absolute top-0 left-1/4 w-150 h-150 rounded-full will-change-transform"
         style={{ opacity: 0.1, transform: `translateY(${bgY1}px)` } as React.CSSProperties}
       />
       <div
-        className="glow-blob-white pointer-events-none absolute bottom-0 right-1/4 w-125 h-125 rounded-full"
+        className="glow-blob-white pointer-events-none absolute bottom-0 right-1/4 w-125 h-125 rounded-full will-change-transform"
         style={{ transform: `translateY(${bgY2}px)` } as React.CSSProperties}
       />
 
       {/* Layer 2: Perspective Grid */}
       <div
-        className="absolute inset-0 bg-grid-elegant opacity-20 pointer-events-none"
+        className="absolute inset-0 bg-grid-elegant opacity-20 pointer-events-none will-change-transform"
         style={{ transform: `translateY(${bgY3}px)` } as React.CSSProperties}
       />
 

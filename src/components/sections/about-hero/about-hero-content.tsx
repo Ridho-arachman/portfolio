@@ -9,7 +9,7 @@ export function AboutHeroContent({ scrollYProgress }: AboutHeroContentProps) {
   const { t } = useTranslation();
   return (
     <div
-      className="relative z-10 container mx-auto px-4 text-center max-w-4xl"
+      className="relative z-10 container mx-auto px-4 text-center max-w-4xl will-change-transform"
       style={{
         transform: `translateY(${scrollYProgress * -100}px) scale(${1 - scrollYProgress * 0.1})`,
         opacity: Math.max(0, 1 - scrollYProgress * 2),
