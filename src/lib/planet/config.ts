@@ -1,12 +1,6 @@
 import { Vector3 } from "three";
 
-export const ASSET_BASE_URL =
-    "https://api.getlayers.ai/storage/v1/object/public/public/assets/ascend-d9857ad1f2";
-
-export const PLANET_GLB = `${ASSET_BASE_URL}/planet.glb`;
-export const PLANET_LIGHTS_GLB = `${ASSET_BASE_URL}/planet-lights.glb`;
-export const PLANET_CLOUDS_PNG = `${ASSET_BASE_URL}/planet-clouds.png`;
-export const DRACO_DECODER_PATH = "https://www.gstatic.com/draco/versioned/decoders/1.5.5/";
+export { ASSET_BASE_URL, PLANET_GLB, PLANET_LIGHTS_GLB, PLANET_CLOUDS_PNG, DRACO_DECODER_PATH } from "./assets";
 
 export const CONFIG = {
     rimColor: "#d9c8ff",
@@ -89,7 +83,7 @@ export const STOPS_S: readonly Stop[] = [
     { p: 1, v: 1.12 },
 ];
 
-export const ENTRY_DUR = 1.9;
+export const ENTRY_DUR = 1.1;
 export const ENTRY_START_Y = -6.5;
 export const STAR_SPHERE_RADIUS = 90;
 export const MARKER_LIFT = 1.012;

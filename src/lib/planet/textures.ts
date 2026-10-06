@@ -34,9 +34,10 @@ function drawScaled(source: ResizeSource, maxSize: number): HTMLCanvasElement {
     return canvas;
 }
 
-// ponytail: the source clouds PNG is 6000x6000 and decoding/uploading that costs seconds of
-// main-thread time on a throttled phone; createImageBitmap resizes off-thread instead. Ceiling
-// = 2048 cap (still denser than the ~500px globe). Upgrade path: ship a 2048 asset.
+// createImageBitmap decodes and resizes off the main thread, which is the reason this exists —
+// decoding a large cloud texture inline is what stalls a throttled phone. Note the shipped
+// asset is 1024x1024, so at the current 2048 cap `drawScaled` is a pass-through copy: keep
+// the cap only while the source is larger than it, or this becomes pure cost.
 export async function loadScaledTexture(url: string, maxSize: number): Promise<Texture> {
     const bitmap = await createImageBitmap(await (await fetch(url)).blob());
     const canvas = drawScaled(bitmap, maxSize);

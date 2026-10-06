@@ -122,8 +122,10 @@ const nextConfig: NextConfig = {
                 },
               ],
             },
+            // `glb` is here because the planet textures ship as GLB, and it was missing
+            // from this list — the globe re-downloaded its own model on every visit.
             {
-              source: "/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ico)",
+              source: "/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ico|glb)",
               headers: [
                 {
                   key: "Cache-Control",

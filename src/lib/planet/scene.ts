@@ -755,10 +755,19 @@ export function createPlanetScene(options: {
     /* ---------------------------------------------------------------- asset loading */
 
     const load = async (): Promise<void> => {
-        const lightsGltf = await gltfLoader.loadAsync(PLANET_LIGHTS_GLB);
+        // Requested together, not awaited in series: these are independent downloads from a
+        // third-party host, and doing them one by one leaves the network idle for two thirds
+        // of the 1.84MB — directly on top of the entrance animation. Do not "simplify" this
+        // back to sequential awaits. DRACOLoader still fetches its decoder only once.
+        const [lightsGltf, planetGltf, cloudTexture] = await Promise.all([
+            gltfLoader.loadAsync(PLANET_LIGHTS_GLB),
+            gltfLoader.loadAsync(PLANET_GLB),
+            loadScaledTexture(PLANET_CLOUDS_PNG, 2048),
+        ]);
         if (disposed) return;
         if (profile.planetTextureSize !== null) {
             capSceneTextures(lightsGltf.scene, profile.planetTextureSize);
+            capSceneTextures(planetGltf.scene, profile.planetTextureSize);
         }
         const lightsMesh = firstMesh(lightsGltf.scene);
         const nightTex = (lightsMesh !== null ? firstStandardMaterial(lightsMesh)?.map : null) ?? null;
@@ -766,11 +775,6 @@ export function createPlanetScene(options: {
         // Only the texture is used from this file; free the rest immediately.
         disposeObject(lightsGltf.scene);
 
-        const planetGltf = await gltfLoader.loadAsync(PLANET_GLB);
-        if (disposed) return;
-        if (profile.planetTextureSize !== null) {
-            capSceneTextures(planetGltf.scene, profile.planetTextureSize);
-        }
         const planetSource = firstMesh(planetGltf.scene);
         if (planetSource === null) throw new Error("planet.glb contains no mesh");
         const sourceMaterial = firstStandardMaterial(planetSource);
@@ -816,8 +820,6 @@ export function createPlanetScene(options: {
         planetSource.layers.set(LAYERS.ENTIRE_SCENE);
         planetGroup.add(planetSource);
 
-        const cloudTexture = await loadScaledTexture(PLANET_CLOUDS_PNG, 2048);
-        if (disposed) return;
         cloudTexture.wrapS = RepeatWrapping;
         cloudTexture.wrapT = RepeatWrapping;
         cloudTexture.repeat.set(5, 5);
