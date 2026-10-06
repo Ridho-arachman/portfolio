@@ -21,7 +21,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       {/* Glow Effect behind card */}
       <div className="absolute -inset-0.5 bg-linear-to-br from-accent/30 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <Card
-        className="relative h-full rounded-3xl border border-glass-border bg-glass-bg transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(167,139,250,0.15)]"
+        className="render-lazy relative h-full rounded-3xl border border-glass-border bg-glass-bg transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(167,139,250,0.15)]"
         style={{ borderWidth: 0, boxShadow: "none" }}
       >
         {/* Image Container - Asymmetric aspect ratios for bento variation */}

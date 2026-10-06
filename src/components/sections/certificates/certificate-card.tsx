@@ -29,7 +29,7 @@ export function CertificateCard({
         >
           {/* Shadcn UI Card */}
           <Card
-            className="h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
+            className="render-lazy h-full rounded-2xl border border-glass-border bg-glass-bg overflow-hidden hover:border-accent/40 hover:shadow-[0_0_30px_rgba(167,139,250,0.1)] transition-all duration-300"
             style={{ borderWidth: 0, boxShadow: "none" }}
           >
             {/* 1. Thumbnail Image */}

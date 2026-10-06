@@ -149,7 +149,7 @@ export function FloatingSwitcher({ botEnabled = true }: { botEnabled?: boolean }
         onDragEnd={handleDragEnd}
         style={{ x: dragX }}
         className={cn(
-          "grid h-14 place-items-center rounded-full border border-white/10 bg-bg-secondary/80 p-1 shadow-2xl backdrop-blur-md",
+          "grid h-14 place-items-center rounded-full border border-white/10 bg-bg-secondary/80 p-1 shadow-2xl",
           isDual ? "w-28 grid-cols-2" : "w-14 grid-cols-1",
         )}
       >
