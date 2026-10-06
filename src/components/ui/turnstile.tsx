@@ -35,7 +35,9 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
       if (cancelled || !containerRef.current || !window.turnstile) return;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY,
-        theme: "auto",
+        // The site is always dark; "auto" does not pick that up and the widget
+        // renders as a light, un-themed box on a dark page.
+        theme: "dark",
         callback: (token: string) => onToken(token),
         "expired-callback": () => {
           onToken("");
