@@ -16,11 +16,18 @@ export function useAboutHeroAnimations() {
     const section = sectionRef.current;
     if (!section || prefersReducedMotion) return;
 
+    // Coalesced to one read + one setState per frame. During a fling, scroll events arrive
+    // faster than rAF and every one re-rendered the whole hero subtree. Cost is invisible
+    // on a desktop GPU; on a weak phone it competes with the blur for the same frames.
+    let frame = 0;
     const handleScroll = () => {
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      setScrollYProgress(heroScrollProgress(rect.bottom, rect.height, viewportHeight));
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const rect = section.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        setScrollYProgress(heroScrollProgress(rect.bottom, rect.height, viewportHeight));
+      });
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -35,6 +42,7 @@ export function useAboutHeroAnimations() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(frame);
     };
   }, [prefersReducedMotion]);
 
