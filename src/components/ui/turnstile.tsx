@@ -100,5 +100,5 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
 
   if (!SITE_KEY) return null;
 
-  return <div ref={containerRef} className="flex justify-center" />;
+  return <div ref={containerRef} className="flex w-full justify-center" />;
 }
