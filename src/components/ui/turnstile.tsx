@@ -65,24 +65,32 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
     };
 
     // Turnstile renders as a blank white box when it mounts while its container
-    // still has no layout (hidden, animated, or inside a lazy placeholder). Wait
-    // until the container actually has a non-zero width before loading/rendering.
-    let measured = false;
-    const io = new ResizeObserver(() => {
-      if (measured) return;
-      const el = containerRef.current;
-      if (!el) return;
-      if (el.clientWidth > 0) {
-        measured = true;
-        start();
+    // still has no layout (hidden, animated, or inside a lazy placeholder). Prefer
+    // mounting against a container that already has a width, and only fall back to a
+    // one-shot ResizeObserver if it does not yet.
+    const el = containerRef.current;
+    if (el && el.clientWidth > 0) {
+      start();
+    } else if (el) {
+      const io = new ResizeObserver(() => {
+        if (el.clientWidth > 0) {
+          start();
+          io.disconnect();
+        }
+      });
+      io.observe(el);
+      return () => {
+        cancelled = true;
         io.disconnect();
-      }
-    });
-    if (containerRef.current) io.observe(containerRef.current);
+        if (widgetIdRef.current && window.turnstile) {
+          window.turnstile.remove(widgetIdRef.current);
+          widgetIdRef.current = null;
+        }
+      };
+    }
 
     return () => {
       cancelled = true;
-      io.disconnect();
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
