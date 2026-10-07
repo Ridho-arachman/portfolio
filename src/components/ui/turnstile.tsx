@@ -30,6 +30,7 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
     if (!SITE_KEY || !containerRef.current) return;
 
     let cancelled = false;
+    let script: HTMLScriptElement | null = null;
 
     const renderWidget = () => {
       if (cancelled || !containerRef.current || !window.turnstile) return;
@@ -50,19 +51,38 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
       });
     };
 
-    if (window.turnstile) {
-      renderWidget();
-    } else {
-      const script = document.createElement("script");
-      script.src = SCRIPT_URL;
-      script.async = true;
-      script.defer = true;
-      script.onload = renderWidget;
-      document.head.appendChild(script);
-    }
+    const start = () => {
+      if (window.turnstile) {
+        renderWidget();
+      } else if (!script) {
+        script = document.createElement("script");
+        script.src = SCRIPT_URL;
+        script.async = true;
+        script.defer = true;
+        script.onload = renderWidget;
+        document.head.appendChild(script);
+      }
+    };
+
+    // Turnstile renders as a blank white box when it mounts while its container
+    // still has no layout (hidden, animated, or inside a lazy placeholder). Wait
+    // until the container actually has a non-zero width before loading/rendering.
+    let measured = false;
+    const io = new ResizeObserver(() => {
+      if (measured) return;
+      const el = containerRef.current;
+      if (!el) return;
+      if (el.clientWidth > 0) {
+        measured = true;
+        start();
+        io.disconnect();
+      }
+    });
+    if (containerRef.current) io.observe(containerRef.current);
 
     return () => {
       cancelled = true;
+      io.disconnect();
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
