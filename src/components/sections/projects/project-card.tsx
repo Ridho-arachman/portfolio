@@ -83,7 +83,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                     alt={`${t.common.preview} ${idx + 1}`}
                     width={48}
                     height={48}
-                    className="object-cover transition-all"
+                    className="h-full w-full object-cover transition-all"
                     sizes="48px"
                     placeholder="blur"
                     blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
