@@ -31,6 +31,8 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
 
     let cancelled = false;
     let script: HTMLScriptElement | null = null;
+    let started = false;
+    let retries = 0;
 
     const renderWidget = () => {
       if (cancelled || !containerRef.current || !window.turnstile) return;
@@ -47,11 +49,26 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
         "error-callback": () => {
           onToken("");
           onExpire?.();
+          // On mobile the challenge can fail transiently when it starts mid-scroll.
+          // Turnstile's own auto-retry gives up eventually and leaves a dead error
+          // box, so re-render once ourselves.
+          if (!cancelled && retries < 1) {
+            retries += 1;
+            window.setTimeout(() => {
+              if (cancelled || !window.turnstile || !widgetIdRef.current)
+                return;
+              window.turnstile.remove(widgetIdRef.current);
+              widgetIdRef.current = null;
+              renderWidget();
+            }, 1500);
+          }
         },
       });
     };
 
     const start = () => {
+      if (started) return;
+      started = true;
       if (window.turnstile) {
         renderWidget();
       } else if (!script) {
@@ -64,33 +81,36 @@ export function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetProps) {
       }
     };
 
-    // Turnstile renders as a blank white box when it mounts while its container
-    // still has no layout (hidden, animated, or inside a lazy placeholder). Prefer
-    // mounting against a container that already has a width, and only fall back to a
-    // one-shot ResizeObserver if it does not yet.
+    // Start the challenge only once the widget is actually on screen and laid
+    // out: starting it while the container is still below the fold (home mounts
+    // the whole below-fold chunk ~200px early via LazySection) makes the mobile
+    // challenge fail and stick in an error state.
     const el = containerRef.current;
-    if (el && el.clientWidth > 0) {
-      start();
-    } else if (el) {
-      const io = new ResizeObserver(() => {
-        if (el.clientWidth > 0) {
-          start();
-          io.disconnect();
-        }
-      });
+    const maybeStart = () => {
+      const rect = el.getBoundingClientRect();
+      if (el.clientWidth > 0 && rect.top < window.innerHeight && rect.bottom > 0) {
+        start();
+        return true;
+      }
+      return false;
+    };
+
+    let io: IntersectionObserver | null = null;
+    if (!maybeStart()) {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting) && maybeStart()) {
+            io?.disconnect();
+          }
+        },
+        { threshold: 0 },
+      );
       io.observe(el);
-      return () => {
-        cancelled = true;
-        io.disconnect();
-        if (widgetIdRef.current && window.turnstile) {
-          window.turnstile.remove(widgetIdRef.current);
-          widgetIdRef.current = null;
-        }
-      };
     }
 
     return () => {
       cancelled = true;
+      io?.disconnect();
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
